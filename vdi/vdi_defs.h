@@ -8,8 +8,7 @@
  * option any later version.  See doc/license.txt for details.
  */
 
-#ifndef VDIDEFS_H
-#define VDIDEFS_H
+#pragma once
 
 #include "fonthdr.h"
 #include "aesext.h"
@@ -168,51 +167,52 @@ typedef struct {
  * WORD array whose last element contains the fill colour.
  */
 typedef struct Vwk_ Vwk;
-struct Vwk_ {
-    WORD chup;                  /* Character Up vector */
-    WORD clip;                  /* Clipping Flag */
-    const Fonthead *cur_font;   /* Pointer to current font */
-    UWORD dda_inc;              /* Fraction to be added to the DDA */
-    WORD multifill;             /* Multi-plane fill flag */
-    UWORD patmsk;               /* Current pattern mask */
-    UWORD *patptr;              /* Current pattern pointer */
-    WORD pts_mode;              /* TRUE if height set in points mode */
-    WORD *scrtchp;              /* Pointer to text scratch buffer */
-    WORD scrpt2;                /* Offset to large text buffer */
-    WORD style;                 /* Current text style */
-    WORD t_sclsts;              /* TRUE if scaling up */
-    WORD fill_color;            /* Current fill color (PEL value): see NOTE 1 above */
-    WORD fill_index;            /* Current fill index */
-    WORD fill_per;              /* TRUE if fill area outlined */
-    WORD fill_style;            /* Current fill style */
-    WORD h_align;               /* Current text horizontal alignment */
-    WORD handle;                /* The handle this attribute area is for */
-    WORD line_beg;              /* Beginning line endstyle */
-    WORD line_color;            /* Current line color (PEL value) */
-    WORD line_end;              /* Ending line endstyle */
-    WORD line_index;            /* Current line style */
-    WORD line_width;            /* Current line width */
-    const Fonthead *loaded_fonts; /* Pointer to first loaded font */
-    WORD mark_color;            /* Current marker color (PEL value)     */
-    WORD mark_height;           /* Current marker height        */
-    WORD mark_index;            /* Current marker style         */
-    WORD mark_scale;            /* Current scale factor for marker data */
-    Vwk *next_work;             /* Pointer to next virtual workstation  */
-    WORD num_fonts;             /* Total number of faces available  */
-    WORD scaled;                /* TRUE if font scaled in any way   */
-    Fonthead scratch_head;      /* Holder for the doubled font data */
-    WORD text_color;            /* Current text color (PEL value)   */
-    WORD ud_ls;                 /* User defined linestyle       */
-    WORD ud_patrn[UDPAT_PLANES*16]; /* User defined pattern             */
-    WORD v_align;               /* Current text vertical alignment  */
-    WORD wrt_mode;              /* Current writing mode         */
-    WORD xfm_mode;              /* Transformation mode requested (NDC) */
-    WORD xmn_clip;              /* Low x point of clipping rectangle    */
-    WORD xmx_clip;              /* High x point of clipping rectangle   */
-    WORD ymn_clip;              /* Low y point of clipping rectangle    */
-    WORD ymx_clip;              /* High y point of clipping rectangle   */
+struct Vwk_
+{
+    WORD chup;                        /* Character Up vector */
+    WORD clip;                        /* Clipping Flag */
+    const Fonthead *cur_font;         /* Pointer to current font */
+    UWORD dda_inc;                    /* Fraction to be added to the DDA */
+    WORD multifill;                   /* Multi-plane fill flag */
+    UWORD patmsk;                     /* Current pattern mask */
+    UWORD *patptr;                    /* Current pattern pointer */
+    WORD pts_mode;                    /* TRUE if height set in points mode */
+    WORD *scrtchp;                    /* Pointer to text scratch buffer */
+    WORD scrpt2;                      /* Offset to large text buffer */
+    WORD style;                       /* Current text style */
+    WORD t_sclsts;                    /* TRUE if scaling up */
+    WORD fill_color;                  /* Current fill color (PEL value): see NOTE 1 above */
+    WORD fill_index;                  /* Current fill index */
+    WORD fill_per;                    /* TRUE if fill area outlined */
+    WORD fill_style;                  /* Current fill style */
+    WORD h_align;                     /* Current text horizontal alignment */
+    WORD handle;                      /* The handle this attribute area is for */
+    WORD line_beg;                    /* Beginning line endstyle */
+    WORD line_color;                  /* Current line color (PEL value) */
+    WORD line_end;                    /* Ending line endstyle */
+    WORD line_index;                  /* Current line style */
+    WORD line_width;                  /* Current line width */
+    const Fonthead *loaded_fonts;     /* Pointer to first loaded font */
+    WORD mark_color;                  /* Current marker color (PEL value)     */
+    WORD mark_height;                 /* Current marker height        */
+    WORD mark_index;                  /* Current marker style         */
+    WORD mark_scale;                  /* Current scale factor for marker data */
+    Vwk *next_work;                   /* Pointer to next virtual workstation  */
+    WORD num_fonts;                   /* Total number of faces available  */
+    WORD scaled;                      /* TRUE if font scaled in any way   */
+    Fonthead scratch_head;            /* Holder for the doubled font data */
+    WORD text_color;                  /* Current text color (PEL value)   */
+    WORD ud_ls;                       /* User defined linestyle       */
+    WORD ud_patrn[UDPAT_PLANES * 16]; /* User defined pattern             */
+    WORD v_align;                     /* Current text vertical alignment  */
+    WORD wrt_mode;                    /* Current writing mode         */
+    WORD xfm_mode;                    /* Transformation mode requested (NDC) */
+    WORD xmn_clip;                    /* Low x point of clipping rectangle    */
+    WORD xmx_clip;                    /* High x point of clipping rectangle   */
+    WORD ymn_clip;                    /* Low y point of clipping rectangle    */
+    WORD ymx_clip;                    /* High y point of clipping rectangle   */
 #if CONF_WITH_VDI_16BIT
-    VwkExt *ext;                /* 16 bit colour management */
+    VwkExt *ext;                      /* 16 bit colour management */
 #endif
     /* newly added */
 #if HAVE_BEZIER
@@ -223,20 +223,19 @@ struct Vwk_ {
 /*
  * the following values are used for 'wrt_mode' in the Vwk structure above
  */
-#define WM_REPLACE      (MD_REPLACE-1)
-#define WM_TRANS        (MD_TRANS-1)
-#define WM_XOR          (MD_XOR-1)
-#define WM_ERASE        (MD_ERASE-1)
-
+#define WM_REPLACE  (MD_REPLACE - 1)
+#define WM_TRANS    (MD_TRANS - 1)
+#define WM_XOR      (MD_XOR - 1)
+#define WM_ERASE    (MD_ERASE - 1)
 
 typedef struct {
-    WORD x1,y1;
-    WORD x2,y2;
+    WORD x1, y1;
+    WORD x2, y2;
 } Rect;
 
 typedef struct {
-    WORD x1,y1;
-    WORD x2,y2;
+    WORD x1, y1;
+    WORD x2, y2;
 } Line;
 
 
@@ -320,7 +319,7 @@ void wideline(Vwk *vwk, Point *point, int count);
 void Vwk2Attrib(const Vwk *vwk, VwkAttrib *attr, const UWORD color);
 void draw_rect_common(const VwkAttrib *attr, const Rect *rect);
 void clc_flit(const VwkAttrib *attr, const VwkClip *clipper, const Point *point, WORD vectors, WORD start, WORD end);
-void abline (const Line *line, const WORD wrt_mode, UWORD color);
+void abline(const Line *line, const WORD wrt_mode, UWORD color);
 void contourfill(const VwkAttrib *attr, const VwkClip *clip);
 
 /* initialization of subsystems */
@@ -382,7 +381,6 @@ void vdi_vqf_attributes(Vwk *);     /* 37 */
 void vdi_vqt_attributes(Vwk *);     /* 38 */
 void vdi_vst_alignment(Vwk *);      /* 39 */
 
-
 void vdi_v_opnvwk(Vwk *);           /* 100 */
 
 void vdi_v_clsvwk(Vwk *);           /* 101 */
@@ -438,5 +436,3 @@ void v_bez_control(Vwk *);
 void v_bez(Vwk *vwk, Point *points, int count);
 void v_bez_fill(Vwk *vwk, Point *points, int count);
 #endif
-
-#endif                          /* VDIDEF_H */

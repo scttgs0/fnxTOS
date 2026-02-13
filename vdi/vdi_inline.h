@@ -7,8 +7,7 @@
  * option any later version.  See doc/license.txt for details.
  */
 
-#ifndef _VDI_INLINE_H
-#define _VDI_INLINE_H
+#pragma once
 
 #if CONF_WITH_VDI_16BIT
 static __inline__ UWORD *get_start_addr16(const WORD x, const WORD y)
@@ -16,5 +15,3 @@ static __inline__ UWORD *get_start_addr16(const WORD x, const WORD y)
     return (UWORD *)(v_bas_ad + (x * sizeof(WORD)) + muls(y, v_lin_wr));
 }
 #endif
-
-#endif                          /* _VDI_INLINE_H */

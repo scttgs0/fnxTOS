@@ -7,8 +7,7 @@
  * option any later version.  See doc/license.txt for details.
  */
 
-#ifndef _VDISTUB_H
-#define _VDISTUB_H
+#pragma once
 
 /* Forward declarations */
 struct Mcdb_;
@@ -40,5 +39,3 @@ void linea_raster(void);
 /* End of the VDI BSS section.
  * This is referenced by the OSHEADER */
 extern UBYTE _endvdibss[]; /* defined in vdi/endvdi.S */
-
-#endif /* _VDISTUB_H */
