@@ -171,57 +171,6 @@ release-aranym:
 	cd $(RELEASE_DIR) && zip -9 -r $(RELEASE_ARANYM).zip $(RELEASE_ARANYM)
 	rm -r $(RELEASE_DIR)/$(RELEASE_ARANYM)
 
-.PHONY: release-firebee
-NODEP += release-firebee
-RELEASE_FIREBEE = emutos-firebee-$(VERSION)
-release-firebee:
-	$(MAKE) clean
-	$(MAKE) allfirebee
-	mkdir $(RELEASE_DIR)/$(RELEASE_FIREBEE)
-	cp etosfb*.s19 $(RELEASE_DIR)/$(RELEASE_FIREBEE)
-	cp desk/icon.def $(RELEASE_DIR)/$(RELEASE_FIREBEE)/emuicon.def
-	cp desk/icon.rsc $(RELEASE_DIR)/$(RELEASE_FIREBEE)/emuicon.rsc
-	cat doc/readme-firebee.txt readme.txt >$(RELEASE_DIR)/$(RELEASE_FIREBEE)/readme.txt
-	mkdir $(RELEASE_DIR)/$(RELEASE_FIREBEE)/doc
-	cp $(DOCFILES) $(RELEASE_DIR)/$(RELEASE_FIREBEE)/doc
-	mkdir $(RELEASE_DIR)/$(RELEASE_FIREBEE)/extras
-	cp $(EXTRAFILES) $(RELEASE_DIR)/$(RELEASE_FIREBEE)/extras
-	cp aes/mform.def $(RELEASE_DIR)/$(RELEASE_FIREBEE)/extras/emucurs.def
-	cp aes/mform.rsc $(RELEASE_DIR)/$(RELEASE_FIREBEE)/extras/emucurs.rsc
-	find $(RELEASE_DIR)/$(RELEASE_FIREBEE) -name '*.txt' -exec unix2dos '{}' ';'
-	cd $(RELEASE_DIR) && zip -9 -r $(RELEASE_FIREBEE).zip $(RELEASE_FIREBEE)
-	rm -r $(RELEASE_DIR)/$(RELEASE_FIREBEE)
-
-.PHONY: release-m548x-dbug
-NODEP += release-m548x-dbug
-RELEASE_M548X_DBUG = emutos-m548x-dbug-$(VERSION)
-release-m548x-dbug:
-	$(MAKE) clean
-	$(MAKE) m548x-dbug
-	mkdir $(RELEASE_DIR)/$(RELEASE_M548X_DBUG)
-	cp $(SREC_M548X_DBUG) $(RELEASE_DIR)/$(RELEASE_M548X_DBUG)
-	cat doc/readme-m548x-dbug.txt readme.txt >$(RELEASE_DIR)/$(RELEASE_M548X_DBUG)/readme.txt
-	mkdir $(RELEASE_DIR)/$(RELEASE_M548X_DBUG)/doc
-	cp $(DOCFILES) $(RELEASE_DIR)/$(RELEASE_M548X_DBUG)/doc
-	find $(RELEASE_DIR)/$(RELEASE_M548X_DBUG) -name '*.txt' -exec unix2dos '{}' ';'
-	cd $(RELEASE_DIR) && zip -9 -r $(RELEASE_M548X_DBUG).zip $(RELEASE_M548X_DBUG)
-	rm -r $(RELEASE_DIR)/$(RELEASE_M548X_DBUG)
-
-.PHONY: release-m548x-bas
-NODEP += release-m548x-bas
-RELEASE_M548X_BAS = emutos-m548x-bas-$(VERSION)
-release-m548x-bas:
-	$(MAKE) clean
-	$(MAKE) m548x-bas
-	mkdir $(RELEASE_DIR)/$(RELEASE_M548X_BAS)
-	cp $(SREC_M548X_BAS) $(RELEASE_DIR)/$(RELEASE_M548X_BAS)
-	cat doc/readme-m548x-bas.txt readme.txt >$(RELEASE_DIR)/$(RELEASE_M548X_BAS)/readme.txt
-	mkdir $(RELEASE_DIR)/$(RELEASE_M548X_BAS)/doc
-	cp $(DOCFILES) $(RELEASE_DIR)/$(RELEASE_M548X_BAS)/doc
-	find $(RELEASE_DIR)/$(RELEASE_M548X_BAS) -name '*.txt' -exec unix2dos '{}' ';'
-	cd $(RELEASE_DIR) && zip -9 -r $(RELEASE_M548X_BAS).zip $(RELEASE_M548X_BAS)
-	rm -r $(RELEASE_DIR)/$(RELEASE_M548X_BAS)
-
 .PHONY: release-prg
 NODEP += release-prg
 RELEASE_PRG = emutos-prg-$(VERSION)
@@ -324,8 +273,8 @@ release-emucon:
 NODEP += release
 release: clean release-clean release-mkdir \
   release-src release-1024k release-512k release-256k release-192k release-cartridge \
-  release-aranym release-firebee \
-  release-m548x-dbug release-m548x-bas release-prg release-prg256 release-floppy \
+  release-aranym \
+  release-prg release-prg256 release-floppy \
   release-pak3 release-emucon
 	$(MAKE) clean
 	@echo '# Packages successfully generated inside $(RELEASE_DIR)'

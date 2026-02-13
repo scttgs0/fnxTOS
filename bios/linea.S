@@ -50,73 +50,29 @@
 // ==== Line-A handler ===============================
 _int_linea:
         /* save d0/d1/a0/a2 as they are needed for sprite undraw/draw */
-#ifdef __mcoldfire__
-        lea     linea_save,a1
-        movem.l d0/d1/a0/a2,(a1)
-#else
         movem.l d0/d1/a0/a2,linea_save
-#endif
-#ifdef __mcoldfire__
-        move.l  4(sp),a0        /* Get the opcode address */
-#else
         move.l  2(sp),a0        /* Get the opcode address */
-#endif
         moveq   #0,d0
         move.w  (a0)+,d0        /* Get the opcode value */
-#ifdef __mcoldfire__
-        move.l  a0,4(sp)        /* Return after the Line A opcode */
-#else
         move.l  a0,2(sp)        /* Return after the Line A opcode */
-#endif
-#ifdef __mcoldfire__
-        /* On ColdFire, all the standard Line A opcodes conflict with
-         * valid MAC instructions. Therefore they can't be used.
-         * Fortunately, the 0xA92x opcodes are still illegal and trigger
-         * the Line A exception. So programs can use 0xA92x instead of
-         * 0xA00x to call the Line A. Thus we must keep only the last
-         * digit as function number. */
-        and.l   #0x00F,d0       /* Keep only the function number */
-#else
         and.w   #0xFFF,d0       /* Keep only the function number */
-#endif
         cmp.w   #nb_linea,d0
         jhs     wrong_linea
 
 #ifdef ENABLE_KDEBUG
-#ifdef __mcoldfire__
-        lea     -16(sp),sp
-        movem.l d0-d1/a0-a1,(sp)
-#else
         movem.l d0-d1/a0-a1,-(sp)
-#endif
         move.w  d0,-(sp)
         pea     linea_msg
         jsr     _kprintf              /* Print debugging information */
         addq.l  #6,sp
-#ifdef __mcoldfire__
-        movem.l (sp),d0-d1/a0-a1
-        lea     16(sp),sp
-#else
         movem.l (sp)+,d0-d1/a0-a1
-#endif
 #endif /* ENABLE_KDEBUG */
 
         lea     linea_vecs,a1
-#ifdef __mcoldfire__
-        lsl.l   #2,d0
-#else
         lsl.w   #2,d0
-#endif
         move.l  0(a1,d0),a1
         /* restore d0,d1,a0,a2 in case we're calling sprite undraw/draw */
-#ifdef __mcoldfire__
-        move.l  a1,-(sp)
-        lea     linea_save,a1
-        movem.l (a1),d0/d1/a0/a2
-        move.l  (sp)+,a1
-#else
         movem.l linea_save,d0/d1/a0/a2
-#endif
         jsr     (a1)
 linea_dispatch_pc:
         rte

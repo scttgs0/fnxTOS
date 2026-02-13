@@ -15,7 +15,6 @@
         .extern _PTSIN
 
 // The following defines are offsets inside fringe code fragments
-// As a result this file cannot be converted to ColdFire using PortAsm.
 #define    F1OP       8 // Offset of f1op_xx from mode_xx fragment
 #define    F2OP      22 // Offset of f2op_xx from mode_xx fragment
 

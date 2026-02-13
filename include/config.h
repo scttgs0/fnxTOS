@@ -122,87 +122,6 @@
 #endif
 
 /*
- * Defaults for the FireBee target
- */
-#ifdef MACHINE_FIREBEE
-# ifndef CONF_WITH_ST_MMU
-#  define CONF_WITH_ST_MMU 0
-# endif
-# ifndef CONF_WITH_TT_MMU
-#  define CONF_WITH_TT_MMU 0
-# endif
-# ifndef CONF_WITH_TT_MFP
-#  define CONF_WITH_TT_MFP 0
-# endif
-# ifndef CONF_WITH_STE_SHIFTER
-#  define CONF_WITH_STE_SHIFTER 0
-# endif
-# ifndef CONF_WITH_TT_SHIFTER
-#  define CONF_WITH_TT_SHIFTER 0
-# endif
-# ifndef CONF_WITH_DSP
-#  define CONF_WITH_DSP 0
-# endif
-# ifndef CONF_WITH_SCC
-#  define CONF_WITH_SCC 0
-# endif
-# ifndef CONF_WITH_MEGARTC
-#  define CONF_WITH_MEGARTC 0
-# endif
-# ifndef CONF_WITH_BLITTER
-#  define CONF_WITH_BLITTER 0
-# endif
-# ifndef CONF_WITH_CACHE_CONTROL
-#  define CONF_WITH_CACHE_CONTROL 0
-# endif
-# ifndef CONF_WITH_SFP004
-#  define CONF_WITH_SFP004 0
-# endif
-# ifndef CONF_WITH_68030_PMMU
-#  define CONF_WITH_68030_PMMU 0
-# endif
-# ifndef CONF_WITH_68040_PMMU
-#  define CONF_WITH_68040_PMMU 0
-# endif
-# ifndef CONF_WITH_SDMMC
-#  define CONF_WITH_SDMMC 1
-# endif
-# ifndef CONF_DETECT_FIRST_BOOT_WITHOUT_MEMCONF
-#  define CONF_DETECT_FIRST_BOOT_WITHOUT_MEMCONF 1
-# endif
-# ifndef INITINFO_DURATION
-#  define INITINFO_DURATION 8 /* Longer time for LCD monitors startup */
-# endif
-# ifndef AES_STACK_SIZE
-#  define AES_STACK_SIZE 2048   /* in LONGs */
-# endif
-# ifndef CONF_WITH_ACSI
-#  define CONF_WITH_ACSI 0      /* broken in current FireBee hardware */
-# endif
-# ifndef CONF_WITH_SCSI
-#  define CONF_WITH_SCSI 0
-# endif
-# ifndef CONF_WITH_ICDRTC
-#  define CONF_WITH_ICDRTC 0    /* useless on FireBee as it has NVRAM clock */
-# endif
-# ifndef CONF_WITH_ULTRASATAN_CLOCK
-#  define CONF_WITH_ULTRASATAN_CLOCK 0    /* useless on FireBee as it has NVRAM clock */
-# endif
-# ifndef CONF_WITH_MONSTER
-#  define CONF_WITH_MONSTER 0
-# endif
-# ifndef CONF_WITH_MAGNUM
-#  define CONF_WITH_MAGNUM 0
-# endif
-# ifndef CONF_WITH_NOVA
-#  define CONF_WITH_NOVA 0
-# endif
-# ifndef CONF_WITH_FORMAT
-#  define CONF_WITH_FORMAT 0
-# endif
-#endif
-
-/*
  * Defaults for the 192 target.
  * This target is only useful on ST hardware, and the ROM size is very
  * limited, so strip out all the advanced features.
@@ -563,42 +482,6 @@
 #endif
 
 /*
- * Defaults for the M548x machine
- */
-#ifdef MACHINE_M548X
-# ifndef CONF_ATARI_HARDWARE
-#  define CONF_ATARI_HARDWARE 0
-# endif
-# ifndef CONF_STRAM_SIZE
-#  define CONF_STRAM_SIZE 14*1024*1024
-# endif
-# ifndef CONF_TTRAM_SIZE
-#  define CONF_TTRAM_SIZE 48UL*1024*1024
-# endif
-# ifndef CONF_SERIAL_CONSOLE
-#  define CONF_SERIAL_CONSOLE 1
-# endif
-# ifndef CONF_WITH_IDE
-#  define CONF_WITH_IDE 1
-# endif
-# ifndef CONF_WITH_SDMMC
-#  define CONF_WITH_SDMMC 1
-# endif
-# ifndef CONF_WITH_FLEXCAN
-#  define CONF_WITH_FLEXCAN 1
-# endif
-# ifndef CONF_DETECT_FIRST_BOOT_WITHOUT_MEMCONF
-#  define CONF_DETECT_FIRST_BOOT_WITHOUT_MEMCONF 1
-# endif
-# ifndef ALWAYS_SHOW_INITINFO
-#  define ALWAYS_SHOW_INITINFO 1
-# endif
-# ifndef AES_STACK_SIZE
-#  define AES_STACK_SIZE 2048   /* in LONGs */
-# endif
-#endif
-
-/*
  * By default, EmuTOS is built for Atari ST/TT/Falcon compatible hardware
  */
 #ifndef CONF_ATARI_HARDWARE
@@ -768,22 +651,14 @@
  * Set CONF_WITH_ADVANCED_CPU to 1 to enable support for 68010-68060
  */
 #ifndef CONF_WITH_ADVANCED_CPU
-# ifdef __mcoldfire__
-#  define CONF_WITH_ADVANCED_CPU 0
-# else
 #  define CONF_WITH_ADVANCED_CPU 1
-# endif
 #endif
 
 /*
  * Set CONF_WITH_APOLLO_68080 to 1 to enable support for Apollo 68080 CPU
  */
 #ifndef CONF_WITH_APOLLO_68080
-# ifdef __mcoldfire__
-#  define CONF_WITH_APOLLO_68080 0
-# else
 #  define CONF_WITH_APOLLO_68080 1
-# endif
 #endif
 
 /*
@@ -891,30 +766,7 @@
 #endif
 
 /*
- * Set CONF_COLDFIRE_TIMER_C to 1 to simulate Timer C using the
- * internal ColdFire timers
- */
-#ifndef CONF_COLDFIRE_TIMER_C
-# if defined(__mcoldfire__) && !CONF_WITH_MFP
-#  define CONF_COLDFIRE_TIMER_C 1
-# else
-#  define CONF_COLDFIRE_TIMER_C 0
-# endif
-#endif
-
-/*
- * Set CONF_WITH_COLDFIRE_RS232 to 1 to use the internal ColdFire serial port
- */
-#ifndef CONF_WITH_COLDFIRE_RS232
-# ifdef __mcoldfire__
-#  define CONF_WITH_COLDFIRE_RS232 1
-# else
-#  define CONF_WITH_COLDFIRE_RS232 0
-# endif
-#endif
-
-/*
- * Set CONF_WITH_YM2149 to 1 to enable YM2149 soundchip support
+ * Set CONF_WITH_YM2149 to 1 to enable YM2149 sound chip support
  */
 #ifndef CONF_WITH_YM2149
 # define CONF_WITH_YM2149 1
@@ -1122,42 +974,20 @@
 # define CONF_WITH_NOVA 1
 #endif
 
-/* Set CONF_WITH_FLEXCAN to 1 to enable support for the FlexCAN controller.
- * This allows use of an Eiffel keyboard adapter plugged into the CAN port
- * of ColdFire evaluation boards.
- */
-#ifndef CONF_WITH_FLEXCAN
-# define CONF_WITH_FLEXCAN 0
-#endif
-
 /*
  * Set CONF_WITH_RESET to 0 to force the startup code to bypass the
  * "reset" instruction during startup.  By default it is bypassed
  * in EmuTOS RAM, because it causes crashes very early in startup (the
  * "black screen" problem).  It is surmised that the hardware reset may
  * reset the RAM controller allowing/causing RAM contents to change.
- * It is also bypassed in ColdFire because there is no reset instruction.
  */
 #ifndef CONF_WITH_RESET
-# if EMUTOS_LIVES_IN_RAM || defined(__mcoldfire__)
+# if EMUTOS_LIVES_IN_RAM
 #  define CONF_WITH_RESET 0
 # else
 #  define CONF_WITH_RESET 1
 # endif
 #endif
-
-/*
- * Set CONF_WITH_BAS_MEMORY_MAP to 1 if EmuTOS is intended to run
- * over the BaS (either on the FireBee or on the M548x with BaS_gcc)
- */
-#ifndef CONF_WITH_BAS_MEMORY_MAP
-# ifdef MACHINE_FIREBEE
-#  define CONF_WITH_BAS_MEMORY_MAP 1
-# else
-#  define CONF_WITH_BAS_MEMORY_MAP 0
-# endif
-#endif
-
 
 
 /****************************************************
@@ -1179,9 +1009,7 @@
  * stack, since Gemlib's v_gtext() implementation puts a 1024-word buffer
  * on the stack. In order to run such programs, we use a large stack.
  * Existing 68K-compatible TOS programs will have worked around this problem,
- * otherwise they would not run on standard Atari TOS. Thus this is
- * principally a problem when recompiling for ColdFire systems, and so
- * we default to a larger value when building for them (see above).
+ * otherwise they would not run on standard Atari TOS.
  *
  * A value for AES_STACK_SIZE can be estimated by enabling the define
  * CONF_DEBUG_AES_STACK (see "Debug section" below).
@@ -1690,11 +1518,7 @@
  * Set CONF_WITH_CACHE_CONTROL to 1 to include 'Cache' in the desktop menu
  */
 #ifndef CONF_WITH_CACHE_CONTROL
-# ifdef __mcoldfire__
-#  define CONF_WITH_CACHE_CONTROL 0
-# else
 #  define CONF_WITH_CACHE_CONTROL 1
-# endif
 #endif
 
 /*
@@ -1828,11 +1652,7 @@
  * features provided by the standard "native features" interface
  */
 #ifndef DETECT_NATIVE_FEATURES
-# ifdef __mcoldfire__
-#  define DETECT_NATIVE_FEATURES 0 /* Conflict with ColdFire instructions. */
-# else
 #  define DETECT_NATIVE_FEATURES 1
-# endif
 #endif
 
 /*
@@ -1883,7 +1703,7 @@
  * or for real hardware.
  */
 #ifndef RS232_DEBUG_PRINT
-# if CONF_SERIAL_CONSOLE && !CONF_WITH_COLDFIRE_RS232
+# if CONF_SERIAL_CONSOLE
 #  define RS232_DEBUG_PRINT 1
 # else
 #  define RS232_DEBUG_PRINT 0
@@ -1897,17 +1717,6 @@
  */
 #ifndef SCC_DEBUG_PRINT
 # define SCC_DEBUG_PRINT 0
-#endif
-
-/*
- * Set COLDFIRE_DEBUG_PRINT to 1 to redirect debug prints to the ColdFire serial port
- */
-#ifndef COLDFIRE_DEBUG_PRINT
-# if CONF_SERIAL_CONSOLE && CONF_WITH_COLDFIRE_RS232
-#  define COLDFIRE_DEBUG_PRINT 1
-# else
-#  define COLDFIRE_DEBUG_PRINT 0
-# endif
 #endif
 
 /*
@@ -1937,7 +1746,7 @@
 
 
 /* Determine if kprintf() is available */
-#if DETECT_NATIVE_FEATURES || STONX_NATIVE_PRINT || CONSOLE_DEBUG_PRINT || RS232_DEBUG_PRINT || SCC_DEBUG_PRINT || COLDFIRE_DEBUG_PRINT || MIDI_DEBUG_PRINT || CARTRIDGE_DEBUG_PRINT
+#if DETECT_NATIVE_FEATURES || STONX_NATIVE_PRINT || CONSOLE_DEBUG_PRINT || RS232_DEBUG_PRINT || SCC_DEBUG_PRINT || MIDI_DEBUG_PRINT || CARTRIDGE_DEBUG_PRINT
 #  define HAS_KPRINTF 1
 # else
 #  define HAS_KPRINTF 0
@@ -1948,7 +1757,7 @@
  * It tries to power off the machine, if possible.
  */
 #ifndef CONF_WITH_SHUTDOWN
-# if DETECT_NATIVE_FEATURES || defined(MACHINE_FIREBEE)
+# if DETECT_NATIVE_FEATURES
 #  define CONF_WITH_SHUTDOWN 1
 # else
 #  define CONF_WITH_SHUTDOWN 0
@@ -2133,29 +1942,14 @@
 # endif
 #endif
 
-#if !CONF_WITH_COLDFIRE_RS232
-# if COLDFIRE_DEBUG_PRINT
-#  error COLDFIRE_DEBUG_PRINT requires CONF_WITH_COLDFIRE_RS232.
-# endif
-#endif
-
-#if (CONSOLE_DEBUG_PRINT + RS232_DEBUG_PRINT + SCC_DEBUG_PRINT + COLDFIRE_DEBUG_PRINT + MIDI_DEBUG_PRINT + CARTRIDGE_DEBUG_PRINT) > 1
-# error Only one of CONSOLE_DEBUG_PRINT, RS232_DEBUG_PRINT, SCC_DEBUG_PRINT, COLDFIRE_DEBUG_PRINT, MIDI_DEBUG_PRINT or CARTRIDGE_DEBUG_PRINT must be set to 1.
+#if (CONSOLE_DEBUG_PRINT + RS232_DEBUG_PRINT + SCC_DEBUG_PRINT + MIDI_DEBUG_PRINT + CARTRIDGE_DEBUG_PRINT) > 1
+# error Only one of CONSOLE_DEBUG_PRINT, RS232_DEBUG_PRINT, SCC_DEBUG_PRINT, MIDI_DEBUG_PRINT or CARTRIDGE_DEBUG_PRINT must be set to 1.
 #endif
 
 
 /*
  * Sanity checks for features on specific target machines
  */
-
-#if !defined(MACHINE_FIREBEE) && !defined(MACHINE_M548X)
-# if CONF_WITH_BAS_MEMORY_MAP
-#  error CONF_WITH_BAS_MEMORY_MAP requires MACHINE_FIREBEE or MACHINE_M548X.
-# endif
-# if CONF_WITH_FLEXCAN
-#  error CONF_WITH_FLEXCAN requires MACHINE_FIREBEE or MACHINE_M548X.
-# endif
-#endif
 
 #ifndef MACHINE_ARANYM
 # if CONF_WITH_68040_PMMU

@@ -59,29 +59,13 @@
 
 /* disable interrupts */
 _disable_interrupts:
-#ifdef __mcoldfire__
-        move.l  d0,-(sp)
-        move.w  sr,d0
-        move.w  d0,savesr
-        ori.l   #0x0700,d0
-        move.w  d0,sr
-        move.l  (sp)+,d0
-#else
         move    sr,savesr
         ori     #0x0700,sr
-#endif
         rts
 
 /* restore interrupt mask as it was before cli() */
 _enable_interrupts:
-#ifdef __mcoldfire__
-        move.l  d0,-(sp)
-        move.w  savesr,d0
-        move.w  d0,sr
-        move.l  (sp)+,d0
-#else
         move    savesr,sr
-#endif
         rts
 
 /*
@@ -92,12 +76,7 @@ _enable_interrupts:
  * AES trap and/or the critical error vector)
  */
 _retake:
-#ifdef __mcoldfire__
-        lea     0x88,a0
-        move.l  #_aestrap,(a0)
-#else
         move.l  #_aestrap,0x88
-#endif
         move.l  #criterr_handler,d0
 call_err:
         move.l  d0,-(sp)
@@ -160,31 +139,17 @@ normal:
         move.w  6(sp),d1            // d1 = drive number
         movea.l _rlr,a0
         movea.l PD_UDA(a0),a0       // a0 -> UDA
-#ifdef __mcoldfire__
-        lea     UDA_SPSUPER(a0),a0
-        move.l  (a0),save_spsuper
-#else
         move.l  UDA_SPSUPER(a0),save_spsuper
-#endif
         jbsr    _disable_interrupts // stack switch must be atomic
         move.l  sp,save_spcriterr
         lea     criterr_stack,sp
         jbsr    _enable_interrupts
-#ifdef __mcoldfire__
-        lea     -36(sp),sp
-        movem.l d3-d7/a3-a6,(sp)    // save regs on temp stack
-#else
         movem.l d3-d7/a3-a6,-(sp)   // save regs on temp stack
-#endif
         movea.l #err_tbl,a1
         suba.l  a0,a0               // assume zeroth entry (error -1)
         move.w  d0,-(sp)            // save original error code on stack
         jeq     alert_lookup        // zero, go do lookup
-#ifdef __mcoldfire__
-        not.l   d0                  // ones complement error code
-#else
         not.w   d0                  // ones complement error code
-#endif
         cmpi.w  #err_tbl_last,d0    // outside table?
         jgt     alert_lookup        // yes, assume zeroth entry
         movea.w d0,a0               // else a0 = lookup table index
@@ -201,21 +166,11 @@ alert_lookup:
         move.l  #0x00010000,d1      // else set special retry request value
 no_retry:
         move.l  d1,d0               // set return code
-#ifdef __mcoldfire__
-        movem.l (sp),d3-d7/a3-a6    // restore regs from temp stack
-        lea     36(sp),sp
-#else
         movem.l (sp)+,d3-d7/a3-a6   // restore regs from temp stack
-#endif
         movea.l save_spcriterr,sp   // recover old stack pointer
         movea.l _rlr,a0
         movea.l PD_UDA(a0),a0       // a0 -> UDA
-#ifdef __mcoldfire__
-        lea     UDA_SPSUPER(a0),a0
-        move.l  save_spsuper,(a0)
-#else
         move.l  save_spsuper,UDA_SPSUPER(a0)
-#endif
         rts
 
 // **** Trap entry: ****
@@ -238,12 +193,7 @@ trapaes:
 
         jbsr    _disable_interrupts     // mask out interrupts
         move.l  usp,a0
-#ifdef __mcoldfire__
-        lea     -56(a0),a0
-        movem.l d1-d7/a0-a6,(a0)        // put registers to user stack
-#else
         movem.l d1-d7/a0-a6,-(a0)       // put registers to user stack
-#endif
         move.l  a0,usp
 
         movea.l _rlr,a6
@@ -266,12 +216,7 @@ trapaes:
         movea.l UDA_OLDSPSUPER(a0),sp
         movea.l UDA_SPUSER(a0),a0
 
-#ifdef __mcoldfire__
-        movem.l (a0),d1-d7/a0-a6
-        lea     56(a0),a0
-#else
         movem.l (a0)+,d1-d7/a0-a6
-#endif
         move.l  a0,usp
         jbsr    _enable_interrupts      // restore interrupt mask
 
@@ -285,66 +230,35 @@ trapaes:
         rte
 
 _unset_aestrap:
-#ifdef __mcoldfire__
-        lea     0x88,a0
-        move.l  savetrap2,(a0)
-#else
         move.l  savetrap2,0x88
-#endif
         rts
 _set_aestrap:
-#ifdef __mcoldfire__
-        lea     0x88,a0
-        move.l  (a0),savetrap2
-        move.l  #_aestrap,(a0)
-#else
         move.l  0x88,savetrap2
         move.l  #_aestrap,0x88
-#endif
         rts
 
 _far_bcha:
         move.l  sp,gstksave
         lea     gstack,sp
-#ifdef __mcoldfire__
-        lea     -24(sp),sp
-        movem.l d0-d2/a0-a2,(sp)
-#else
         movem.l d0-d2/a0-a2,-(sp)
-#endif
         move.w  d0,-(sp)
         jsr     _b_click
         addq.l  #2,sp
-#ifdef __mcoldfire__
-        movem.l (sp),d0-d2/a0-a2
-        lea     24(sp),sp
-#else
         movem.l (sp)+,d0-d2/a0-a2
-#endif
         movea.l gstksave,sp
         rts
 
 _far_mcha:
         move.l  sp,gstksave
         lea     gstack,sp
-#ifdef __mcoldfire__
-        lea     -24(sp),sp
-        movem.l d0-d2/a0-a2,(sp)
-#else
         movem.l d0-d2/a0-a2,-(sp)
-#endif
 
         move.w  d1,-(sp)
         move.w  d0,-(sp)
         move.l  #_mchange,-(sp)
         jsr     _forkq
         addq.l  #8,sp
-#ifdef __mcoldfire__
-        movem.l (sp),d0-d2/a0-a2
-        lea     24(sp),sp
-#else
         movem.l (sp)+,d0-d2/a0-a2
-#endif
         movea.l gstksave,sp
         rts
 
@@ -353,24 +267,14 @@ _far_mcha:
 _aes_wheel:
         move.l  sp,gstksave
         lea     gstack,sp
-#ifdef __mcoldfire__
-        lea     -24(sp),sp
-        movem.l d0-d2/a0-a2,(sp)
-#else
         movem.l d0-d2/a0-a2,-(sp)
-#endif
 
         move.w  d1,-(sp)
         move.w  d0,-(sp)
         move.l  #_wheel_change,-(sp)
         jsr     _forkq
         addq.l  #8,sp
-#ifdef __mcoldfire__
-        movem.l (sp),d0-d2/a0-a2
-        lea     24(sp),sp
-#else
         movem.l (sp)+,d0-d2/a0-a2
-#endif
         movea.l gstksave,sp
         rts
 #endif /* CONF_WITH_EXTENDED_MOUSE */

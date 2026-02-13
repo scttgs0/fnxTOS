@@ -21,7 +21,6 @@
 #include "serport.h"
 #include "processor.h"
 #include "delay.h"
-#include "coldfire.h" /* For cookie jar info. */
 
 /*
  * initial 1 millisecond delay loop values
@@ -54,16 +53,6 @@ void calibration_timer(void);
  */
 void init_delay(void)
 {
-#ifdef __mcoldfire__
-    /*
-      For ColdFire, we don't know cookie_mcf.sysbus_frequency at this point.
-      We know it will be between 100 and 133 MHz. Since also at this point
-      it is okay for the loop time to be approximate, we just use 133 MHz
-      here and set the correct value later in calibrate_delay() below.
-    */
-
-    loopcount_1_msec = 133UL * 1000;
-#else
 # if CONF_WITH_APOLLO_68080
     if (is_apollo_68080)
         loopcount_1_msec = LOOPS_68080;
@@ -82,7 +71,6 @@ void init_delay(void)
             loopcount_1_msec = LOOPS_68000;
         }
     }
-#endif
 
     KDEBUG(("init_delay loopcount_1_msec=%ld\n", loopcount_1_msec));
 }
@@ -124,8 +112,6 @@ void calibrate_delay(void)
      */
     if (intcount)       /* check for valid */
         loopcount_1_msec = (loopcount * 24) / (intcount * 25);
-#elif defined(__mcoldfire__)
-    loopcount_1_msec = (ULONG)cookie_mcf.sysbus_frequency * 1000;
 #else
     KDEBUG(("Warning: loopcount_1_msec isn't calibrated.\n"));
 #endif

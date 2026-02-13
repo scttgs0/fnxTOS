@@ -76,12 +76,7 @@ _ui_start:
         move.l  d0,old_gem_ssp
 
         // ad_envrn = the pointer to the environ string
-#ifdef __mcoldfire__
-        lea     save_ad_envrn,a0
-        move.l  0x2C(a5),(a0)
-#else
         move.l  0x2C(a5),save_ad_envrn
-#endif
 
 aes_restart:
         // set our temporary user stack again, so we can call bzero()
@@ -89,12 +84,7 @@ aes_restart:
         movea.l #gemusp,sp
 
         // restore original environment pointer
-#ifdef __mcoldfire__
-        move.l  save_ad_envrn,d0
-        move.l  d0,_ad_envrn
-#else
         move.l  save_ad_envrn,_ad_envrn
-#endif
 
         // clear the 'global memory' zone whose size is determined by
         // routine size_theglo :-)
@@ -168,12 +158,7 @@ _accdesk_start:
 //////////////////////////////////////////////////////////////////////////////
 _dos_exec:
         move.l  sp,d1
-#ifdef __mcoldfire__
-        move.l  a2,-(sp)                // Save registers
-        move.l  d2,-(sp)
-#else
         movem.l d2/a2,-(sp)             // Save registers
-#endif
 
         // *** WARNING ***
         // We are here on the private supervisor stack of the AES process 0.
@@ -234,12 +219,7 @@ _dos_exec:
         move.l  (sp)+,UDA_SPSUPER(a0)   // Restore rlr->p_uda->u_spsuper
         jsr     _enable_interrupts
 
-#ifdef __mcoldfire__
-        move.l  (sp)+,d2
-        move.l  (sp)+,a2
-#else
         movem.l (sp)+,d2/a2
-#endif
         rts
 
 .bss

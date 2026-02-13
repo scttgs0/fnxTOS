@@ -515,7 +515,7 @@ void screen_init_mode(void)
         setphys((const UBYTE *)0x10000L);
 #endif
 
-#if CONF_WITH_NVRAM && !defined(MACHINE_FIREBEE)
+#if CONF_WITH_NVRAM
         /* This is currently disabled on the FireBee, because the VIDEL is
          * unreliable. Some video modes are not displayed well.
          */

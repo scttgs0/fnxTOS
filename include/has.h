@@ -157,9 +157,7 @@ extern int has_modectl;
 #endif
 
 /* address bus width */
-#if defined(__mcoldfire__)
-  #define IS_BUS32 1
-#elif CONF_WITH_ADVANCED_CPU
+#if CONF_WITH_ADVANCED_CPU
 extern UBYTE is_bus32;
   #define IS_BUS32 is_bus32
 #else

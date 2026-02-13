@@ -610,12 +610,6 @@ static void OPTIMIZE_SMALL swblit_rect_common(const VwkAttrib *attr, const Rect 
                 if (color & 0x0001) {
                     *work |= pattern & b.leftmask;  /* left section */
                     work += vplanes;
-#ifdef __mcoldfire__
-                    for (n = centre; n >= 0; n--) { /* centre section */
-                        *work |= pattern;
-                        work += vplanes;
-                    }
-#else
                     if (centre >= 0) {              /* centre section */
                         n = centre;
                         __asm ("1:\n\t"
@@ -624,19 +618,12 @@ static void OPTIMIZE_SMALL swblit_rect_common(const VwkAttrib *attr, const Rect 
                                "dbra %0,1b" : "+d"(n), "+a"(work) : "d"(pattern),
                                               "r"(2*vplanes) : "memory", "cc");
                     }
-#endif
                     if (b.rightmask) {              /* right section */
                         *work |= pattern & b.rightmask;
                     }
                 } else {
                     *work &= ~(pattern & b.leftmask);   /* left section */
                     work += vplanes;
-#ifdef __mcoldfire__
-                    for (n = centre; n >= 0; n--) { /* centre section */
-                        *work &= ~pattern;
-                        work += vplanes;
-                    }
-#else
                     if (centre >= 0) {              /* centre section */
                         n = centre;
                         __asm ("1:\n\t"
@@ -645,7 +632,6 @@ static void OPTIMIZE_SMALL swblit_rect_common(const VwkAttrib *attr, const Rect 
                                "dbra %0,1b" : "+d"(n), "+a"(work) : "d"(~pattern),
                                               "r"(2*vplanes) : "memory", "cc");
                     }
-#endif
                     if (b.rightmask) {              /* right section */
                         *work &= ~(pattern & b.rightmask);
                     }
@@ -668,12 +654,6 @@ static void OPTIMIZE_SMALL swblit_rect_common(const VwkAttrib *attr, const Rect 
 
                 *work ^= pattern & b.leftmask;      /* left section */
                 work += vplanes;
-#ifdef __mcoldfire__
-                for (n = centre; n >= 0; n--) {    /* centre section */
-                    *work ^= pattern;
-                    work += vplanes;
-                }
-#else
                 if (centre >= 0) {                  /* centre section */
                     n = centre;
                     __asm ("1:\n\t"
@@ -682,7 +662,6 @@ static void OPTIMIZE_SMALL swblit_rect_common(const VwkAttrib *attr, const Rect 
                            "dbra %0,1b" : "+d"(n), "+a"(work) : "d"(pattern),
                                           "r"(2 * vplanes) : "memory", "cc");
                 }
-#endif
                 if (b.rightmask) {                  /* right section */
                     *work ^= pattern & b.rightmask;
                 }
@@ -705,12 +684,6 @@ static void OPTIMIZE_SMALL swblit_rect_common(const VwkAttrib *attr, const Rect 
                 if (color & 0x0001) {
                     *work |= pattern & b.leftmask;  /* left section */
                     work += vplanes;
-#ifdef __mcoldfire__
-                    for (n = centre; n >= 0; n--) { /* centre section */
-                        *work |= pattern;
-                        work += vplanes;
-                    }
-#else
                     if (centre >= 0) {              /* centre section */
                         n = centre;
                         __asm ("1:\n\t"
@@ -719,19 +692,12 @@ static void OPTIMIZE_SMALL swblit_rect_common(const VwkAttrib *attr, const Rect 
                                "dbra %0,1b" : "+d"(n), "+a"(work) : "d"(pattern),
                                               "r"(2 * vplanes) : "memory", "cc");
                     }
-#endif
                     if (b.rightmask) {              /* right section */
                         *work |= pattern & b.rightmask;
                     }
                 } else {
                     *work &= ~(pattern & b.leftmask);   /* left section */
                     work += vplanes;
-#ifdef __mcoldfire__
-                    for (n = centre; n >= 0; n--) { /* centre section */
-                        *work &= ~pattern;
-                        work += vplanes;
-                    }
-#else
                     if (centre >= 0) {              /* centre section */
                         n = centre;
                         __asm ("1:\n\t"
@@ -740,7 +706,6 @@ static void OPTIMIZE_SMALL swblit_rect_common(const VwkAttrib *attr, const Rect 
                                "dbra %0,1b" : "+d"(n), "+a"(work) : "d"(~pattern),
                                               "r"(2 * vplanes) : "memory", "cc");
                     }
-#endif
                     if (b.rightmask) {              /* right section */
                         *work &= ~(pattern & b.rightmask);
                     }
@@ -765,12 +730,6 @@ static void OPTIMIZE_SMALL swblit_rect_common(const VwkAttrib *attr, const Rect 
                 data |= pattern & b.leftmask;
                 *work = data;
                 work += vplanes;
-#ifdef __mcoldfire__
-                for (n = centre; n >= 0; n--) {     /* centre section */
-                    *work = pattern;
-                    work += vplanes;
-                }
-#else
                 if (centre >= 0) {                  /* centre section */
                     n = centre;
                     __asm ("1:\n\t"
@@ -779,7 +738,6 @@ static void OPTIMIZE_SMALL swblit_rect_common(const VwkAttrib *attr, const Rect 
                            "dbra %0,1b" : "+d"(n), "+a"(work) : "r"(pattern),
                                           "r"(2 * vplanes) : "memory", "cc");
                 }
-#endif
                 if (b.rightmask) {                  /* right section */
                     data = *work & ~b.rightmask;
                     data |= pattern & b.rightmask;
@@ -807,6 +765,7 @@ void draw_rect_common(const VwkAttrib *attr, const Rect *rect)
         swblit_rect_common16(attr, rect);
     else
 #endif
+
 #if CONF_WITH_BLITTER
     if (blitter_is_enabled)
     {
@@ -2342,6 +2301,7 @@ void abline(const Line *line, const WORD wrt_mode, UWORD color)
         }
         else
 #endif
+
 #if CONF_WITH_BLITTER
         if (blitter_is_enabled)
         {

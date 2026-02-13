@@ -22,11 +22,7 @@
 #include "string.h"     /* for bzero() */
 #include "gemdos.h"     /* for mem alloc & free */
 
-#ifdef __mcoldfire__
-#define ASM_BLIT_IS_AVAILABLE   0   /* assembler routine does not support ColdFire */
-#else
 #define ASM_BLIT_IS_AVAILABLE   1   /* may use m68k assembler fast_bit_blt routine */
-#endif
 
 #if CONF_WITH_BLITTER || !ASM_BLIT_IS_AVAILABLE
 #define GetMemW(addr) ((ULONG) * (UWORD *)(addr))

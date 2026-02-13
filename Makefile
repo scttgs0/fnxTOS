@@ -52,11 +52,6 @@ help:
 	@echo "512     etos512$(UNIQUE).img, EmuTOS ROM padded to size 512 KB"
 	@echo "1024    etos1024$(UNIQUE).img, EmuTOS ROM padded to size 1024 KB"
 	@echo "aranym  $(ROM_ARANYM), optimized for ARAnyM"
-	@echo "firebee $(SREC_FIREBEE), to be flashed on the FireBee"
-	@echo "firebee-prg emutos.prg, a RAM tos for the FireBee"
-	@echo "m548x-dbug $(SREC_M548X_DBUG), EmuTOS-RAM for dBUG on ColdFire Evaluation Boards"
-	@echo "m548x-bas  $(SREC_M548X_BAS), EmuTOS for BaS_gcc on ColdFire Evaluation Boards"
-	@echo "m548x-prg  emutos.prg, a RAM tos for ColdFire Evaluation Boards with BaS_gcc"
 	@echo "c256genx  $(ROM_C256GENX), EmuTOS flash image for the C256 GenX with 68000 CPU Module"
 	@echo "a2560k    $(ROM_A2560K), flash image for the Foenix Labs A2560K"
 	@echo "a2560m    $(ROM_A2560M), flash image for the Foenix Labs A2560M"
@@ -99,7 +94,6 @@ help-multi:
 	@echo "allprg     all emutos*.prg"
 	@echo "allprg256  all emu256*.prg"
 	@echo "allflop    all emutos*.st"
-	@echo "allfirebee all FireBee srec files"
 
 #
 # EmuTOS version
@@ -307,10 +301,6 @@ bios_src +=  memory.S processor.S vectors.S aciavecs.S bios.c xbios.c acsi.c \
              dsp.c dsp2.S \
              scsidriv.c
 
-ifeq (1,$(COLDFIRE))
-  bios_src += coldfire.c coldfire2.S spi_cf.c
-endif
-
 #
 # source code in bdos/
 #
@@ -340,11 +330,7 @@ vdi_src = vdi_asm.S vdi_bezier.c vdi_col.c vdi_control.c vdi_esc.c \
           vdi_marker.c vdi_misc.c vdi_mouse.c vdi_raster.c vdi_text.c \
           vdi_textblit.c
 
-ifeq (1,$(COLDFIRE))
-vdi_src += vdi_tblit_cf.S
-else
 vdi_src += vdi_blit.S vdi_tblit.S
-endif
 
 # The source below must be the last VDI one
 vdi_src += endvdi.S
@@ -629,81 +615,8 @@ cart:
 	./mkrom stc emutos.img emutos.stc
 	@printf "$(LOCALCONFINFO)"
 
-#
-# ColdFire images
-#
-
-TOCLEAN += *.s19
-SRECFILE = emutos.s19
-
-# Length of an S-Record data field on a single line, in bytes (optional).
-# Increasing the default value may speed up the transfer,
-# specially through a slow serial port when data is displayed on the screen.
-SREC_LEN =
-SREC_LEN_OPTION = $(if $(SREC_LEN),--srec-len=$(SREC_LEN))
-
-$(SRECFILE): emutos.img
-	$(OBJCOPY) -I binary -O srec $(SREC_LEN_OPTION) --change-addresses $(LMA) --change-start $(ENTRY) $< $(SRECFILE)
-
-CPUFLAGS_FIREBEE = -mcpu=5474
-SREC_FIREBEE = etosfb$(UNIQUE).s19
-
-.PHONY: firebee
-NODEP += firebee
-firebee: UNIQUE = $(COUNTRY)
-firebee: OPTFLAGS = $(STANDARD_OPTFLAGS)
-firebee: override DEF += -DMACHINE_FIREBEE
-firebee: CPUFLAGS = $(CPUFLAGS_FIREBEE)
-firebee:
-	@echo "# Building FireBee EmuTOS into $(SREC_FIREBEE)"
-	$(MAKE) COLDFIRE=1 CPUFLAGS='$(CPUFLAGS)' DEF='$(DEF)' OPTFLAGS='$(OPTFLAGS)' UNIQUE=$(UNIQUE) LMA=0xe0600000 SRECFILE=$(SREC_FIREBEE) $(SREC_FIREBEE) REF_OS=TOS404
-	@printf "$(LOCALCONFINFO)"
-
-.PHONY: firebee-prg
-NODEP += firebee-prg
-firebee-prg: OPTFLAGS = $(STANDARD_OPTFLAGS)
-firebee-prg: override DEF += -DMACHINE_FIREBEE
-firebee-prg: CPUFLAGS = $(CPUFLAGS_FIREBEE)
-firebee-prg:
-	@echo "# Building FireBee $(EMUTOS_PRG)"
-	$(MAKE) COLDFIRE=1 CPUFLAGS='$(CPUFLAGS)' DEF='$(DEF)' OPTFLAGS='$(OPTFLAGS)' prg
-
-CPUFLAGS_M548X = -mcpu=5475
-
-.PHONY: m548x-prg
-NODEP += m548x-prg
-m548x-prg: OPTFLAGS = $(STANDARD_OPTFLAGS)
-m548x-prg: override DEF += -DMACHINE_M548X -DCONF_WITH_BAS_MEMORY_MAP=1
-m548x-prg: CPUFLAGS = $(CPUFLAGS_M548X)
-m548x-prg:
-	@echo "# Building m548x $(EMUTOS_PRG)"
-	$(MAKE) COLDFIRE=1 CPUFLAGS='$(CPUFLAGS)' DEF='$(DEF)' OPTFLAGS='$(OPTFLAGS)' prg
-
-SREC_M548X_DBUG = emutos-m548x-dbug.s19
-.PHONY: m548x-dbug
-NODEP += m548x-dbug
-m548x-dbug: UNIQUE = $(COUNTRY)
-m548x-dbug: override DEF += -DMACHINE_M548X
-m548x-dbug: CPUFLAGS = $(CPUFLAGS_M548X)
-m548x-dbug:
-	@echo "# Building M548x dBUG EmuTOS in $(SREC_M548X_DBUG)"
-	$(MAKE) COLDFIRE=1 CPUFLAGS='$(CPUFLAGS)' DEF='$(DEF)' UNIQUE=$(UNIQUE) SRECFILE=$(SREC_M548X_DBUG) $(SREC_M548X_DBUG) REF_OS=TOS404
-	@printf "$(LOCALCONFINFO)"
-
-SREC_M548X_BAS = emutos-m548x-bas.s19
-.PHONY: m548x-bas
-NODEP += m548x-bas
-m548x-bas: UNIQUE = $(COUNTRY)
-m548x-bas: override DEF += -DMACHINE_M548X -DCONF_WITH_BAS_MEMORY_MAP=1
-m548x-bas: CPUFLAGS = $(CPUFLAGS_M548X)
-m548x-bas:
-	@echo "# Building M548x BaS_gcc EmuTOS in $(SREC_M548X_BAS)"
-	$(MAKE) COLDFIRE=1 CPUFLAGS='$(CPUFLAGS)' DEF='$(DEF)' UNIQUE=$(UNIQUE) LMA=0xe0100000 SRECFILE=$(SREC_M548X_BAS) $(SREC_M548X_BAS) REF_OS=TOS404
-	@printf "$(LOCALCONFINFO)"
-
 
 TOCLEAN += *.rom
-
 
 #
 # C256 Foenix GenX with 68000 CPU module image
@@ -1120,17 +1033,6 @@ allflop:
 	  $(MAKE) flop UNIQUE=$$i || exit 1; \
 	done
 
-.PHONY: allfirebee
-NODEP += allfirebee
-allfirebee:
-	@for i in $(COUNTRIES); \
-	do \
-	  echo; \
-	  echo "sleep 1"; \
-	  sleep 1; \
-	  $(MAKE) firebee UNIQUE=$$i || exit 1; \
-	done
-
 #
 # Mono-country translated EmuTOS: translate files only if the language
 # is not 'us', and if a UNIQUE EmuTOS is requested.
@@ -1335,7 +1237,7 @@ checkindent:
 #
 
 EXPAND_FILES = $(wildcard */*.[chS] */*.awk */*.sh)
-EXPAND_NOFILES = vdi/vdi_tblit_cf.S
+EXPAND_NOFILES = 
 
 .PHONY: expand
 NODEP += expand
@@ -1398,53 +1300,6 @@ clean:
 		$(MAKE) -C $$(dirname $$dir) clean ; \
 	done
 
-#
-# ColdFire autoconverted sources.
-# They are not generated automatically.
-# To regenerate them, type "make coldfire-sources".
-# You will need the PortAsm/68K for ColdFire tool from MicroAPL.
-# See https://microapl.com/Porting/ColdFire/pacf_download.html
-#
-
-PORTASM = pacf
-PORTASMFLAGS = -blanks on -core v4 -hardware_divide -hardware_mac -a gnu -out_syntax standard -nowarning 402,502,900,1111,1150 -noerrfile
-
-GENERATED_COLDFIRE_SOURCES = vdi/vdi_tblit_cf.S
-
-.PHONY: coldfire-sources
-NODEP += coldfire-sources
-coldfire-sources:
-	rm -f $(GENERATED_COLDFIRE_SOURCES)
-	$(MAKE) COLDFIRE=1 $(GENERATED_COLDFIRE_SOURCES)
-
-# Intermediate target (intermediate files are automatically removed)
-TOCLEAN += vdi/*_preprocessed.*
-vdi/%_preprocessed.s: vdi/%.S
-	$(CPP) $(CFILE_FLAGS) $< -o $@
-
-NODEP += $(GENERATED_COLDFIRE_SOURCES)
-vdi/%_cf.S: vdi/%_preprocessed.s
-	cd $(<D) && $(PORTASM) $(PORTASMFLAGS) -o $(@F) $(<F)
-	dos2unix $@
-	sed -i $@ \
-		-e "s:\.section\t.bss,.*:.bss:g" \
-		-e "s:\( \|\t\)bsr\(  \|\..\):\1jbsr :g" \
-		-e "s:\( \|\t\)bra\(  \|\..\):\1jra  :g" \
-		-e "s:\( \|\t\)beq\(  \|\..\):\1jeq  :g" \
-		-e "s:\( \|\t\)bne\(  \|\..\):\1jne  :g" \
-		-e "s:\( \|\t\)bgt\(  \|\..\):\1jgt  :g" \
-		-e "s:\( \|\t\)bge\(  \|\..\):\1jge  :g" \
-		-e "s:\( \|\t\)blt\(  \|\..\):\1jlt  :g" \
-		-e "s:\( \|\t\)ble\(  \|\..\):\1jle  :g" \
-		-e "s:\( \|\t\)bcc\(  \|\..\):\1jcc  :g" \
-		-e "s:\( \|\t\)bcs\(  \|\..\):\1jcs  :g" \
-		-e "s:\( \|\t\)bpl\(  \|\..\):\1jpl  :g" \
-		-e "s:\( \|\t\)bmi\(  \|\..\):\1jmi  :g" \
-		-e "s:\( \|\t\)bhi\(  \|\..\):\1jhi  :g" \
-		-e "s:\( \|\t\)blo\(  \|\..\):\1jlo  :g" \
-		-e "s:\( \|\t\)bhs\(  \|\..\):\1jhs  :g" \
-		-e "s:\( \|\t\)bls\(  \|\..\):\1jls  :g" \
-		-e "s:\( \|,\)0(%:\1(%:g"
 
 #
 # The targets for building a release are in a separate file

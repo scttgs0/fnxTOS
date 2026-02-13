@@ -54,17 +54,6 @@ LONG protect_wlwwwl(LONG (*func)(void), WORD, LONG, WORD, WORD, WORD, LONG);
  * Borrowed from MiNTLib:
  * https://github.com/freemint/mintlib/blob/master/include/compiler.h
  */
-#ifdef __mcoldfire__
-
-#define PUSH_SP(regs,size)              \
-    "lea     -" #size "(sp),sp\n\t"     \
-    "movem.l " regs ",(sp)\n\t"
-
-#define POP_SP(regs,size)               \
-    "movem.l (sp)," regs "\n\t"         \
-    "lea     " #size "(sp),sp\n\t"
-
-#else
 
 #define PUSH_SP(regs,size)              \
     "movem.l " regs ",-(sp)\n\t"
@@ -72,7 +61,6 @@ LONG protect_wlwwwl(LONG (*func)(void), WORD, LONG, WORD, WORD, WORD, LONG);
 #define POP_SP(regs,size)               \
     "movem.l (sp)+," regs "\n\t"
 
-#endif
 
 /*
  * Important note for the macros below:
@@ -87,21 +75,6 @@ LONG protect_wlwwwl(LONG (*func)(void), WORD, LONG, WORD, WORD, WORD, LONG);
  *   swap endianness of val, 16 bits only.
  */
 
-#ifdef __mcoldfire__
-#define swpw(a)                           \
-  __extension__                           \
-  ({long _tmp;                            \
-    __asm__ volatile                      \
-    ("move.w  %0,%1\n\t"                  \
-     "lsl.l   #8,%0\n\t"                  \
-     "lsr.l   #8,%1\n\t"                  \
-     "move.b  %1,%0"                      \
-    : "=d"(a), "=d"(_tmp) /* outputs */   \
-    : "0"(a)     /* inputs  */            \
-    : "cc"       /* clobbered */          \
-    );                                    \
-  })
-#else
 #define swpw(a)                           \
   __asm__ volatile                        \
   ("ror   #8,%0"                          \
@@ -109,7 +82,6 @@ LONG protect_wlwwwl(LONG (*func)(void), WORD, LONG, WORD, WORD, WORD, LONG);
   : "0"(a)           /* inputs  */        \
   : "cc"             /* clobbered */      \
   )
-#endif
 
 /* Copy and swap an UWORD from *src to *dest */
 static __inline__ void swpcopyw(const UWORD* src, UWORD* dest)
@@ -127,23 +99,6 @@ static __inline__ void swpcopyw(const UWORD* src, UWORD* dest)
  *   e.g. ABCD => DCBA
  */
 
-#ifdef __mcoldfire__
-#define swpl(a)                           \
-  __extension__                           \
-  ({long _tmp;                            \
-    __asm__ volatile                      \
-    ("move.b  (%1),%0\n\t"                \
-     "move.b  3(%1),(%1)\n\t"             \
-     "move.b  %0,3(%1)\n\t"               \
-     "move.b  1(%1),%0\n\t"               \
-     "move.b  2(%1),1(%1)\n\t"            \
-     "move.b  %0,2(%1)"                   \
-    : "=d"(_tmp)      /* outputs */       \
-    : "a"(&a)        /* inputs  */        \
-    : "cc", "memory" /* clobbered */      \
-    );                                    \
-  })
-#else
 #define swpl(a)                           \
   __asm__ volatile                        \
   ("ror   #8,%0\n\t"                      \
@@ -153,7 +108,6 @@ static __inline__ void swpcopyw(const UWORD* src, UWORD* dest)
   : "0"(a)           /* inputs  */        \
   : "cc"             /* clobbered */      \
   )
-#endif
 
 
 /*
@@ -162,23 +116,6 @@ static __inline__ void swpcopyw(const UWORD* src, UWORD* dest)
  *   e.g. ABCD => BADC
  */
 
-#ifdef __mcoldfire__
-#define swpw2(a)                          \
-  __extension__                           \
-  ({unsigned long _tmp;                   \
-    __asm__ volatile                      \
-    ("move.b  (%1),%0\n\t"                \
-     "move.b  1(%1),(%1)\n\t"             \
-     "move.b  %0,1(%1)\n\t"               \
-     "move.b  2(%1),%0\n\t"               \
-     "move.b  3(%1),2(%1)\n\t"            \
-     "move.b  %0,3(%1)"                   \
-    : "=d"(_tmp)     /* outputs */        \
-    : "a"(&a)        /* inputs  */        \
-    : "cc", "memory" /* clobbered */      \
-    );                                    \
-  })
-#else
 #define swpw2(a)                          \
   __asm__ volatile                        \
   ("ror   #8,%0\n\t"                      \
@@ -189,16 +126,12 @@ static __inline__ void swpcopyw(const UWORD* src, UWORD* dest)
   : "0"(a)           /* inputs  */        \
   : "cc"             /* clobbered */      \
   )
-#endif
 
 
 /*
  * Pseudo-prototype for macro: void rolw1(byref WORD x);
  *  rotates x leftwards by 1 bit
  */
-#ifdef __mcoldfire__
-#define rolw1(x)    x=(x>>15)|(x<<1)
-#else
 #define rolw1(x)                    \
     __asm__ volatile                \
     ("rol.w #1,%1"                  \
@@ -206,16 +139,12 @@ static __inline__ void swpcopyw(const UWORD* src, UWORD* dest)
     : "0"(x)        /* inputs */    \
     : "cc"          /* clobbered */ \
     )
-#endif
 
 
 /*
  * Pseudo-prototype for macro: void rorw1(byref WORD x);
  *  rotates x rightwards by 1 bit
  */
-#ifdef __mcoldfire__
-#define rorw1(x)    x=(x>>1)|(x<<15)
-#else
 #define rorw1(x)                    \
     __asm__ volatile                \
     ("ror.w #1,%1"                  \
@@ -223,16 +152,12 @@ static __inline__ void swpcopyw(const UWORD* src, UWORD* dest)
     : "0" (x)       /* inputs */    \
     : "cc"          /* clobbered */ \
     )
-#endif
 
 
 /*
  * Pseudo-prototype for macro: void roll(byref ULONG x, WORD count);
  *  rotates x leftwards by count bits
  */
-#ifdef __mcoldfire__
-#define roll(x,n)    x=(x>>(32-(n)))|(x<<(n))
-#else
 #define roll(x,n)                   \
     __asm__ volatile                \
     ("rol.l %2,%1"                  \
@@ -240,16 +165,12 @@ static __inline__ void swpcopyw(const UWORD* src, UWORD* dest)
     : "0"(x),"I"(n) /* inputs */    \
     : "cc"          /* clobbered */ \
     )
-#endif
 
 
 /*
  * Pseudo-prototype for macro: void rorl(byref ULONG x, WORD count);
  *  rotates x rightwards by count bits
  */
-#ifdef __mcoldfire__
-#define rorl(x,n)    x=(x<<(32-(n)))|(x>>(n))
-#else
 #define rorl(x,n)                   \
     __asm__ volatile                \
     ("ror.l %2,%1"                  \
@@ -257,7 +178,6 @@ static __inline__ void swpcopyw(const UWORD* src, UWORD* dest)
     : "0"(x),"I"(n) /* inputs */    \
     : "cc"          /* clobbered */ \
     )
-#endif
 
 
 /*
@@ -312,17 +232,6 @@ __extension__                             \
  *   Saves all registers to the stack, calls the function
  *   that addr points to, and restores the registers afterwards.
  */
-#ifdef __mcoldfire__
-#define regsafe_call(addr)                         \
-__extension__                                      \
-({__asm__ volatile ("lea     -60(sp),sp\n\t"       \
-                    "movem.l d0-d7/a0-a6,(sp)\n\t" \
-                    "jsr (%0)\n\t"                 \
-                    "movem.l (sp),d0-d7/a0-a6\n\t" \
-                    "lea     60(sp),sp"            \
-                    : : "a"(addr): "memory");      \
-})
-#else
 #define regsafe_call(addr)                         \
 __extension__                                      \
 ({__asm__ volatile ("movem.l d0-d7/a0-a6,-(sp)\n\t"\
@@ -330,7 +239,6 @@ __extension__                                      \
                     "movem.l (sp)+,d0-d7/a0-a6"    \
                     : : "a"(addr): "memory");      \
 })
-#endif
 
 
 

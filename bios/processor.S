@@ -42,8 +42,6 @@
 
         .text
 
-#ifndef __mcoldfire__
-
 /*
  * _detect_cpu - CPU detection
  *
@@ -242,14 +240,11 @@ nosfp:  move.l  a1,(0x08).w     // restore bus error
 #endif /* CONF_WITH_ADVANCED_CPU */
         rts
 
-#endif /* __mcoldfire__ */
-
 
 /*
  * void processor_init(void) - sets mcpu and fputype.
  */
 _processor_init:
-#ifndef __mcoldfire__           // On ColdFire, the caches are enabled by the pre-OS
         jbsr    _detect_cpu
         swap    d0
         move.w  d0,_mcpu_subtype    // save processor subtype
@@ -363,7 +358,6 @@ init_cacr:
 pi_done:
 #endif /* CONF_WITH_ADVANCED_CPU */
 
-#endif /* not __mcoldfire__ */
         rts
 
 /*
@@ -374,14 +368,8 @@ pi_done:
  * this provides backward compatibility in case some foolish person
  * reads code from an I/O device and branches to it directly; this
  * would have been legal on STs and STes.
- *
- * we don't do that on ColdFire, because ColdFire executables are brand new
- * and supposed to be aware of cache issues.
  */
 _instruction_cache_kludge:
-#ifdef __mcoldfire__
-        rts
-#endif
 //
 // for 680x0, we fall through invalidate_instruction_cache
 //
@@ -400,10 +388,6 @@ _instruction_cache_kludge:
  */
 
 _invalidate_instruction_cache:
-#ifdef __mcoldfire__
-        lea     cpushl_bc,a1    // flush/invalidate both caches
-        jra     cpushl_loop
-#else
 #if CONF_WITH_ADVANCED_CPU
         cmpi.b  #20,_mcpu+3
         jeq     ii_020or030
@@ -433,7 +417,6 @@ ii_inval:
 ii_done:
 #endif /* CONF_WITH_ADVANCED_CPU */
         rts
-#endif
 
 
 /*
@@ -448,10 +431,6 @@ ii_done:
  *     we must push the data cache (the backing memory may be stale)
  */
 _flush_data_cache:
-#ifdef __mcoldfire__
-        lea     cpushl_dc,a1    // flush/invalidate data cache
-        jra     cpushl_loop
-#else
 #if CONF_WITH_ADVANCED_CPU
 
         // 68020 has no data cache, 68030 data cache is always write-through,
@@ -468,7 +447,7 @@ _flush_data_cache:
 fd_no_dirty:
 #endif
         rts
-#endif
+
 
 
 /*
@@ -480,10 +459,6 @@ fd_no_dirty:
  * the cache needs to be invalidated
  */
 _invalidate_data_cache:
-#ifdef __mcoldfire__
-        lea     cpushl_dc,a1    // flush/invalidate data cache
-        // fall through cpushl_loop
-#else
 #if CONF_WITH_ADVANCED_CPU
         cmpi.b  #30,_mcpu+3
         jne     ic_not30
@@ -508,64 +483,6 @@ ic_inval:
 ic_done:
 #endif /* CONF_WITH_ADVANCED_CPU */
         rts
-#endif
-
-#ifdef __mcoldfire__
-cpushl_loop:
-        // This helper routine is a loop around cpushl ?c,(a0)
-        // a1 must point to the actual instruction called in the loop
-
-        // This code comes from the MCF547x Reference Manual
-        // Section 7.11 Cache Management
-        //
-        // The ColdFire has no cinva instruction.
-        // Instead, cpushl writes the modified cache data to the RAM
-        // then invalidates the caches (data + instruction) except if
-        // the DDPI and IDPI bits have been set in the CACR.
-        //
-        // The ColdFire V4e core has a 32 KB instruction cache
-        // and a 32 KB data cache. Both caches have the same structure.
-        // The data is stored in "Line" elements of 16 bytes.
-        // The Lines are stored in a 2D array of 4 Ways * 512 Sets.
-        //
-        // The following changes have been made to the original code:
-        // - call jsr (a1) instead of "cpushl dc"
-        // - flush the 512 Sets (original code forgot the last one)
-
-        nop                     // synchronize/flush store buffer
-        moveq.l #0,d0           // initialize way counter
-        moveq.l #0,d1           // initialize set counter
-        move.l  d0,a0           // initialize cpushl pointer
-
-setloop:
-        jsr     (a1)            // call appropriate cpushl instruction
-        lea     0x0010(a0),a0   // increment set index by 1
-        addq.l  #1,d1           // increment set counter
-        cmpi.l  #512,d1         // are sets for this way done?
-        jne     setloop
-
-        moveq.l #0,d1           // set counter to zero again
-        addq.l  #1,d0           // increment to next way
-        move.l  d0,a0           // set = 0, way = d0
-        cmpi.l  #4,d0           // flushed all the ways?
-        jne     setloop
-
-        rts
-
-// Helper routines for cpushl_loop
-
-cpushl_ic:
-        cpushl  ic,(a0)         // instruction cache
-        rts
-
-cpushl_dc:
-        cpushl  dc,(a0)         // data cache
-        rts
-
-cpushl_bc:
-        cpushl  bc,(a0)         // both caches
-        rts
-#endif
 
 
 #if CONF_WITH_CACHE_CONTROL
@@ -631,12 +548,10 @@ init_ttr1:                          // transparent translation is enabled for al
         .bss
         .even
 
-#ifndef __mcoldfire__
 _mcpu:          .ds.l   1
 _mcpu_subtype:  .ds.w   1
 _fputype:       .ds.l   1
 temp:           .ds.l   1
-#endif
 
 #if CONF_WITH_APOLLO_68080
 _is_apollo_68080:   .ds.w   1

@@ -136,33 +136,9 @@ _main:
 # define OSXH_STE       0
 # define OSXH_TT        0
 # define OSXH_FALCON    0
-# define OSXH_FIREBEE   0
-# define OSXH_M548X     0
 # define OSXH_ARANYM    (1<<8)
-#elif defined(MACHINE_M548X)
-# define OSXH_ST        0
-# define OSXH_STE       0
-# define OSXH_TT        0
-# define OSXH_FALCON    0
-# define OSXH_FIREBEE   0
-# define OSXH_M548X     (1<<5)
-# define OSXH_ARANYM    0
-#elif defined(MACHINE_FIREBEE)
-# define OSXH_ST        0
-# define OSXH_STE       0
-# define OSXH_TT        0
-# define OSXH_FALCON    0
-# define OSXH_FIREBEE   (1<<4)
-# define OSXH_M548X     0
-# define OSXH_ARANYM    0
 #else
-# define OSXH_FIREBEE   0
-# define OSXH_M548X     0
-# ifndef __mcoldfire__
 #  define OSXH_ST       (1<<0)
-# else
-#  define OSXH_ST       0
-# endif
 # if CONF_WITH_STE_SHIFTER
 #  define OSXH_STE      (1<<1)
 # else
@@ -184,7 +160,7 @@ _main:
 #  define OSXH_ARANYM   0
 # endif
 #endif
-#define OSXH_MACHINES   (OSXH_ST+OSXH_STE+OSXH_TT+OSXH_FALCON+OSXH_FIREBEE+OSXH_M548X+OSXH_ARANYM)
+#define OSXH_MACHINES   (OSXH_ST+OSXH_STE+OSXH_TT+OSXH_FALCON+OSXH_ARANYM)
 
 /*
  *  Processor flags in extended OS header
@@ -209,32 +185,8 @@ _main:
 # define OSXH_68040     (1<<4)
 # define OSXH_68060     0
 # define OSXH_68080     0
-# define OSXH_COLDFIRE  0
-#elif defined(MACHINE_M548X)
-# define OSXH_68000     0
-# define OSXH_68010     0
-# define OSXH_68020     0
-# define OSXH_68030     0
-# define OSXH_68040     0
-# define OSXH_68060     0
-# define OSXH_68080     0
-# define OSXH_COLDFIRE  (1<<8)
-#elif defined(MACHINE_FIREBEE)
-# define OSXH_68000     0
-# define OSXH_68010     0
-# define OSXH_68020     0
-# define OSXH_68030     0
-# define OSXH_68040     0
-# define OSXH_68060     0
-# define OSXH_68080     0
-# define OSXH_COLDFIRE  (1<<8)
 #else
-# define OSXH_COLDFIRE  0
-# ifndef __mcoldfire__
 #  define OSXH_68000    (1<<0)
-# else
-#  define OSXH_68000    0
-# endif
 # if CONF_WITH_ADVANCED_CPU
 #  define OSXH_68010    (1<<1)
 #  define OSXH_68020    (1<<2)
@@ -254,7 +206,7 @@ _main:
 #  define OSXH_68080    0
 # endif
 #endif
-#define OSXH_PROCESSORS (OSXH_68000+OSXH_68010+OSXH_68020+OSXH_68030+OSXH_68040+OSXH_68060+OSXH_68080+OSXH_COLDFIRE)
+#define OSXH_PROCESSORS (OSXH_68000+OSXH_68010+OSXH_68020+OSXH_68030+OSXH_68040+OSXH_68060+OSXH_68080)
 
 /*
  * Default cold-boot delay. Can be modified by users to allow
@@ -360,14 +312,12 @@ valid_st_mmu_config:
         // address which will become our BIOS stack after memconf.
         lea     _stktop,sp
 
-#if !defined(__mcoldfire__)
         // first, reset the VBR
         // it may have been modified before emutos-ram or soft reset
         move.l  #vbr_ok,16     // must be 68000 if we get illegal instrn error
         moveq   #0,d0
         MOVEC_D0_VBR           // initialise VBR to zero
 vbr_ok:
-#endif
 
 #if CONF_WITH_RESET
         // now, reset the external hardware
@@ -393,23 +343,12 @@ not_falcon:
 main_after_reset_instruction:
 #endif /* CONF_WITH_RESET */
 
-#ifdef __mcoldfire__
-        lea     coldfire_startup_ret,a6
-        jmp     coldfire_startup
-coldfire_startup_ret:
-#endif
-
 #if CONF_WITH_CARTRIDGE
 /*
  * Check for diagnostic cartridge
  */
 
-#ifdef __mcoldfire__
-        move.l  cart_base, d0
-        cmp.l   #cart_magic, d0         // magic - is cartridge present?
-#else
         cmp.l   #cart_magic, cart_base  // magic - is cartridge present?
-#endif
         jne     nodiag                  // no -> go on
 
 #if EMUTOS_LIVES_IN_RAM
@@ -426,17 +365,14 @@ nodiag:
 /*
  * disable the instruction/data caches
  */
-#if !defined(__mcoldfire__)
         move.l  #cache_done,0x10   // must be 68000 if we get illegal instrn error
         move.l  #0x00000808,d0     // clear & disable instruction/data caches on
         MOVEC_D0_CACR              //  68020-60 (even though bit usage differs!)
 cache_done:
-#endif
 
 /*
  * disable the MMU
  */
-#if !defined(__mcoldfire__)
         move.l  #not_68030,0x2c    // PMOVE is lineF on non-68030 systems
         lea     zero,a0
         PMOVE_A0_TTR0              // first we initialise the TTRs (ACRs on a 68ec030)
@@ -454,19 +390,13 @@ not_68030:
         MOVEC_D0_TC                // disable translation on 68040-60 (will error out
                                    //  on a 68ec040)
 mmu_done:
-#endif
 
 /*
  * Check, if we should jump to a reset vector after warmboot
  */
 
 resetvec:
-#ifdef __mcoldfire__
-       move.l   resvalid.w, d0
-       cmpi.l   #0x31415926, d0         // Jump to resetvector?
-#else
        cmpi.l   #0x31415926, resvalid.w // Jump to resetvector?
-#endif
        jne      noreset                 // No --> noreset
        move.l   resvector.w, d0         // Yes: old resvec to d0
        jeq      noreset                 // Address null? Yes --> noreset
@@ -506,33 +436,18 @@ memdone:
 _run_cartridge_applications:
         move.w  4(sp),d0                // application bit number
         lea     cart_base, a0
-#ifdef __mcoldfire__
-        move.l  #0xABCDEF42, d1
-        cmp.l   (a0)+, d1               // is cartridge present?
-#else
         cmp.l   #0xABCDEF42, (a0)+      // is cartridge present?
-#endif
         jne     cartover                // no -> cartover
 testtype:
         btst    d0, 4(a0)               // What type?
         jeq     nextapp
 
-#ifdef __mcoldfire__
-        lea     -60(sp), sp
-        movem.l d0-d7/a0-a6, (sp)       // save registers
-#else
         movem.l d0-d7/a0-a6, -(sp)      // save registers
-#endif
         move.l  4(a0),d0                // d0 = address of cartridge init
         andi.l  #0x00ffffff,d0          // make it 24-bit clean
         movea.l d0,a0
         jsr     (a0)                    // execute app in cartridge
-#ifdef __mcoldfire__
-        movem.l (sp), d0-d7/a0-a6       // restore registers
-        lea     60(sp), sp
-#else
         movem.l (sp)+, d0-d7/a0-a6      // restore registers
-#endif
 nextapp:
         tst.l   (a0)                    // another application?
         move.l  (a0), a0

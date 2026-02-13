@@ -25,18 +25,10 @@ _strlencpy:
         movea.l 4(sp),a1
         moveq   #0,d0
 lstcpy_loop:
-#ifdef __mcoldfire__
-        addq.l  #1,d0
-#else
         addq.w  #1,d0
-#endif
         move.b  (a0)+,(a1)+
         jne     lstcpy_loop
-#ifdef __mcoldfire__
-        subq.l  #1,d0
-#else
         subq.w  #1,d0
-#endif
         rts
 
 /*

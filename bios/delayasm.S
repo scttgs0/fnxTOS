@@ -31,13 +31,7 @@ _run_calibration:
         clr.l   intcount            //initialise interrupt count
 
         lea     MFP_TCDCR,a0        //a0 -> Timer C/D control reg
-#ifdef __mcoldfire__
-        move.b  (a0),d0
-        andi.l  #0xf0,d0            //stop TimerD
-        move.b  d0,(a0)
-#else
         andi.b  #0xf0,(a0)          //stop TimerD
-#endif
 
         lea     MFP_TDDR,a0         //a0 -> TimerD data
         clr.b   (a0)                //set count = 256
@@ -50,13 +44,7 @@ _run_calibration:
         bset.b  #4,(a0)             //set interrupt mask bit
 
         lea     MFP_TCDCR,a0        //a0 -> Timer C/D control reg
-#ifdef __mcoldfire__
-        move.b  (a0),d0
-        ori.l   #0x02,d0            //set pre-scaler = divide-by-10 & start TimerD
-        move.b  d0,(a0)
-#else
         ori.b   #0x02,(a0)          //set pre-scaler = divide-by-10 & start TimerD
-#endif
 
         move.l  4(a7),d0            //loopcount
 cal_loop:                           //just like asm.h inline function
@@ -75,13 +63,7 @@ cal_loop:                           //just like asm.h inline function
         bclr.b  #4,(a0)             //reset interrupt mask bit
 
         lea     MFP_TCDCR,a0        //a0 -> Timer C/D control reg
-#ifdef __mcoldfire__
-        move.b  (a0),d0
-        andi.l  #0xf0,d0            //stop TimerD
-        move.b  d0,(a0)
-#else
         andi.b  #0xf0,(a0)          //stop TimerD
-#endif
 
         move    d1,sr               //restore interrupt mask
 
@@ -105,14 +87,7 @@ cal_loop:                           //just like asm.h inline function
 handle_timer:                   //68000:
         //interrupt dispatch      //44
         addq.l  #1,intcount       //12+16 = 28
-#ifdef __mcoldfire__
-        move.l  a0,-(sp)
-        lea     MFP_ISRB,a0
-        move.b  #0xef,(a0)
-        movea.l (sp)+,a0
-#else
         move.b  #0xef,MFP_ISRB    //20
-#endif
         rte                       //20
                                 //total 112
         .bss

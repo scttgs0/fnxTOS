@@ -523,10 +523,8 @@ static int set_videl_vga(WORD mode)
 
     videlregs[0x0a] = (mode&VIDEL_PAL) ? 2 : 0; /* video sync to 50Hz if PAL */
 
-#ifndef MACHINE_FIREBEE
     /* On the Falcon, synchronize Videl register updates like Atari TOS 4 */
     vsync(); /* wait for VBL */
-#endif
 
     videlword(0x82) = p->hht;           /* H hold timer */
     videlword(0x84) = p->hbb;           /* H border begin */
@@ -560,7 +558,6 @@ static int set_videl_vga(WORD mode)
             videlregs[0x60] = 0x02;
         } else {
             videlword(0x66) = 0x0400;
-#ifndef MACHINE_FIREBEE
             /*
              * When switching to monochrome mode, the Falcon Videl needs these
              * additional steps; otherwise video output can become distorted.
@@ -584,7 +581,6 @@ static int set_videl_vga(WORD mode)
                 vsync();
                 videlword(0x66) = 0x0400;
             }
-#endif
         }
         break;
     case VIDEL_2BPP:                    /* 4 colours */

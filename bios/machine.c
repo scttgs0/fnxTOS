@@ -37,7 +37,6 @@
 #include "mfp.h"
 #include "scc.h"
 #include "memory.h"
-#include "coldfire.h"
 #include "dma.h"
 #include "nova.h"
 #include "biosext.h"
@@ -310,9 +309,7 @@ static void detect_blitter(void)
      * prevent its use on such systems.  we do allow a blitter on the
      * FireBee, which by design supports 32-bit blitting.
      */
-#ifndef MACHINE_FIREBEE
     if (!ramtop)
-#endif
         if (check_read_byte(BLITTER_CONFIG1))
             has_blitter = 1;
 
@@ -660,14 +657,8 @@ void machine_init(void)
 
 void fill_cookie_jar(void)
 {
-#ifdef __mcoldfire__
-    cookie_add(COOKIE_COLDFIRE, 0);
-    setvalue_mcf();
-    cookie_add(COOKIE_MCF, (ULONG)&cookie_mcf);
-#else
     /* this is detected by detect_cpu(), called from processor_init() */
     cookie_add(COOKIE_CPU, mcpu);
-#endif
 
     /* _VDO
      * This cookie represents the revision of the video shifter present.
@@ -680,10 +671,8 @@ void fill_cookie_jar(void)
     setvalue_vdo();
     cookie_add(COOKIE_VDO, cookie_vdo);
 
-#ifndef __mcoldfire__
   /* this is detected by detect_fpu(), called from processor_init() */
     cookie_add(COOKIE_FPU, fputype);
-#endif
 
     /* _MCH */
     setvalue_mch();
@@ -822,11 +811,5 @@ static const char * guess_machine_name(void)
 const char * machine_name(void)
 {
     MAYBE_UNUSED(guess_machine_name);
-#ifdef MACHINE_FIREBEE
-    return "FireBee";
-#elif defined(MACHINE_M548X)
-    return m548x_machine_name();
-#else
     return guess_machine_name();
-#endif
 }

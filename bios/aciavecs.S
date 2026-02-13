@@ -149,48 +149,23 @@ _init_acia_vecs:
 #if CONF_WITH_EXTENDED_MOUSE
         move.l  a0,_mousexvec-_kbdvecs(a1)
 #endif
-#ifdef __mcoldfire__
-        move.l  #_kbdvec,d0
-        move.l  d0,kbdvec-_kbdvecs(a1)
-#else
         move.l  #_kbdvec,kbdvec-_kbdvecs(a1)
-#endif
-#ifdef __mcoldfire__
-        move.l  #_midivec,d0
-        move.l  d0,midivec-_kbdvecs(a1)
-#else
         move.l  #_midivec,midivec-_kbdvecs(a1)
-#endif
         move.l  a0,vkbderr-_kbdvecs(a1)
         move.l  a0,vmiderr-_kbdvecs(a1)
         move.l  a0,statvec-_kbdvecs(a1)
         move.l  a0,mousevec-_kbdvecs(a1)
 #if CONF_WITH_IKBD_CLOCK
-#ifdef __mcoldfire__
-        move.l  #_clockvec,d0                        // in bios/clock.c
-        move.l  d0,clockvec-_kbdvecs(a1)
-#else
         move.l  #_clockvec,clockvec-_kbdvecs(a1)     // in bios/clock.c
-#endif
 #else
         move.l  a0,clockvec-_kbdvecs(a1)
 #endif /* CONF_WITH_IKBD_CLOCK */
         move.l  a0,joyvec-_kbdvecs(a1)
 #if CONF_WITH_MIDI_ACIA
-#ifdef __mcoldfire__
-        move.l  #_midisys,d0
-        move.l  d0,midisys-_kbdvecs(a1)
-#else
         move.l  #_midisys,midisys-_kbdvecs(a1)
-#endif
 #endif /* CONF_WITH_MIDI_ACIA */
 #if CONF_WITH_IKBD_ACIA
-#ifdef __mcoldfire__
-        move.l  #_ikbdsys,d0
-        move.l  d0,ikbdsys-_kbdvecs(a1)
-#else
         move.l  #_ikbdsys,ikbdsys-_kbdvecs(a1)
-#endif
 #endif /* CONF_WITH_IKBD_ACIA */
 
         // initialize the iorecs
@@ -247,12 +222,7 @@ _int_acia:
          * registers can be freely used by the vectors of the kbdvecs struct.
          * Theoretically d0-d1/a0-a1 would be sufficient here.
          */
-#ifdef __mcoldfire__
-        lea     -32(sp),sp
-        movem.l d0-d3/a0-a3,(sp)
-#else
         movem.l d0-d3/a0-a3,-(sp)
-#endif
 
 int_acia_loop:
 #if CONF_WITH_MIDI_ACIA
@@ -269,12 +239,7 @@ int_acia_loop:
         move.b  #0xbf,0x11(a1)            // clear in service bit
 
         // restore scratch regs
-#ifdef __mcoldfire__
-        movem.l (sp),d0-d3/a0-a3
-        lea     32(sp),sp
-#else
         movem.l (sp)+,d0-d3/a0-a3
-#endif
         rte
 
 #endif /* CONF_WITH_IKBD_ACIA || CONF_WITH_MIDI_ACIA */
@@ -309,26 +274,15 @@ midirts:
 
 _midivec:
         // push byte data in d0 into midi iorec.
-#ifdef __mcoldfire__
-        moveq   #0,d1
-#endif
         move.w  midiibuftl,d1
-#ifdef __mcoldfire__
-        addq.l  #1,d1
-#else
         addq.w  #1,d1
-#endif
         cmp.w   midiibufsz,d1
         jlt     1f
         moveq   #0,d1
 1:      cmp.w   midiibufhd,d1
         jeq     1f
         movea.l midiibuf,a0             // must use ptr, user may have changed it
-#ifdef __mcoldfire__
-        move.b  d0,0(a0,d1.l)
-#else
         move.b  d0,0(a0,d1.w)
-#endif
         move.w  d1,midiibuftl
 1:      rts
 
@@ -410,20 +364,10 @@ ikbdraw:
 
 begin_packet:
         move.b  d0,kbdbuf       // put the byte at beginning of the buffer
-#ifdef __mcoldfire__
-        lea     kbdindex,a0
-        move.w  #1,(a0)         // next position in buffer is byte number 1
-        sub.l   #0xf6,d0
-        lea     ikbdstate,a0
-        move.b  ikbdstate_table(pc,d0),(a0)
-        lea     kbdlength,a0
-        move.b  kbdlength_table(pc,d0),(a0)
-#else
         move.w  #1,kbdindex     // next position in buffer is byte number 1
         sub.b   #0xf6,d0
         move.b  ikbdstate_table(pc,d0),ikbdstate
         move.b  kbdlength_table(pc,d0),kbdlength
-#endif
         rts
 ikbdstate_table:
         .dc.b   1, 2, 3, 3, 3, 3, 4, 5, 6, 7
@@ -432,39 +376,19 @@ kbdlength_table:
         .even
 
 in_packet:
-#ifdef __mcoldfire__
-        moveq   #0,d1
-#endif
         move.w  kbdindex,d1
         lea     kbdbuf,a0
-#ifdef __mcoldfire__
-        move.b  d0,0(a0,d1.l)
-        moveq   #0,d1           // preserve d0 by using d1 as work reg
-        move.b  kbdlength,d1
-        subq.l  #1,d1
-        move.b  d1,kbdlength
-        jeq     got_packet
-        moveq   #0,d1
-        move.w  kbdindex,d1
-        addq.l  #1,d1
-        move.w  d1,kbdindex
-#else
         move.b  d0,0(a0,d1.w)
         sub.b   #1,kbdlength
         jeq     got_packet
         addq.w  #1,kbdindex
-#endif
         rts
 
 // now I've got a full packet in buffer kbdbuf, and d0.b is the last byte received
 got_packet:
         moveq.l #0,d1           // preserve d0 by using d1 as work reg
         move.b  ikbdstate,d1
-#ifdef __mcoldfire__
-        asl.l   #2,d1
-#else
         asl.w   #2,d1
-#endif
         move.l  action_table-4(pc,d1),a1
         lea     kbdbuf,a0
         jmp     (a1)
@@ -533,23 +457,13 @@ kbd_jump_vec:
 _call_mousevec:
         move.l  4(sp),a0
         move.l  mousevec,a1
-#ifdef __mcoldfire__
-        lea     -44(sp),sp
-        movem.l d2-d7/a2-a6,(sp)
-#else
         movem.l d2-d7/a2-a6,-(sp)
-#endif
         jsr     (a1)
-#ifdef __mcoldfire__
-        movem.l (sp),d2-d7/a2-a6
-        lea     44(sp),sp
-#else
         movem.l (sp)+,d2-d7/a2-a6
-#endif
         rts
 
 
-#if CONF_WITH_FLEXCAN || CONF_SERIAL_IKBD
+#if CONF_SERIAL_IKBD
 
 /******************************************************************************/
 /* Call ikbdraw from C                                                        */
@@ -561,4 +475,4 @@ _call_ikbdraw:
         move.b  5(sp),d0                // raw IKBD byte
         jra     ikbdraw
 
-#endif /* CONF_WITH_FLEXCAN || CONF_SERIAL_IKBD */
+#endif /* CONF_SERIAL_IKBD */

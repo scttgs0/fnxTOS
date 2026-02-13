@@ -20,17 +20,9 @@
         .globl  _trap1
 _trap1:
         move.l  (sp)+,t1spsav   // save return address
-#ifdef __mcoldfire__
-        move.l  d2,t1regsav
-        move.l  a2,t1regsav+4
-        trap    #1              // call bdos call
-        move.l  t1regsav,d2
-        move.l  t1regsav+4,a2
-#else
         movem.l d2/a2,t1regsav
         trap    #1              // call bdos call
         movem.l t1regsav,d2/a2
-#endif
         move.l  t1spsav,-(sp)   // restore return address
         rts
 
@@ -48,12 +40,7 @@ t1regsav:
  */
         .globl  _trap1_pexec    // Reentrant Pexec call
 _trap1_pexec:
-#ifdef __mcoldfire__
-        move.l  a2,-(sp)
-        move.l  d2,-(sp)
-#else
         movem.l d2/a2,-(sp)
-#endif
         move.l  22(sp),-(sp)    // Push parameter on the stack again for pexec
         move.l  22(sp),-(sp)
         move.l  22(sp),-(sp)
@@ -61,12 +48,7 @@ _trap1_pexec:
         move.w  #0x4b,-(sp)
         trap    #1              // Pexec
         lea     16(sp),sp
-#ifdef __mcoldfire__
-        move.l  (sp)+,d2
-        move.l  (sp)+,a2
-#else
         movem.l (sp)+,d2/a2
-#endif
         rts
 
 #if USE_STOP_INSN_TO_FREE_HOST_CPU
@@ -79,20 +61,11 @@ _trap1_pexec:
 _stop_until_interrupt:
         move.w  sr,d0
         move.w  d0,d1           // Backup
-#ifdef __mcoldfire__
-        andi.l  #0x0700,d1      // Isolate IPL bits
-#else
         andi.w  #0x0700,d1      // Isolate IPL bits
-#endif
 
         // Convert the IPL into an offset in the stop block below
-#ifdef __mcoldfire__
-        lsr.l   #8-3,d1         // 8 bits right, then multiply by 4
-        jmp     stop0(pc,d1.l)
-#else
         lsr.w   #8-3,d1         // 8 bits right, then multiply by 4
         jmp     stop0(pc,d1.w)
-#endif
 
         // Each stop case must be exactly 8 byte long.
         // Preserving sr is not strictly mandatory, but:
@@ -164,22 +137,6 @@ _just_rts:
  */
         .globl  _mul_div_round
 _mul_div_round:
-#ifdef __mcoldfire__
-        moveq.l #0,d0
-        move.w  6(sp),d0        // d0 = mult2
-        add.l   d0,d0           // d0 = mult2 * 2
-        muls.w  4(sp),d0        // d0 = mult1 * mult2 * 2
-        divs.w  8(sp),d0        // d0 = (mult1 * mult2 * 2) / divisor
-        ext.l   d0
-        jmi     mdrminus
-        addq.l  #1,d0           // d0 = (mult1 * mult2 * 2) / divisor + 1
-        asr.l   #1,d0           // d0 = ((mult1 * mult2 * 2) / divisor + 1) / 2
-        rts
-mdrminus:
-        subq.l  #1,d0           // d0 = (mult1 * mult2 * 2) / divisor - 1
-        asr.l   #1,d0           // d0 = ((mult1 * mult2 * 2) / divisor - 1) / 2
-        rts
-#else
         move.w  6(sp),d0        // d0 = mult2
         add.w   d0,d0           // d0 = mult2 * 2
         muls.w  4(sp),d0        // d0 = mult1 * mult2 * 2
@@ -192,7 +149,6 @@ mdrminus:
         subq.w  #1,d0           // d0 = (mult1 * mult2 * 2) / divisor - 1
         asr.w   #1,d0           // d0 = ((mult1 * mult2 * 2) / divisor - 1) / 2
         rts
-#endif
 
 /* ==== Glue for external vectors ===========================================
  *
@@ -256,12 +212,7 @@ _protect_wlwwwl:
         movem.l  8(sp),d0-d1/a0-a1
         move.l   a2,-(sp)
         move.l   d2,-(sp)
-#ifdef __mcoldfire__
-        lea      -16(sp),sp
-        movem.l  d0-d1/a0-a1,(sp)
-#else
         movem.l  d0-d1/a0-a1,-(sp)
-#endif
         move.l   28(sp),a0
         jsr      (a0)
         lea      16(sp),sp

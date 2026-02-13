@@ -126,7 +126,7 @@ void push_ascii_ikbdiorec(UBYTE ascii);
 /* the following is in aciavecs.S */
 void call_mousevec(SBYTE *packet);
 
-#if CONF_WITH_FLEXCAN || CONF_SERIAL_IKBD
+#if CONF_SERIAL_IKBD
 void call_ikbdraw(UBYTE b);
 #endif
 

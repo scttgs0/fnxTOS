@@ -25,7 +25,6 @@
 #include "string.h"
 #include "tosvars.h"
 #include "vectors.h"
-#include "coldfire.h"
 #include "ikbd.h"
 
 /*
@@ -153,7 +152,7 @@ static WORD incr_tail(IOREC *iorec)
     return tail;
 }
 
-#if (!CONF_WITH_COLDFIRE_RS232 && CONF_WITH_MFP_RS232 && !RS232_DEBUG_PRINT) || CONF_WITH_TT_MFP || CONF_WITH_SCC
+#if (CONF_WITH_MFP_RS232 && !RS232_DEBUG_PRINT) || CONF_WITH_TT_MFP || CONF_WITH_SCC
 static void put_iorecbuf(IOREC *out, WORD b)
 {
     WORD tail;
@@ -269,9 +268,7 @@ LONG bconin1(void)
  */
 LONG bcostat1(void)
 {
-#if CONF_WITH_COLDFIRE_RS232
-    return coldfire_rs232_can_write() ? -1 : 0;
-#elif CONF_WITH_MFP_RS232
+#if CONF_WITH_MFP_RS232
 # if RS232_DEBUG_PRINT
     return (MFP_BASE->tsr & 0x80) ? -1 : 0;
 # else
@@ -295,10 +292,7 @@ LONG bconout1(WORD dev, WORD b)
     while(!bcostat1())
         ;
 
-#if CONF_WITH_COLDFIRE_RS232
-    coldfire_rs232_write_byte(b);
-    return 1;
-#elif CONF_WITH_MFP_RS232
+#if CONF_WITH_MFP_RS232
 # if RS232_DEBUG_PRINT
     MFP_BASE->udr = (char)b;
     return 1L;
@@ -1067,10 +1061,6 @@ void init_serport(void)
 # if !RS232_DEBUG_PRINT
     mfpint(MFP_TBE,(LONG)mfp_rs232_tx_interrupt);
 # endif
-#endif
-
-#ifdef __mcoldfire__
-    coldfire_rs232_enable_interrupt();
 #endif
 }
 

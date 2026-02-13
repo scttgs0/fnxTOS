@@ -81,12 +81,7 @@ meminit:
 
 #if !EMUTOS_LIVES_IN_RAM
         /* Initialize and test Falcon MMU ??? */
-#ifdef __mcoldfire__
-        lea     0xffff8007.w, a0
-        bset    #6, (a0)                // seen in TOS 4.04
-#else
         bset    #6, 0xffff8007.w        // seen in TOS 4.04
-#endif
         jeq     memconf                 // not sure what 6th bit means
         jra     memchk
 #endif // !EMUTOS_LIVES_IN_RAM
@@ -120,24 +115,12 @@ memchk:
         // memconf would trash the RAM including EmuTOS itself, anyway.
 #if !EMUTOS_LIVES_IN_RAM
         // EmuTOS lives in ROM, we must check if the RAM is valid
-#ifdef __mcoldfire__
-        move.l  #0x752019f3, d1
-        cmp.l   memvalid.w, d1          // magic in memvalid ?
-        jne     memconf                 // no -> config memory
-        move.l  #0x237698aa, d1
-        cmp.l   memval2.w, d1           // magic in memval2 ?
-        jne     memconf                 // no -> config memory
-        move.l  #0x5555aaaa, d1
-        cmp.l   memval3.w, d1           // magic in memval3 ?
-        jne     memconf                 // no -> config memory
-#else
         cmp.l   #0x752019f3, memvalid.w // magic in memvalid ?
         jne     memconf                 // no -> config memory
         cmp.l   #0x237698aa, memval2.w  // magic in memval2 ?
         jne     memconf                 // no -> config memory
         cmp.l   #0x5555aaaa, memval3.w  // magic in memval3 ? (TOS >= 1.2)
         jne     memconf                 // no -> config memory
-#endif // __mcoldfire__
 #endif // !EMUTOS_LIVES_IN_RAM
 
         // The old RAM settings are valid, load them into registers.
@@ -484,17 +467,6 @@ mem_sanity_done:
 // ===========================================================================
 falcmemconf:
         /* find out the memory size by checking the d0 = $ff8006 value */
-#ifdef __mcoldfire__
-        moveq   #0, d0
-        move.w  0xffff8006.w, d0        // read the Falcon MMU register
-        lsr.l   #8,d0
-        lsr.l   #1,d0
-        move.l  d0,d1
-        and.l   #1,d1
-        lsr.l   #2,d0
-        and.l   #6,d0
-        or.l    d0,d1
-#else
         move.w  0xffff8006.w, d0        // read the Falcon MMU register
         lsr.w   #8,d0
         lsr.b   #1,d0
@@ -503,7 +475,6 @@ falcmemconf:
         lsr.b   #2,d0
         and.b   #6,d0
         or.b    d0,d1
-#endif
         move.l  #0x00080000,d0
         asl.l   d1,d0
         cmp.b   #5,d1
@@ -567,18 +538,9 @@ stram_detected:
         move.l  d5, _phystop.w          // highest address as phystop
 
         /* Make ST-RAM configuration valid */
-#ifdef __mcoldfire__
-        lea     memvalid.w, a0
-        move.l  #0x752019f3, (a0)       // set memvalid to ok
-        lea     memval2.w, a0
-        move.l  #0x237698aa, (a0)       // set memval2 to ok
-        lea     memval3.w, a0
-        move.l  #0x5555aaaa, (a0)       // set memval3 to ok
-#else
         move.l  #0x752019f3, memvalid.w // set memvalid to ok
         move.l  #0x237698aa, memval2.w  // set memval2 to ok
         move.l  #0x5555aaaa, memval3.w  // set memval3 to ok
-#endif
 
 #if CONF_DETECT_FIRST_BOOT_WITHOUT_MEMCONF
         lea     _warm_magic.w, a0
@@ -703,16 +665,10 @@ _memtest_verify:
         subq.l  #1,d1                   // for dbne
 vloop:
         cmp.l   (a0)+,d0                // ok?
-#ifdef __mcoldfire__
-        jne     verror                  // no, branch to error
-        subq.l  #1,d1
-        jpl     vloop
-#else
         dbne    d1,vloop
         jne     verror
         subi.l  #0x10000,d1             // handle long value for count
         jhi     vloop
-#endif
         moveq   #1,d0                   // all ok, return TRUE
         rts
 verror:
@@ -729,25 +685,12 @@ _memtest_rotate_verify:
         lsr.l   #2,d1                   // d1 = length (longs)
         subq.l  #1,d1                   // for dbne
 rloop:
-#ifdef __mcoldfire__
-        lsl.l   #1,d0                   // rotate bit
-        jcc     rnocarry
-        moveq   #1,d0
-rnocarry:
-#else
         rol.l   #1,d0
-#endif
         cmp.l   (a0)+,d0                // store
-#ifdef __mcoldfire__
-        jne     rerror
-        subq.l  #1,d1
-        jpl     rloop
-#else
         dbne    d1,rloop
         jne     rerror
         subi.l  #0x10000,d1             // handle long value for count
         jhi     rloop
-#endif
         moveq   #1,d0                   // all ok, return TRUE
         rts
 rerror:

@@ -30,11 +30,7 @@
  * 2 bytes for ColdFire processors, to allow for possible auto-alignment
  * of the stack to a 4-byte boundary.
  */
-#ifdef __mcoldfire__
-#define STACKRESERVE    10
-#else
 #define STACKRESERVE    8
-#endif
 
         .text
 
@@ -46,27 +42,15 @@
  * That RTS will occur at the end of switchto()
  */
 _psetup:
-#ifdef __mcoldfire__
-        move.w  sr,d0
-        move.w  d0,savesr2
-        ori.l   #0x0700,d0
-        move.w  d0,sr
-#else
         move    sr,savesr2
         ori     #0x0700,sr
-#endif
         movea.l 4(sp),a0        // AESPD *
         move.l  8(sp),d0        // New process entry point
         movea.l PD_UDA(a0),a0
         movea.l UDA_SPSUPER(a0),a1
         move.l  d0,-(a1)        // Push entry point on the process stack
         move.l  a1,UDA_SPSUPER(a0)
-#ifdef __mcoldfire__
-        move.w  savesr2,d0
-        move.w  d0,sr
-#else
         move    savesr2,sr
-#endif
         rts
 
 /*
@@ -107,14 +91,7 @@ _gotopgm:
         move.l  sp,d0   // Current stack
         subi.l  #STACKRESERVE,d0        // Room for the trap stack frame or more
         move.l  d0,UDA_SPSUPER(a2)      // Will be the stack on next trap
-
-#ifdef __mcoldfire__
-        move.w  sr,d0
-        bclr    #13,d0                  // Switch to user mode
-        move.w  d0,sr
-#else
         andi.w  #0xdfff,sr              // Switch to user mode
-#endif
         move.l  P_TBASE(a0),a1          // Start of the TEXT segment
         jmp     (a1)
 
@@ -132,22 +109,10 @@ _dsptch:
         rts
 
 savestate:
-#ifdef __mcoldfire__
-        move.b  _indisp,d0
-        addq.l  #1,d0
-        move.b  d0,_indisp
-
-        move.w  sr,d0
-        move.w  d0,savesr0
-        ori.l   #0x0700,d0
-        move.w  d0,sr
-#else
         addq.b  #1,_indisp
 
         move    sr,savesr0
         ori     #0x0700,sr
-#endif
-
         move.l  a6,-(sp)        // Temporary backup
         movea.l _rlr,a6         // Get pointer to rlr AESPD structure
         movea.l PD_UDA(a6),a6   // Get pointer to UDA structure
@@ -158,25 +123,12 @@ savestate:
         move.l  sp,UDA_SPSUPER(a6)      // Save old ssp in UDA struct
 
         lea     gemasm_stack,sp
-#ifdef __mcoldfire__
-        move.w  savesr0,d0
-        move.w  d0,sr
-#else
         move    savesr0,sr
-#endif
         jmp     _disp
 
 _switchto:
-#ifdef __mcoldfire__
-        move.w  sr,d0
-        move.w  d0,savesr0
-        ori.l   #0x0700,d0
-        move.w  d0,sr
-#else
         move    sr,savesr0
         ori     #0x0700,sr
-#endif
-
         movea.l 4(sp),sp        // Use SP as pointer to UDA struct
         movem.l UDA_REGS(sp),d0-a5
         movea.l UDA_SPUSER(sp),a6
@@ -185,12 +137,7 @@ _switchto:
         movea.l UDA_SPSUPER(sp),sp
 
         clr.b   _indisp
-#ifdef __mcoldfire__
-        move.w  savesr0,d0
-        move.w  d0,sr
-#else
         move.w  savesr0,sr
-#endif
         rts                     // Switch to the next process now !
 
         .bss

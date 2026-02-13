@@ -25,7 +25,6 @@
 #include "processor.h"
 #include "chardev.h"
 #include "serport.h"
-#include "coldfire.h"
 #include "asm.h"
 #include "vectors.h"
 #include "super.h"      /* for Super() and SuperToUser() */
@@ -141,17 +140,6 @@ static void kprintf_outc_stonx(int c)
 }
 #endif
 
-#if COLDFIRE_DEBUG_PRINT
-static void kprintf_outc_coldfire_rs232(int c)
-{
-    /* Raw terminals usually require CRLF */
-    if ( c == '\n')
-        coldfire_rs232_write_byte('\r');
-
-    coldfire_rs232_write_byte((char)c);
-}
-#endif
-
 static int vkprintf(const char *fmt, va_list ap)
 {
 #if CONSOLE_DEBUG_PRINT
@@ -197,10 +185,6 @@ static int vkprintf(const char *fmt, va_list ap)
             SuperToUser(stacksave);     /* switch back.    */
         return rc;
     }
-#endif
-
-#if COLDFIRE_DEBUG_PRINT
-    return doprintf(kprintf_outc_coldfire_rs232, fmt, ap);
 #endif
 
 #if MIDI_DEBUG_PRINT
@@ -276,11 +260,7 @@ int kcprintf(const char *RESTRICT fmt, ...)
 static const char *const exc_messages[] = {
     "", /* Reset: Initial SSP */
     "", /* Reset: Initial PC */
-#ifdef __mcoldfire__
-    "Access Error",
-#else
     "Bus Error",
-#endif
     "Address Error",
     "Illegal Instruction",
     "Zero Divide",
@@ -324,35 +304,6 @@ void dopanic(const char *fmt, ...)
 
         kcprintf("pc=%08lx\n",
                  (ULONG)s->pc);
-#ifdef __mcoldfire__
-    } else {
-        /* On ColdFire, the exception frame is the same for all exceptions. */
-        struct {
-            UWORD format_word;
-            UWORD sr;
-            UWORD *pc;
-        } *s = (void *)proc_stk;
-
-        pc = s->pc;
-        sr = s->sr;
-
-        if (proc_enum >= 2 && proc_enum < ARRAY_SIZE(exc_messages)) {
-            kcprintf("Panic: %s\n",
-                     exc_messages[proc_enum]);
-        } else {
-            kcprintf("Panic: Exception number %d\n",
-                     (int) proc_enum);
-        }
-
-        kcprintf("fw=%04x (fmt=%d vec=%d fault=%d)\n",
-                 s->format_word,
-                 (s->format_word & 0xf000) >> 12,
-                 (s->format_word & 0x03fc) >> 2,
-                 (s->format_word & 0x0c00) >> 8 | (s->format_word & 0x0003));
-        kcprintf("sr=%04x pc=%08lx\n",
-                 s->sr, (ULONG)s->pc);
-    }
-#else
     } else if (mcpu == 0 && (proc_enum == 2 || proc_enum == 3)) {
         /* 68000 Bus or Address Error */
         struct {
@@ -495,7 +446,7 @@ void dopanic(const char *fmt, ...)
         kcprintf("sr=%04x pc=%08lx\n",
                  s->sr, (ULONG)s->pc);
     }
-#endif
+
 #if DISPLAY_INSTRUCTION_AT_PC
     /*
      * we optionally display the instruction pointed to by the PC.

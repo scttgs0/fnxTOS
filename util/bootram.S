@@ -115,14 +115,9 @@ copy_a2_a3_d2_sync_caches:
         subq.l  #1,d2
 bcopy:
         move.l  (a2)+,(a3)+
-#ifdef __mcoldfire__
-        subq.l  #1,d2
-        jpl     bcopy
-#else
         dbra    d2,bcopy
         sub.l   #0x10000,d2
         jhi     bcopy
-#endif
         jra     sync_caches
 
 bcopy_backwards:
@@ -132,52 +127,11 @@ bcopy_backwards:
         subq.l  #1,d2
 bcopy2:
         move.l  -(a2),-(a3)
-#ifdef __mcoldfire__
-        subq.l  #1,d2
-        jpl     bcopy2
-#else
         dbra    d2,bcopy2
         sub.l   #0x10000,d2
         jhi     bcopy2
-#endif
 
 sync_caches:
-#ifdef __mcoldfire__
-        // This code comes from the MCF547x Reference Manual
-        // Section 7.11 Cache Management
-        //
-        // The ColdFire has no cinva instruction.
-        // Instead, cpushl writes the modified cache data to the RAM
-        // then invalidates the caches (data + instruction) except if
-        // the bits DDPI and IDPI have been set in the CACR.
-        //
-        // The ColdFire V4e core has a 32 KB instruction cache
-        // and a 32 KB data cache. Both caches have the same structure.
-        // The data is stored in "Line" elements of 16 bytes.
-        // The Lines are stored in a 2D array of 4 Ways * 512 Sets.
-        //
-        // The following changes have been made to the original code:
-        // - flush both caches with "cpushl bc" instead of "cpushl dc"
-        // - flush the 512 Sets (original code forgot the last one)
-
-        nop                     // synchronize-flush store buffer
-        moveq.l #0,d0           // initialize way counter
-        moveq.l #0,d1           // initialize set counter
-        move.l  d0,a0           // initialize cpushl pointer
-
-setloop:
-        cpushl  bc,(a0)         // push cache line a0 (both caches)
-        add.l   #0x0010,a0      // increment set index by 1
-        addq.l  #1,d1           // increment set counter
-        cmpi.l  #512,d1         // are sets for this way done?
-        jne     setloop
-
-        moveq.l #0,d1           // set counter to zero again
-        addq.l  #1,d0           // increment to next way
-        move.l  d0,a0           // set = 0, way = d0
-        cmpi.l  #4,d0           // flushed all the ways?
-        jne     setloop
-#else
         moveq   #20,d0
         cmp.l   d0,d5
         jeq     inv_020or030
@@ -189,7 +143,6 @@ inv_020or030:
         ori.b   #0x08,d0        // invalidate instruction cache
         MOVEC_D0_CACR
 not68030:
-#endif
         jmp     (a6)            // return without using the stack
 
 endboot:

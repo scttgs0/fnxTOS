@@ -321,16 +321,12 @@ WORD initinfo(ULONG *pshiftbits)
     pair_start(_("EmuTOS Version")); cprintf("%s", version); pair_end();
 
     pair_start(_("CPU type"));
-#ifdef __mcoldfire__
-    cprintf("ColdFire V4e");
-#else
 # if CONF_WITH_APOLLO_68080
     if (is_apollo_68080)
         cprintf("Apollo 68080");
     else
 # endif
         cprintf("M680%02ld", mcpu);
-#endif
     pair_end();
 
     pair_start(_("Machine")); cprintf(machine_name()); pair_end();

@@ -36,12 +36,7 @@ _coma_start:
         trap    #1
         lea     12(sp),sp
 
-#ifdef __mcoldfire__
-        move.l 44(a5),d0
-        move.l  d0,_environment
-#else
         move.l 44(a5),_environment
-#endif
 
         jsr     _cmdmain
 
@@ -50,22 +45,14 @@ _coma_start:
 
 _getwh:
         move.l  a2,-(sp)                // not a scratch reg for gcc
-#ifdef __mcoldfire__
-        .dc.w   0xa920                  // lineA init
-#else
         .dc.w   0xa000                  // lineA init
-#endif
         move.l  -44(a0),d0              // v_cel_mx/v_cel_my
         movea.l (sp)+,a2
         rts
 
 _getht:
         move.l  a2,-(sp)                // not a scratch reg for gcc
-#ifdef __mcoldfire__
-        .dc.w   0xa920                  // lineA init
-#else
         .dc.w   0xa000                  // lineA init
-#endif
         moveq   #0,d0
         move.w  -46(a0),d0              // v_cel_ht
         movea.l (sp)+,a2

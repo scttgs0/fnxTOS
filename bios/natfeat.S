@@ -43,11 +43,7 @@ _detect_native_features:
         move.l  #fail_natfeat,vec_illegal
         pea     nf_version_name
         sub.l   #4,sp
-#ifdef __mcoldfire__
-#error Conflict with instruction mvs.b d0,d1
-#else
         .dc.w   0x7300              // Jump to NATFEAT_ID
-#endif
         tst.l   d0
         jeq     fail_natfeat
         moveq   #1,d0               // NatFeats detected
@@ -95,21 +91,11 @@ nfCall:
         .dc.l   0x27011992              // XHDI magic constant
 _xhdi_vec:
         // Important: The XHDI specification requires us to backup all the registers
-#ifdef __mcoldfire__
-        lea     -12(sp),sp
-        movem.l d1/a0-a1,(sp)
-#else
         movem.l d1/a0-a1,-(sp)
-#endif
         pea     16(sp)
         jsr     _xhdi_handler
         addq.l  #4,sp
-#ifdef __mcoldfire__
-        movem.l (sp),d1/a0-a1
-        lea     12(sp),sp
-#else
         movem.l (sp)+,d1/a0-a1
-#endif
         rts
 
 #endif  /* CONF_WITH_XHDI */

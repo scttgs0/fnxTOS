@@ -31,82 +31,11 @@
 #include "vectors.h"
 #include "machine.h"
 #include "has.h"
-#include "coldfire.h"
 #include "processor.h"
 #include "biosmem.h"
 #include "intmath.h"
 
 #if CONF_WITH_IDE
-
-#ifdef MACHINE_M548X
-
-#include "coldpriv.h"
-
-struct IDE
-{
-    UBYTE filler00[2];
-    UBYTE sector_number;
-    UBYTE sector_count;
-    UBYTE cylinder_high;
-    UBYTE cylinder_low;
-    UBYTE command;  /* Read: status */
-    UBYTE head;
-    UWORD data;
-    UBYTE filler0a[2];
-    UBYTE features; /* Read: error */
-    UBYTE filler0d;
-    UBYTE filler0e;
-    UBYTE control;  /* Read: Alternate status */
-};
-
-#define ide_interface ((volatile struct IDE *)(COMPACTFLASH_BASE + 0x1800))
-
-/* On M548X, the IDE registers must be read and written as a single word. */
-
-#define IDE_WRITE_REGISTER_PAIR(r,a,b) \
-    *(volatile UWORD *)&ide_interface->r = MAKE_UWORD(a,b)
-
-/* The interface 'i' is passed to these macros only for compatibility.
-   In M548X, the macros always use the only IDE interface on the board. */
-
-#define IDE_WRITE_SECTOR_NUMBER_SECTOR_COUNT(i,a,b) \
-    IDE_WRITE_REGISTER_PAIR(sector_number,a,b)
-
-#define IDE_WRITE_CYLINDER_HIGH_CYLINDER_LOW(i,a) \
-    *(volatile UWORD *)&ide_interface->cylinder_high = a
-
-#define IDE_WRITE_COMMAND_HEAD(i,a,b) \
-    IDE_WRITE_REGISTER_PAIR(command,a,b)
-
-#define IDE_WRITE_CONTROL(i,a) \
-    IDE_WRITE_REGISTER_PAIR(filler0e,0,a)
-
-/*
- * this macro uses the NOP command, which is specifically provided
- * for situations where the command register must be written at the
- * same time as the head register.  see the x3t10 ata-2 and ata-3
- * specifications for details.
- */
-#define IDE_WRITE_HEAD(i,a) \
-    IDE_WRITE_REGISTER_PAIR(command,IDE_CMD_NOP,a)
-
-#define IDE_READ_REGISTER_PAIR(r) \
-    *(volatile UWORD *)&ide_interface->r
-
-#define IDE_READ_SECTOR_NUMBER_SECTOR_COUNT(i) \
-    IDE_READ_REGISTER_PAIR(sector_number)
-
-#define IDE_READ_CYLINDER_HIGH_CYLINDER_LOW(i) \
-    IDE_READ_REGISTER_PAIR(cylinder_high)
-
-#define IDE_READ_STATUS(i)   ide_interface->command
-
-#define IDE_READ_ERROR(i)    ide_interface->features
-
-#define IDE_READ_ALT_STATUS(i) \
-    IDE_READ_REGISTER_PAIR(filler0e)
-
-#else
 
 /* On standard hardware, the IDE registers can be accessed as single bytes. */
 
@@ -126,8 +55,6 @@ struct IDE
     MAKE_UWORD(i->sector_number, i->sector_count)
 #define IDE_READ_CYLINDER_HIGH_CYLINDER_LOW(i) \
     MAKE_UWORD(i->cylinder_high, i->cylinder_low)
-
-#endif /* MACHINE_M548X */
 
 /* the data register is naturally byteswapped on some hardware */
 #define IDE_DATA_REGISTER_IS_BYTESWAPPED FALSE
@@ -153,11 +80,7 @@ struct IDE
 
 #if CONF_ATARI_HARDWARE
 
-#ifdef MACHINE_FIREBEE
-#define NUM_IDE_INTERFACES  2
-#else
 #define NUM_IDE_INTERFACES  4   /* (e.g. stacked ST Doubler) */
-#endif
 
 struct IDE
 {
@@ -387,7 +310,7 @@ static void set_packet_size(WORD dev,UWORD config);
  * we do not check for the FireBee, since there are always exactly
  * two interfaces, or for non-Atari hardware.
  */
-#if CONF_ATARI_HARDWARE && !defined(MACHINE_FIREBEE)
+#if CONF_ATARI_HARDWARE
 
 /* used by duplicate interface detection logic */
 #define SECNUM_MAGIC    0xcc
@@ -549,11 +472,7 @@ BOOL detect_ide(void)
         ifinfo[i].twisted_cable = FALSE;
     }
 
-#if defined(MACHINE_M548X)
-    has_ide = 0x01;
-#elif defined(MACHINE_FIREBEE)
-    has_ide = 0x03;
-#elif CONF_ATARI_HARDWARE
+#if CONF_ATARI_HARDWARE
 
     /*
      * see if the IDE registers for possible interfaces are accessible.
@@ -599,7 +518,7 @@ void ide_init(void)
     if (!has_ide)
         return;
 
-#if CONF_ATARI_HARDWARE && !defined(MACHINE_FIREBEE)
+#if CONF_ATARI_HARDWARE
     /* Reject 'ghost' interfaces & detect twisted cables.
      * We wait a max time for BSY to drop on all IDE interface
      * since this is called during initialisation, which can be
@@ -1348,14 +1267,12 @@ LONG ide_rw(WORD rw,ULONG sector,UWORD count,UBYTE *buf,WORD dev,BOOL need_bytes
      * moves, we must use an intermediate buffer if the user buffer is not
      * word-aligned, and the processor is a 68000 or 68010
      */
-#ifndef __mcoldfire__
     if (IS_ODD_POINTER(buf) && (mcpu < 20))
     {
         if (maxsecs_per_io > DSKBUF_SECS)
             maxsecs_per_io = DSKBUF_SECS;
         use_tmpbuf = TRUE;
     }
-#endif
 
     while (count > 0)
     {

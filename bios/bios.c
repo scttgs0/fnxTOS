@@ -59,7 +59,6 @@
 #include "memory.h"
 #include "nova.h"
 #include "tosvars.h"
-#include "coldfire.h"
 #if WITH_CLI
 #include "../cli/clistub.h"
 #endif
@@ -154,17 +153,8 @@ static void vecs_init(void)
     VEC_LEVEL6 = just_rte;
     VEC_LEVEL7 = just_rte;
 
-#ifdef __mcoldfire__
-    /* On ColdFire, when a zero divide exception occurs, the PC value in the
-     * exception frame points to the offending instruction, not the next one.
-     * If we put a simple rte in the exception handler, this will result in
-     * an endless loop.
-     * New ColdFire programs are supposed to be clean and avoid zero
-     * divides. So we keep the default panic() behaviour in such case. */
-#else
     /* Original TOS cowardly ignores integer divide by zero. */
     VEC_DIVNULL = just_rte;
-#endif
 
     /* initialise some vectors we really need */
     VEC_GEM = vditrap;
@@ -173,10 +163,6 @@ static void vecs_init(void)
     VEC_LINEA = int_linea;
 
     /* Emulate some instructions unsupported by the processor. */
-#ifdef __mcoldfire__
-    /* On ColdFire, all the unsupported assembler instructions
-     * will be emulated by a specific emulation layer loaded later. */
-#else
     if (longframe) {
         /* On 68010+, "move from sr" called from user mode causes a
          * privilege violation. This instruction must be emulated for
@@ -188,7 +174,7 @@ static void vecs_init(void)
          * compatibility with higher processors. */
         VEC_ILLEGAL = int_illegal;
     }
-#endif
+
 #if CONF_WITH_ADVANCED_CPU
     /* On the 68060, instructions that were implemented in earlier
      * processors but not in the 68060 cause this trap to be taken,
@@ -724,10 +710,6 @@ static void shutdown(void)
 #if DETECT_NATIVE_FEATURES
     nf_shutdown();
 #endif
-
-#ifdef MACHINE_FIREBEE
-    firebee_shutdown();
-#endif
 }
 
 /* Will shutdown() succeed ? */
@@ -738,11 +720,7 @@ BOOL can_shutdown(void)
         return TRUE;
 #endif
 
-#ifdef MACHINE_FIREBEE
-    return TRUE;
-#else
     return FALSE;
-#endif
 }
 
 #endif /* CONF_WITH_SHUTDOWN */
