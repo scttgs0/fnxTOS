@@ -31,7 +31,6 @@
 #include "biosext.h"    /* for cache control routines */
 #include "cookie.h"
 #include "intmath.h"
-#include "lisa.h"
 
 
 /*==== Introduction =======================================================*/
@@ -316,9 +315,6 @@ void flop_hdv_init(void)
 
     /* by default, there is no floppy drive */
     nflops = 0;
-#if defined(MACHINE_LISA)
-    lisa_floppy_init();
-#endif
     flop_init(0);
     flop_init(1);
 
@@ -393,14 +389,6 @@ static void flop_detect_drive(WORD dev)
 
     KDEBUG(("flop_detect_drive(%d)\n",dev));
 
-#ifdef MACHINE_LISA
-    if (lisa_flop_detect_drive(dev)) {
-        flop_add_drive(dev);
-        units[dev].last_access = hz_200;
-    }
-    return;
-#endif
-
 #if CONF_WITH_FDC
     floplock(dev);
 
@@ -448,10 +436,6 @@ LONG flop_mediach(WORD dev)
     int i, unit;
 
     KDEBUG(("flop_mediach(%d)\n",dev));
-
-#if defined(MACHINE_LISA)
-    return lisa_flop_mediach(dev);
-#endif
 
     fi = &finfo[dev];
 
@@ -633,9 +617,6 @@ LONG floppy_rw(WORD rw, UBYTE *buf, WORD cnt, LONG recnr, WORD spt,
 
 void flop_eject(void)
 {
-#ifdef MACHINE_LISA
-    lisa_flop_eject();
-#endif
 }
 
 #endif /* CONF_WITH_EJECT */
@@ -1059,10 +1040,7 @@ static WORD flopio(UBYTE *userbuf, WORD rw, WORD dev,
         /* TODO, maybe media changed ? */
     }
 
-#if defined(MACHINE_LISA)
-    err = lisa_floprw(userbuf, rw, dev, sect, track, side, count);
-    units[dev].last_access = hz_200;
-#elif CONF_WITH_FDC
+#if CONF_WITH_FDC
     floplock(dev);
 
     select(dev, side);

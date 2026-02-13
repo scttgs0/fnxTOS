@@ -34,7 +34,6 @@
 #include "biosext.h"
 #include "bios.h"
 #include "bdosbind.h"
-#include "lisa.h"
 #include "nova.h"
 
 void detect_monitor_change(void);
@@ -616,10 +615,6 @@ void screen_init_mode(void)
 #endif /* CONF_WITH_ATARI_VIDEO */
     MAYBE_UNUSED(get_default_palmode);
 
-#ifdef MACHINE_LISA
-    lisa_screen_init();
-#endif
-
     rez_was_hacked = FALSE; /* initial assumption */
 }
 
@@ -731,9 +726,6 @@ static const struct video_mode vmode_table[] = {
  */
 static ULONG calc_vram_size(void)
 {
-#if defined(MACHINE_LISA)
-    return 32*1024UL;
-#else
     ULONG vram_size;
 
 #if CONF_WITH_VIDEL
@@ -767,7 +759,6 @@ static ULONG calc_vram_size(void)
      * (at least) 768 bytes more than actually needed.
      */
     return (vram_size + 768UL + 255UL) & ~255UL;
-#endif
 }
 
 static void shifter_get_current_mode_info(UWORD *planes, UWORD *hz_rez, UWORD *vt_rez)
@@ -798,13 +789,7 @@ void screen_get_current_mode_info(UWORD *planes, UWORD *hz_rez, UWORD *vt_rez)
 {
     MAYBE_UNUSED(atari_get_current_mode_info);
 
-#if defined(MACHINE_LISA)
-    *planes = 1;
-    *hz_rez = 720;
-    *vt_rez = 364;
-#else
     atari_get_current_mode_info(planes, hz_rez, vt_rez);
-#endif
 }
 
 /*
@@ -1017,9 +1002,7 @@ static WORD atari_setcolor(WORD colorNum, WORD color)
 
 const UBYTE *physbase(void)
 {
-#if defined(MACHINE_LISA)
-    return lisa_physbase();
-#elif CONF_WITH_ATARI_VIDEO
+#if CONF_WITH_ATARI_VIDEO
     return atari_physbase();
 #else
     /* No real physical screen, fall back to Logbase() */
@@ -1034,9 +1017,7 @@ static void setphys(const UBYTE *addr)
 {
     KDEBUG(("setphys(%p)\n", addr));
 
-#if defined(MACHINE_LISA)
-    lisa_setphys(addr);
-#elif CONF_WITH_ATARI_VIDEO
+#if CONF_WITH_ATARI_VIDEO
     atari_setphys(addr);
 #endif
 }

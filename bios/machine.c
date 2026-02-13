@@ -824,8 +824,6 @@ const char * machine_name(void)
     MAYBE_UNUSED(guess_machine_name);
 #ifdef MACHINE_FIREBEE
     return "FireBee";
-#elif defined(MACHINE_LISA)
-    return "Apple Lisa";
 #elif defined(MACHINE_M548X)
     return m548x_machine_name();
 #else

@@ -54,7 +54,6 @@ help:
 	@echo "aranym  $(ROM_ARANYM), optimized for ARAnyM"
 	@echo "firebee $(SREC_FIREBEE), to be flashed on the FireBee"
 	@echo "firebee-prg emutos.prg, a RAM tos for the FireBee"
-	@echo "lisaflop $(EMUTOS_DC42), EmuTOS RAM as Apple Lisa boot floppy"
 	@echo "m548x-dbug $(SREC_M548X_DBUG), EmuTOS-RAM for dBUG on ColdFire Evaluation Boards"
 	@echo "m548x-bas  $(SREC_M548X_BAS), EmuTOS for BaS_gcc on ColdFire Evaluation Boards"
 	@echo "m548x-prg  emutos.prg, a RAM tos for ColdFire Evaluation Boards with BaS_gcc"
@@ -304,7 +303,6 @@ bios_src +=  memory.S processor.S vectors.S aciavecs.S bios.c xbios.c acsi.c \
              mfp.c midi.c mouse.c natfeat.S natfeats.c nvram.c panicasm.S \
              parport.c screen.c serport.c sound.c videl.c vt52.c xhdi.c \
              pmmu030.c 68040_pmmu.S \
-             lisa.c lisa2.S \
              delay.c delayasm.S sd.c memory2.c bootparams.c scsi.c nova.c \
              dsp.c dsp2.S \
              scsidriv.c
@@ -326,7 +324,7 @@ bdos_src = bdosmain.c console.c fsbuf.c fsdir.c fsdrive.c fsfat.c fsglob.c \
 #
 
 util_src = cookie.c doprintf.c intmath.c langs.c memmove.S memset.S miscasm.S \
-           nls.c setjmp.S string.c lisautil.S miscutil.c
+           nls.c setjmp.S string.c miscutil.c
 
 # The functions in the following modules are used by the AES and EmuDesk
 ifeq ($(WITH_AES),1)
@@ -908,32 +906,6 @@ obj/bootsect.o: obj/ramtos.h
 NODEP += mkflop
 mkflop : tools/mkflop.c
 	$(NATIVECC) $< -o $@
-
-#
-# lisaflop
-#
-
-TOCLEAN += *.dc42
-
-EMUTOS_DC42 = emutos.dc42
-LISA_DEFS =
-
-.PHONY: lisaflop
-NODEP += lisaflop
-lisaflop: UNIQUE = $(COUNTRY)
-lisaflop: OPTFLAGS = $(SMALL_OPTFLAGS)
-lisaflop: override DEF += -DTARGET_LISA_FLOPPY $(LISA_DEFS)
-lisaflop:
-	$(MAKE) CPUFLAGS='$(CPUFLAGS)' DEF='$(DEF)' OPTFLAGS='$(OPTFLAGS)' UNIQUE=$(UNIQUE) EMUTOS_DC42=$(EMUTOS_DC42) $(EMUTOS_DC42)
-	@printf "$(LOCALCONFINFO)"
-
-$(EMUTOS_DC42): lisaboot.img emutos.img mkrom
-	./mkrom lisa-boot-floppy lisaboot.img emutos.img $@
-
-lisaboot.img: obj/lisaboot.o obj/lisautil.o obj/bootram.o
-	$(LD) $+ $(PCREL_LDFLAGS) -o $@
-
-obj/lisaboot.o: obj/ramtos.h
 
 #
 # localisation support: create bios/ctables.h include/i18nconf.h

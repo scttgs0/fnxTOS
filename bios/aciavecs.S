@@ -549,7 +549,7 @@ _call_mousevec:
         rts
 
 
-#if CONF_WITH_FLEXCAN || CONF_SERIAL_IKBD || defined(MACHINE_LISA)
+#if CONF_WITH_FLEXCAN || CONF_SERIAL_IKBD
 
 /******************************************************************************/
 /* Call ikbdraw from C                                                        */
@@ -561,4 +561,4 @@ _call_ikbdraw:
         move.b  5(sp),d0                // raw IKBD byte
         jra     ikbdraw
 
-#endif /* CONF_WITH_FLEXCAN || CONF_SERIAL_IKBD || defined(MACHINE_LISA) */
+#endif /* CONF_WITH_FLEXCAN || CONF_SERIAL_IKBD */

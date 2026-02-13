@@ -59,7 +59,6 @@
 #include "memory.h"
 #include "nova.h"
 #include "tosvars.h"
-#include "lisa.h"
 #include "coldfire.h"
 #if WITH_CLI
 #include "../cli/clistub.h"
@@ -728,8 +727,6 @@ static void shutdown(void)
 
 #ifdef MACHINE_FIREBEE
     firebee_shutdown();
-#elif defined(MACHINE_LISA)
-    lisa_shutdown();
 #endif
 }
 
@@ -742,8 +739,6 @@ BOOL can_shutdown(void)
 #endif
 
 #ifdef MACHINE_FIREBEE
-    return TRUE;
-#elif defined(MACHINE_LISA)
     return TRUE;
 #else
     return FALSE;

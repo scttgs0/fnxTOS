@@ -31,7 +31,6 @@
 #include "delay.h"
 #include "bios.h"
 #include "../bdos/bdosstub.h"
-#include "lisa.h"
 #include "disk.h"
 #include "acsi.h"
 
@@ -1263,12 +1262,6 @@ LONG gettime(void)
     {
         /* Dummy case for conditional compilation */
     }
-#ifdef MACHINE_LISA
-    else if (TRUE)
-    {
-        return lisa_getdt();
-    }
-#endif /* MACHINE_LISA */
 #if CONF_WITH_NVRAM
     else if (has_nvram)
     {

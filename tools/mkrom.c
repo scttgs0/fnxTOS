@@ -33,9 +33,7 @@ typedef enum
     CMD_NONE = 0,
     CMD_PAD,
     CMD_PAK3,
-    CMD_STC,
-    CMD_LISA_BOOT_FLOPPY,
-    CMD_LISA_DATA_FLOPPY
+    CMD_STC
 } CMD_TYPE;
 
 /* Global variables */
@@ -549,123 +547,6 @@ static int write_tags(FILE* file, const char* filename,
     return 1;
 }
 
-/* Apple Lisa boot floppy. Single sided, GCR format. */
-static int cmd_lisa_boot_floppy(FILE* bootfile, const char* bootfilename,
-                                FILE* ramtosfile, const char* ramtosfilename,
-                                FILE* outfile, const char* outfilename)
-{
-    int ret; /* boolean return value: 0 == error, 1 == OK */
-    size_t written; /* Number of bytes written this time */
-    struct dc42_header header;
-    size_t bootblock_size = 512;
-    size_t floppy_size = 400 * 1024;
-    size_t total_sectors = floppy_size / 512;
-    size_t tag_size = 12 * total_sectors;
-    size_t max_ramtos_size = floppy_size - bootblock_size;
-    size_t boot_size;
-    size_t ramtos_size;
-    size_t free_size;
-    size_t used_sectors;
-    uint32_t checksum;
-    uint32_t big_endian_long;
-    int err; /* Seek error */
-    size_t nwrite;
-
-    printf("# Padding %s and %s to Lisa boot floppy into %s\n", bootfilename, ramtosfilename, outfilename);
-
-    /* Set up the Disk Copy 4.2 header */
-    memset(&header, 0, sizeof header);
-    /*pascal_strncpy(header.pascal_name, sizeof header.pascal_name, "-not a Macintosh disk-");*/
-    pascal_strncpy(header.pascal_name, sizeof header.pascal_name, "EmuTOS for Lisa");
-    write_big_endian_long(&header.data_size, floppy_size);
-    write_big_endian_long(&header.tag_size, tag_size);
-    header.encoding = DC42_ENCODING_GCR_SSDD;
-    header.format = DC42_FORMAT_MAC400K;
-    write_big_endian_short(&header.magic, DC42_MAGIC);
-
-    /* Write the header */
-    written = fwrite(&header, 1, sizeof header, outfile);
-    if (written != sizeof header)
-    {
-        fprintf(stderr, "%s: %s: %s\n", g_argv0, outfilename, strerror(errno));
-        return 0;
-    }
-
-    /* Append and pad boot */
-    ret = append_and_pad(bootfile, bootfilename, outfile, outfilename, bootblock_size, &boot_size);
-    if (!ret)
-        return ret;
-
-    /* Append and pad ramtos */
-    ret = append_and_pad(ramtosfile, ramtosfilename, outfile, outfilename, max_ramtos_size, &ramtos_size);
-    if (!ret)
-        return ret;
-    free_size = max_ramtos_size - ramtos_size;
-    used_sectors = (bootblock_size + ramtos_size + 511) / 512;
-
-    /* Append tags */
-    ret = write_tags(outfile, outfilename, total_sectors, used_sectors);
-    if (!ret)
-        return ret;
-
-    /* Seek to the ramtos size location (must match lisaboot.S ramtos_size) */
-    err = fseek(outfile, sizeof header + 2, SEEK_SET);
-    if (err != 0)
-    {
-        fprintf(stderr, "%s: %s: %s\n", g_argv0, outfilename, strerror(errno));
-        return 0;
-    }
-
-    /* Write the ramtos size */
-    write_big_endian_long(&big_endian_long, ramtos_size);
-    nwrite = fwrite(&big_endian_long, 1, sizeof big_endian_long, outfile);
-    if (nwrite != sizeof big_endian_long)
-    {
-        fprintf(stderr, "%s: %s: %s\n", g_argv0, outfilename, strerror(errno));
-        return 0;
-    }
-
-    /* Rewind to the start of data */
-    err = fseek(outfile, sizeof header, SEEK_SET);
-    if (err != 0)
-    {
-        fprintf(stderr, "%s: %s: %s\n", g_argv0, outfilename, strerror(errno));
-        return 0;
-    }
-
-    /* Compute the data checksum */
-    ret = compute_dc42_checksum(outfile, outfilename, floppy_size, &checksum, 0);
-    if (!ret)
-        return ret;
-    write_big_endian_long(&header.data_checksum, checksum);
-
-    /* Compute the tag checksum */
-    ret = compute_dc42_checksum(outfile, outfilename, tag_size, &checksum, 1);
-    if (!ret)
-        return ret;
-    write_big_endian_long(&header.tag_checksum, checksum);
-
-    /* Seek to the header location again */
-    err = fseek(outfile, 0, SEEK_SET);
-    if (err != 0)
-    {
-        fprintf(stderr, "%s: %s: %s\n", g_argv0, outfilename, strerror(errno));
-        return 0;
-    }
-
-    /* Write the header a second time with the checksums */
-    nwrite = fwrite(&header, 1, sizeof header, outfile);
-    if (nwrite != sizeof header)
-    {
-        fprintf(stderr, "%s: %s: %s\n", g_argv0, outfilename, strerror(errno));
-        return 0;
-    }
-
-    printf("# %s done (%lu bytes free)\n", outfilename, (unsigned long)free_size);
-
-    return 1;
-}
-
 /* Write tags filled with zero */
 static int write_zero_tags(FILE* file, const char* filename,
                            size_t total_sectors)
@@ -681,103 +562,6 @@ static int write_zero_tags(FILE* file, const char* filename,
         if (!ret)
             return ret;
     }
-
-    return 1;
-}
-
-/* Convert an ST floppy image to an Apple Lisa floppy image. Must be 400 KB */
-static int cmd_lisa_data_floppy(FILE* infile, const char* infilename,
-                                FILE* outfile, const char* outfilename)
-{
-    int ret; /* boolean return value: 0 == error, 1 == OK */
-    size_t written; /* Number of bytes written this time */
-    struct dc42_header header;
-    size_t floppy_size = 400 * 1024;
-    size_t total_sectors = floppy_size / 512;
-    size_t tag_size = 12 * total_sectors;
-    uint32_t checksum;
-    int err; /* Seek error */
-    size_t nwrite;
-    size_t source_size;
-
-    printf("# Converting %s to Lisa data floppy into %s\n", infilename, outfilename);
-
-    /* Get the input file size */
-    source_size = get_file_size(infile, infilename);
-    if (source_size == SIZE_ERROR)
-        return 0;
-
-    /* Check input file */
-    if (source_size != floppy_size)
-    {
-        fprintf(stderr, "%s: %s has wrong size (%lu bytes), must be exactly %lu bytes\n", g_argv0, infilename, (unsigned long)source_size, (unsigned long)floppy_size);
-        return 0;
-    }
-
-    /* Set up the Disk Copy 4.2 header */
-    memset(&header, 0, sizeof header);
-    pascal_strncpy(header.pascal_name, sizeof header.pascal_name, "-not a Macintosh disk-");
-    write_big_endian_long(&header.data_size, floppy_size);
-    write_big_endian_long(&header.tag_size, tag_size);
-    header.encoding = DC42_ENCODING_GCR_SSDD;
-    header.format = DC42_FORMAT_MAC400K;
-    write_big_endian_short(&header.magic, DC42_MAGIC);
-
-    /* Write the header */
-    written = fwrite(&header, 1, sizeof header, outfile);
-    if (written != sizeof header)
-    {
-        fprintf(stderr, "%s: %s: %s\n", g_argv0, outfilename, strerror(errno));
-        return 0;
-    }
-
-    /* Copy the input file */
-    ret = copy_stream(infile, infilename, outfile, outfilename, floppy_size);
-    if (!ret)
-        return ret;
-
-    /* Append tags filled with zeros */
-    ret = write_zero_tags(outfile, outfilename, total_sectors);
-    if (!ret)
-        return ret;
-
-    /* Rewind to the start of data */
-    err = fseek(outfile, sizeof header, SEEK_SET);
-    if (err != 0)
-    {
-        fprintf(stderr, "%s: %s: %s\n", g_argv0, outfilename, strerror(errno));
-        return 0;
-    }
-
-    /* Compute the data checksum */
-    ret = compute_dc42_checksum(outfile, outfilename, floppy_size, &checksum, 0);
-    if (!ret)
-        return ret;
-    write_big_endian_long(&header.data_checksum, checksum);
-
-    /* Compute the tag checksum */
-    ret = compute_dc42_checksum(outfile, outfilename, tag_size, &checksum, 1);
-    if (!ret)
-        return ret;
-    write_big_endian_long(&header.tag_checksum, checksum);
-
-    /* Seek to the header location again */
-    err = fseek(outfile, 0, SEEK_SET);
-    if (err != 0)
-    {
-        fprintf(stderr, "%s: %s: %s\n", g_argv0, outfilename, strerror(errno));
-        return 0;
-    }
-
-    /* Write the header a second time with the checksums */
-    nwrite = fwrite(&header, 1, sizeof header, outfile);
-    if (nwrite != sizeof header)
-    {
-        fprintf(stderr, "%s: %s: %s\n", g_argv0, outfilename, strerror(errno));
-        return 0;
-    }
-
-    printf("# %s done\n", outfilename);
 
     return 1;
 }
@@ -822,21 +606,6 @@ int main(int argc, char* argv[])
         infilename = argv[2];
         outfilename = argv[3];
     }
-    else if (argc == 5 && !strcmp(argv[1], "lisa-boot-floppy"))
-    {
-        op = CMD_LISA_BOOT_FLOPPY;
-        bootfilename = argv[2];
-        infilename = argv[3];
-        outfilename = argv[4];
-        outmode = "w+b"; /* Computing the checksum requires read/write */
-    }
-    else if (argc == 4 && !strcmp(argv[1], "lisa-data-floppy"))
-    {
-        op = CMD_LISA_DATA_FLOPPY;
-        infilename = argv[2];
-        outfilename = argv[3];
-        outmode = "w+b"; /* Computing the checksum requires read/write */
-    }
     else
     {
         fprintf(stderr, "usage:\n");
@@ -845,12 +614,6 @@ int main(int argc, char* argv[])
         fprintf(stderr, "\n");
         fprintf(stderr, "  # Steem Engine cartridge image\n");
         fprintf(stderr, "  %s stc <source.img> <destination.stc>\n", g_argv0);
-        fprintf(stderr, "\n");
-        fprintf(stderr, "  # Apple Lisa boot floppy\n");
-        fprintf(stderr, "  %s lisa-boot-floppy <bootfile.img> <source.img> <destination.dc42>\n", g_argv0);
-        fprintf(stderr, "\n");
-        fprintf(stderr, "  # Apple Lisa data floppy from Atari 400 KB floppy (1 side, 80 tracks, 10 sectors)\n");
-        fprintf(stderr, "  %s lisa-data-floppy <source.st> <destination.dc42>\n", g_argv0);
         fprintf(stderr, "\n");
         fprintf(stderr, "  # PAK/3 image\n");
         fprintf(stderr, "  %s pak3 <source.img> <destination.img>\n", g_argv0);
@@ -896,14 +659,6 @@ int main(int argc, char* argv[])
 
         case CMD_STC:
             ret = cmd_stc(infile, infilename, outfile, outfilename);
-        break;
-
-        case CMD_LISA_BOOT_FLOPPY:
-            ret = cmd_lisa_boot_floppy(bootfile, bootfilename, infile, infilename, outfile, outfilename);
-        break;
-
-        case CMD_LISA_DATA_FLOPPY:
-            ret = cmd_lisa_data_floppy(infile, infilename, outfile, outfilename);
         break;
 
         default:

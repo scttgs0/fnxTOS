@@ -33,7 +33,7 @@
 /*
  * Determine if this EmuTOS is built for ROM or RAM
  */
-#if defined(TARGET_PRG) || defined(TARGET_FLOPPY) || defined(TARGET_LISA_FLOPPY)
+#if defined(TARGET_PRG) || defined(TARGET_FLOPPY)
 #  define EMUTOS_LIVES_IN_RAM 1
 # else
 #  define EMUTOS_LIVES_IN_RAM 0
@@ -559,38 +559,6 @@
 #ifdef TARGET_FLOPPY
 # ifndef MAX_VERTICES
 #  define MAX_VERTICES 512
-# endif
-#endif
-
-/*
- * Defaults for the Apple Lisa floppy target
- */
-#ifdef TARGET_LISA_FLOPPY
-# define MACHINE_LISA
-#endif
-
-/*
- * Defaults for the Apple Lisa machine
- */
-#ifdef MACHINE_LISA
-# ifndef CONF_ATARI_HARDWARE
-#  define CONF_ATARI_HARDWARE 0
-# endif
-# ifndef CONF_WITH_ADVANCED_CPU
-#  define CONF_WITH_ADVANCED_CPU 0
-# endif
-# ifndef CONF_WITH_APOLLO_68080
-#  define CONF_WITH_APOLLO_68080 0
-# endif
-# ifndef CONF_WITH_CACHE_CONTROL
-#  define CONF_WITH_CACHE_CONTROL 0
-# endif
-# ifndef CONF_WITH_EJECT
-#  define CONF_WITH_EJECT 1
-# endif
-# ifndef USE_STOP_INSN_TO_FREE_HOST_CPU
-   /* This makes LisaEm timings completely inaccurate, so disable it */
-#  define USE_STOP_INSN_TO_FREE_HOST_CPU 0
 # endif
 #endif
 
@@ -1980,7 +1948,7 @@
  * It tries to power off the machine, if possible.
  */
 #ifndef CONF_WITH_SHUTDOWN
-# if DETECT_NATIVE_FEATURES || defined(MACHINE_FIREBEE) || defined(MACHINE_LISA)
+# if DETECT_NATIVE_FEATURES || defined(MACHINE_FIREBEE)
 #  define CONF_WITH_SHUTDOWN 1
 # else
 #  define CONF_WITH_SHUTDOWN 0

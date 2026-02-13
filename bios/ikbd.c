@@ -37,7 +37,6 @@
 #include "delay.h"
 #include "bios.h"
 #include "coldfire.h"
-#include "lisa.h"
 
 
 /* forward declarations */
@@ -1054,10 +1053,6 @@ void kbd_init(void)
 #if CONF_WITH_FLEXCAN
     /* On ColdFire machines, an Eiffel adapter may be present on the CAN bus. */
     coldfire_init_flexcan();
-#endif
-
-#ifdef MACHINE_LISA
-    lisa_kbd_init();
 #endif
 
     /* initialize the IKBD */
