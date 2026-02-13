@@ -59,7 +59,6 @@
 #include "memory.h"
 #include "nova.h"
 #include "tosvars.h"
-#include "amiga.h"
 #include "lisa.h"
 #include "coldfire.h"
 #if WITH_CLI
@@ -225,11 +224,6 @@ static void bios_init(void)
     stonx_kprintf_init();
 #endif
 
-#if CONF_WITH_UAE
-    KDEBUG(("amiga_uae_init()\n"));
-    amiga_uae_init();
-#endif
-
     /* Initialize the processor */
     KDEBUG(("processor_init()\n"));
     processor_init();   /* Set CPU type, longframe and FPU type */
@@ -254,14 +248,6 @@ static void bios_init(void)
     /* Initialize the BIOS memory management */
     KDEBUG(("bmem_init()\n"));
     bmem_init();
-
-#if defined(MACHINE_AMIGA)
-    /* Detect and initialize Zorro II/III expansion boards.
-     * This must be done after is_bus32 and bmem_init().
-     * Alt-RAM found on those boards will be added later in altram_init().
-     */
-    amiga_autoconfig();
-#endif
 
 #if CONF_WITH_68040_PMMU
     /*
@@ -742,8 +728,6 @@ static void shutdown(void)
 
 #ifdef MACHINE_FIREBEE
     firebee_shutdown();
-#elif defined(MACHINE_AMIGA)
-    amiga_shutdown();
 #elif defined(MACHINE_LISA)
     lisa_shutdown();
 #endif
@@ -759,8 +743,6 @@ BOOL can_shutdown(void)
 
 #ifdef MACHINE_FIREBEE
     return TRUE;
-#elif defined(MACHINE_AMIGA)
-    return amiga_can_shutdown();
 #elif defined(MACHINE_LISA)
     return TRUE;
 #else

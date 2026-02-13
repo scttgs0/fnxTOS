@@ -46,7 +46,6 @@
         .extern _shifty
         .extern _run
         .extern _ui_mupb
-        .extern amiga_startup
 
 // ===========================================================================
 // ==== TEXT segment (TOS image) =============================================
@@ -56,18 +55,6 @@
 
 #if DIAGNOSTIC_CARTRIDGE
     .dc.l   cart_magic
-#endif
-
-#if defined(MACHINE_AMIGA) && !EMUTOS_LIVES_IN_RAM
-    .dc.w   0x1111      // 256 KB ROM
-    .dc.w   0x4ef9      // jmp
-    .dc.l   amiga_main  // pc at power on or after physical reset
-
-    /* Some softkick programs (ex: BlizKick) requires the entry point to be here */
-    .org    0xd0
-    reset
-amiga_main:
-    // fall through os_entry
 #endif
 
 /*
@@ -151,17 +138,7 @@ _main:
 # define OSXH_FALCON    0
 # define OSXH_FIREBEE   0
 # define OSXH_M548X     0
-# define OSXH_AMIGA     0
 # define OSXH_ARANYM    (1<<8)
-#elif defined(MACHINE_AMIGA)
-# define OSXH_ST        0
-# define OSXH_STE       0
-# define OSXH_TT        0
-# define OSXH_FALCON    0
-# define OSXH_FIREBEE   0
-# define OSXH_M548X     0
-# define OSXH_AMIGA     (1<<6)
-# define OSXH_ARANYM    0
 #elif defined(MACHINE_M548X)
 # define OSXH_ST        0
 # define OSXH_STE       0
@@ -169,7 +146,6 @@ _main:
 # define OSXH_FALCON    0
 # define OSXH_FIREBEE   0
 # define OSXH_M548X     (1<<5)
-# define OSXH_AMIGA     0
 # define OSXH_ARANYM    0
 #elif defined(MACHINE_FIREBEE)
 # define OSXH_ST        0
@@ -178,12 +154,10 @@ _main:
 # define OSXH_FALCON    0
 # define OSXH_FIREBEE   (1<<4)
 # define OSXH_M548X     0
-# define OSXH_AMIGA     0
 # define OSXH_ARANYM    0
 #else
 # define OSXH_FIREBEE   0
 # define OSXH_M548X     0
-# define OSXH_AMIGA     0
 # ifndef __mcoldfire__
 #  define OSXH_ST       (1<<0)
 # else
@@ -210,7 +184,7 @@ _main:
 #  define OSXH_ARANYM   0
 # endif
 #endif
-#define OSXH_MACHINES   (OSXH_ST+OSXH_STE+OSXH_TT+OSXH_FALCON+OSXH_FIREBEE+OSXH_M548X+OSXH_ARANYM+OSXH_AMIGA)
+#define OSXH_MACHINES   (OSXH_ST+OSXH_STE+OSXH_TT+OSXH_FALCON+OSXH_FIREBEE+OSXH_M548X+OSXH_ARANYM)
 
 /*
  *  Processor flags in extended OS header
@@ -348,16 +322,6 @@ _realmain:
         move.w  #0x0000,0xffff8606.w
 #endif
 
-#ifdef MACHINE_AMIGA
-        // It is *mandatory* to call this as soon as possible,
-        // to do early initialization of the Amiga hardware.
-        // On cold boot, address 0 points to the ROM.
-        // After that, it will point to the RAM, as expected.
-        lea     amiga_startup_ret,a6
-        jmp     amiga_startup
-amiga_startup_ret:
-#endif
-
 #if (!EMUTOS_LIVES_IN_RAM) && (CONF_WITH_ST_MMU)
         // Some ST MMUs power up with an invalid memory bank configuration,
         // inhibiting any RAM access. However, EmuTOS needs at least a
@@ -408,7 +372,7 @@ valid_st_mmu_config:
 vbr_ok:
 #endif
 
-#if CONF_WITH_RESET && !defined(MACHINE_AMIGA)
+#if CONF_WITH_RESET
         // now, reset the external hardware
 
         // we don't need to call reset on Amiga
@@ -430,7 +394,7 @@ not_falcon:
         // we are not on Falcon, a simple reset is enough
         reset
 main_after_reset_instruction:
-#endif /* CONF_WITH_RESET && !defined(MACHINE_AMIGA) */
+#endif /* CONF_WITH_RESET */
 
 #ifdef __mcoldfire__
         lea     coldfire_startup_ret,a6

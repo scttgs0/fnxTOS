@@ -54,12 +54,6 @@ help:
 	@echo "aranym  $(ROM_ARANYM), optimized for ARAnyM"
 	@echo "firebee $(SREC_FIREBEE), to be flashed on the FireBee"
 	@echo "firebee-prg emutos.prg, a RAM tos for the FireBee"
-	@echo "amiga   $(ROM_AMIGA), EmuTOS ROM for Amiga hardware"
-	@echo "amigavampire $(VAMPIRE_ROM_AMIGA), EmuTOS ROM for Amiga optimized for Vampire V2"
-	@echo "v4sa    $(V4_ROM_AMIGA), EmuTOS ROM for Amiga Vampire V4 Standalone"
-	@echo "amigakd $(AMIGA_KICKDISK), EmuTOS as Amiga 1000 Kickstart disk"
-	@echo "amigaflop $(EMUTOS_ADF), EmuTOS RAM as Amiga boot floppy"
-	@echo "amigaflopvampire $(EMUTOS_VAMPIRE_ADF), EmuTOS RAM as Amiga boot floppy optimized for Vampire V2"
 	@echo "lisaflop $(EMUTOS_DC42), EmuTOS RAM as Apple Lisa boot floppy"
 	@echo "m548x-dbug $(SREC_M548X_DBUG), EmuTOS-RAM for dBUG on ColdFire Evaluation Boards"
 	@echo "m548x-bas  $(SREC_M548X_BAS), EmuTOS for BaS_gcc on ColdFire Evaluation Boards"
@@ -310,7 +304,6 @@ bios_src +=  memory.S processor.S vectors.S aciavecs.S bios.c xbios.c acsi.c \
              mfp.c midi.c mouse.c natfeat.S natfeats.c nvram.c panicasm.S \
              parport.c screen.c serport.c sound.c videl.c vt52.c xhdi.c \
              pmmu030.c 68040_pmmu.S \
-             amiga.c amiga2.S spi_vamp.c \
              lisa.c lisa2.S \
              delay.c delayasm.S sd.c memory2.c bootparams.c scsi.c nova.c \
              dsp.c dsp2.S \
@@ -639,66 +632,6 @@ cart:
 	@printf "$(LOCALCONFINFO)"
 
 #
-# Amiga Image
-#
-
-TOCLEAN += *.rom
-
-ROM_AMIGA = emutos-amiga.rom
-AMIGA_DEFS =
-
-.PHONY: amiga
-NODEP += amiga
-amiga: UNIQUE = $(COUNTRY)
-amiga: OPTFLAGS = $(SMALL_OPTFLAGS)
-amiga: override DEF += -DTARGET_AMIGA_ROM $(AMIGA_DEFS)
-amiga:
-	@echo "# Building Amiga EmuTOS into $(ROM_AMIGA)"
-	$(MAKE) CPUFLAGS='$(CPUFLAGS)' DEF='$(DEF)' OPTFLAGS='$(OPTFLAGS)' UNIQUE=$(UNIQUE) ROM_AMIGA=$(ROM_AMIGA) $(ROM_AMIGA) REF_OS=TOS206
-	@printf "$(LOCALCONFINFO)"
-
-$(ROM_AMIGA): emutos.img mkrom
-	./mkrom amiga $< $(ROM_AMIGA)
-
-# Special Amiga ROM optimized for Vampire V2
-
-VAMPIRE_CPUFLAGS = -m68040
-VAMPIRE_COMMON_DEF = -DCONF_WITH_VAMPIRE_SPI=1 -DCONF_WITH_SDMMC=1
-VAMPIRE_DEF = -DSTATIC_ALT_RAM_ADDRESS=0x08000000 -DSTATIC_ALT_RAM_SIZE=126UL*1024*1024
-VAMPIRE_ROM_AMIGA = emutos-vampire.rom
-
-.PHONY: amigavampire
-NODEP += amigavampire
-amigavampire: CPUFLAGS = $(VAMPIRE_CPUFLAGS)
-amigavampire: override DEF += $(VAMPIRE_COMMON_DEF) $(VAMPIRE_DEF)
-amigavampire: ROM_AMIGA = $(VAMPIRE_ROM_AMIGA)
-amigavampire: amiga
-
-# Special Amiga ROM optimized for Vampire V4 Standalone
-V4_DEF = -DSTATIC_ALT_RAM_ADDRESS=0x01000000 -DSTATIC_ALT_RAM_SIZE=496UL*1024*1024
-V4_ROM_AMIGA = emutos-vampire-v4sa.rom
-
-.PHONY: v4sa
-NODEP += v4sa
-v4sa: CPUFLAGS = $(VAMPIRE_CPUFLAGS)
-v4sa: override DEF += $(VAMPIRE_COMMON_DEF) $(V4_DEF)
-v4sa: ROM_AMIGA = $(V4_ROM_AMIGA)
-v4sa: amiga
-
-#
-# Amiga Kickstart disk image for Amiga 1000
-#
-
-TOCLEAN += *.adf
-
-AMIGA_KICKDISK = emutos-kickdisk.adf
-
-.PHONY: amigakd
-NODEP += amigakd
-amigakd: amiga
-	./mkrom amiga-kickdisk $(ROM_AMIGA) $(AMIGA_KICKDISK)
-
-#
 # ColdFire images
 #
 
@@ -975,45 +908,6 @@ obj/bootsect.o: obj/ramtos.h
 NODEP += mkflop
 mkflop : tools/mkflop.c
 	$(NATIVECC) $< -o $@
-
-#
-# amigaflop
-#
-
-EMUTOS_ADF = emutos.adf
-
-.PHONY: amigaflop
-NODEP += amigaflop
-amigaflop: UNIQUE = $(COUNTRY)
-amigaflop: OPTFLAGS = $(SMALL_OPTFLAGS)
-amigaflop: override DEF += -DTARGET_AMIGA_FLOPPY $(AMIGA_DEFS)
-amigaflop:
-	$(MAKE) CPUFLAGS='$(CPUFLAGS)' DEF='$(DEF)' OPTFLAGS='$(OPTFLAGS)' UNIQUE=$(UNIQUE) EMUTOS_ADF=$(EMUTOS_ADF) $(EMUTOS_ADF)
-	@printf "$(LOCALCONFINFO)"
-
-EMUTOS_VAMPIRE_ADF = emutos-vampire.adf
-
-.PHONY: amigaflopvampire
-NODEP += amigaflopvampire
-amigaflopvampire: override DEF += $(VAMPIRE_COMMON_DEF) -DSTATIC_ALT_RAM_ADDRESS=0x08000000 $(AMIGA_DEFS)
-amigaflopvampire: CPUFLAGS = $(VAMPIRE_CPUFLAGS)
-amigaflopvampire: EMUTOS_ADF = $(EMUTOS_VAMPIRE_ADF)
-amigaflopvampire: amigaflop
-
-# Convenient target to test amigaflopvampire on WinUAE
-.PHONY: amigaflopwinuae
-NODEP += amigaflopwinuae
-amigaflopwinuae: override DEF += -DSTATIC_ALT_RAM_ADDRESS=0x40000000 $(AMIGA_DEFS)
-amigaflopwinuae: CPUFLAGS = $(VAMPIRE_CPUFLAGS)
-amigaflopwinuae: amigaflop
-
-$(EMUTOS_ADF): amigaboot.img emutos.img mkrom
-	./mkrom amiga-floppy amigaboot.img emutos.img $@
-
-amigaboot.img: obj/amigaboot.o obj/bootram.o
-	$(LD) $+ $(PCREL_LDFLAGS) -o $@
-
-obj/amigaboot.o: obj/ramtos.h
 
 #
 # lisaflop

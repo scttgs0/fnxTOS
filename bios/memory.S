@@ -30,7 +30,6 @@
         .extern _warm_magic
         .extern _stktop
         .extern _meminit_flags
-        .extern amiga_memconf
 
         // functions for detecting hardware
         .extern _check_read_byte
@@ -203,11 +202,6 @@ memconf:
         // memconf for hardcoded ST-RAM size
         moveq   #0, d6                  // fake memctrl
         move.l  #CONF_STRAM_SIZE, d5    // _phystop
-        // Fall into memconf_done
-#elif defined(MACHINE_AMIGA)
-        lea     amiga_memconf_ret(pc),a6
-        jmp     amiga_memconf
-amiga_memconf_ret:
         // Fall into memconf_done
 #else /* ST/TT/Falcon memconf */
 

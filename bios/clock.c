@@ -31,7 +31,6 @@
 #include "delay.h"
 #include "bios.h"
 #include "../bdos/bdosstub.h"
-#include "amiga.h"
 #include "lisa.h"
 #include "disk.h"
 #include "acsi.h"
@@ -1151,12 +1150,7 @@ void clock_init(void)
     {
         /* Dummy case for conditional compilation */
     }
-#ifdef MACHINE_AMIGA
-    else if (TRUE)
-    {
-        return amiga_clock_init();
-    }
-#endif /* MACHINE_AMIGA */
+
 #if CONF_WITH_NVRAM
     else if (has_nvram)
     {
@@ -1269,12 +1263,6 @@ LONG gettime(void)
     {
         /* Dummy case for conditional compilation */
     }
-#ifdef MACHINE_AMIGA
-    else if (TRUE)
-    {
-        return amiga_getdt();
-    }
-#endif /* MACHINE_AMIGA */
 #ifdef MACHINE_LISA
     else if (TRUE)
     {

@@ -26,7 +26,6 @@
 #include "tosvars.h"
 #include "vectors.h"
 #include "coldfire.h"
-#include "amiga.h"
 #include "ikbd.h"
 
 /*
@@ -1056,10 +1055,6 @@ void init_serport(void)
 #if BCONMAP_AVAILABLE
     memcpy(&iorec_dummy,&iorec_init,sizeof(EXT_IOREC));
     init_bconmap();
-#endif
-
-#ifdef MACHINE_AMIGA
-    amiga_rs232_init();
 #endif
 
 #if !CONF_SERIAL_IKBD

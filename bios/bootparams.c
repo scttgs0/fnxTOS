@@ -23,10 +23,4 @@
  * value without trying to read the actual memory.
  */
 
-#ifdef MACHINE_AMIGA
-
-const ALTRAM_REGION altram_regions[MAX_ALTRAM_REGIONS] = { { NULL, 0 } };
-
-#endif /* MACHINE_AMIGA */
-
 #endif /* EMUTOS_LIVES_IN_RAM */

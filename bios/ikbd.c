@@ -37,7 +37,6 @@
 #include "delay.h"
 #include "bios.h"
 #include "coldfire.h"
-#include "amiga.h"
 #include "lisa.h"
 
 
@@ -90,13 +89,8 @@ static WORD convert_scancode(UBYTE *scancodeptr);
 #define KEY_LTARROW 0x4b
 #define KEY_RTARROW 0x4d
 #define KEY_DNARROW 0x50
-#ifdef MACHINE_AMIGA
-#define KEY_EMULATE_LEFT_BUTTON     KEY_DELETE
-#define KEY_EMULATE_RIGHT_BUTTON    KEY_HELP
-#else
 #define KEY_EMULATE_LEFT_BUTTON     KEY_INSERT
 #define KEY_EMULATE_RIGHT_BUTTON    KEY_HOME
-#endif
 
 #define MOUSE_REL_POS_REPORT    0xf8    /* values for mouse_packet[0] */
 #define RIGHT_BUTTON_DOWN       0x01    /* these values are OR'ed in */
@@ -796,14 +790,6 @@ void kbd_int(UBYTE scancode)
                 goto push_value;
             }
             break;
-#ifdef MACHINE_AMIGA
-        case KEY_CAPS:
-            if (conterm & 1) {
-                keyclick(KEY_CAPS);
-            }
-            shifty &= ~MODE_CAPS;       /* clear bit */
-            break;
-#endif
         case KEY_HOME:
             shifty &= ~MODE_HOME;       /* clear bit */
             kb_ticks = 0;               /* stop key repeat */
@@ -845,11 +831,7 @@ void kbd_int(UBYTE scancode)
         if (conterm & 1) {
             keyclick(KEY_CAPS);
         }
-#ifdef MACHINE_AMIGA
-        shifty |= MODE_CAPS;    /* set bit */
-#else
         shifty ^= MODE_CAPS;    /* toggle bit */
-#endif
         break;
     default:
         modifier = FALSE;
@@ -963,8 +945,6 @@ void ikbd_writeb(UBYTE b)
     ikbd_acia.data = b;
 #elif CONF_WITH_FLEXCAN
     coldfire_flexcan_ikbd_writeb(b);
-#elif defined(MACHINE_AMIGA)
-    amiga_ikbd_writeb(b);
 #endif
 }
 
@@ -1074,10 +1054,6 @@ void kbd_init(void)
 #if CONF_WITH_FLEXCAN
     /* On ColdFire machines, an Eiffel adapter may be present on the CAN bus. */
     coldfire_init_flexcan();
-#endif
-
-#ifdef MACHINE_AMIGA
-    amiga_kbd_init();
 #endif
 
 #ifdef MACHINE_LISA

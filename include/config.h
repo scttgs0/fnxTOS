@@ -33,7 +33,7 @@
 /*
  * Determine if this EmuTOS is built for ROM or RAM
  */
-#if defined(TARGET_PRG) || defined(TARGET_FLOPPY) || defined(TARGET_AMIGA_FLOPPY) || defined(TARGET_LISA_FLOPPY)
+#if defined(TARGET_PRG) || defined(TARGET_FLOPPY) || defined(TARGET_LISA_FLOPPY)
 #  define EMUTOS_LIVES_IN_RAM 1
 # else
 #  define EMUTOS_LIVES_IN_RAM 0
@@ -559,35 +559,6 @@
 #ifdef TARGET_FLOPPY
 # ifndef MAX_VERTICES
 #  define MAX_VERTICES 512
-# endif
-#endif
-
-/*
- * Defaults for the Amiga ROM target
- */
-#ifdef TARGET_AMIGA_ROM
-# define MACHINE_AMIGA
-#endif
-
-/*
- * Defaults for Amiga floppy targets
- */
-#ifdef TARGET_AMIGA_FLOPPY
-# define MACHINE_AMIGA
-#endif
-
-/*
- * Defaults for the Amiga machine
- */
-#ifdef MACHINE_AMIGA
-# ifndef CONF_ATARI_HARDWARE
-#  define CONF_ATARI_HARDWARE 0
-# endif
-# ifndef CONF_WITH_IDE
-#  define CONF_WITH_IDE 1
-# endif
-# ifndef CONF_WITH_UAE
-#  define CONF_WITH_UAE 1
 # endif
 #endif
 
@@ -1865,14 +1836,6 @@
  ****************************************/
 
 /*
- * Set CONF_WITH_UAE to 1 to enable support for the advanced features of
- * the UAE emulator on the Amiga target
- */
-#ifndef CONF_WITH_UAE
-# define CONF_WITH_UAE 0
-#endif
-
-/*
  * Set this to 1 if your emulator is capable of emulating properly the
  * STOP opcode (used to reduce host CPU burden during loops).  Set to
  * zero for all emulators which do not properly support the STOP opcode.
@@ -2006,7 +1969,7 @@
 
 
 /* Determine if kprintf() is available */
-#if CONF_WITH_UAE || DETECT_NATIVE_FEATURES || STONX_NATIVE_PRINT || CONSOLE_DEBUG_PRINT || RS232_DEBUG_PRINT || SCC_DEBUG_PRINT || COLDFIRE_DEBUG_PRINT || MIDI_DEBUG_PRINT || CARTRIDGE_DEBUG_PRINT
+#if DETECT_NATIVE_FEATURES || STONX_NATIVE_PRINT || CONSOLE_DEBUG_PRINT || RS232_DEBUG_PRINT || SCC_DEBUG_PRINT || COLDFIRE_DEBUG_PRINT || MIDI_DEBUG_PRINT || CARTRIDGE_DEBUG_PRINT
 #  define HAS_KPRINTF 1
 # else
 #  define HAS_KPRINTF 0
@@ -2017,7 +1980,7 @@
  * It tries to power off the machine, if possible.
  */
 #ifndef CONF_WITH_SHUTDOWN
-# if DETECT_NATIVE_FEATURES || defined(MACHINE_FIREBEE) || defined(MACHINE_AMIGA) || defined(MACHINE_LISA)
+# if DETECT_NATIVE_FEATURES || defined(MACHINE_FIREBEE) || defined(MACHINE_LISA)
 #  define CONF_WITH_SHUTDOWN 1
 # else
 #  define CONF_WITH_SHUTDOWN 0
@@ -2223,12 +2186,6 @@
 # endif
 # if CONF_WITH_FLEXCAN
 #  error CONF_WITH_FLEXCAN requires MACHINE_FIREBEE or MACHINE_M548X.
-# endif
-#endif
-
-#ifndef MACHINE_AMIGA
-# if CONF_WITH_UAE
-#  error CONF_WITH_UAE requires MACHINE_AMIGA.
 # endif
 #endif
 

@@ -31,7 +31,6 @@
 #include "biosext.h"    /* for cache control routines */
 #include "cookie.h"
 #include "intmath.h"
-#include "amiga.h"
 #include "lisa.h"
 
 
@@ -317,9 +316,7 @@ void flop_hdv_init(void)
 
     /* by default, there is no floppy drive */
     nflops = 0;
-#ifdef MACHINE_AMIGA
-    amiga_floppy_init();
-#elif defined(MACHINE_LISA)
+#if defined(MACHINE_LISA)
     lisa_floppy_init();
 #endif
     flop_init(0);
@@ -396,14 +393,6 @@ static void flop_detect_drive(WORD dev)
 
     KDEBUG(("flop_detect_drive(%d)\n",dev));
 
-#ifdef MACHINE_AMIGA
-    if (amiga_flop_detect_drive(dev)) {
-        flop_add_drive(dev);
-        units[dev].last_access = hz_200;
-    }
-    return;
-#endif
-
 #ifdef MACHINE_LISA
     if (lisa_flop_detect_drive(dev)) {
         flop_add_drive(dev);
@@ -460,9 +449,7 @@ LONG flop_mediach(WORD dev)
 
     KDEBUG(("flop_mediach(%d)\n",dev));
 
-#ifdef MACHINE_AMIGA
-    return amiga_flop_mediach(dev);
-#elif defined(MACHINE_LISA)
+#if defined(MACHINE_LISA)
     return lisa_flop_mediach(dev);
 #endif
 
@@ -799,11 +786,9 @@ LONG flopver(WORD *buf, LONG filler, WORD dev,
 {
     LONG rc = 0L;
     WORD *bad = buf;
-#if defined(MACHINE_AMIGA) || CONF_WITH_FDC
+#if CONF_WITH_FDC
     WORD i, err;
     UBYTE *diskbuf = (UBYTE *)buf + SECTOR_SIZE;
-#endif
-#if CONF_WITH_FDC
     WORD retry;
     BOOL density_ok;
 #endif
@@ -811,19 +796,7 @@ LONG flopver(WORD *buf, LONG filler, WORD dev,
     if (!IS_VALID_FLOPPY_DEVICE(dev))
         return EUNDEV;  /* unknown disk */
 
-#ifdef MACHINE_AMIGA
-    for (i = 0; i < count; i++, sect++) {
-        err = amiga_floprw(diskbuf, RW_READ, dev, sect, track, side, 1);
-        if (err) {
-            *bad++ = sect ? sect : -1;
-            if ((err != EREADF) && (err != ESECNF))
-                rc = err;
-        }
-    }
-
-    units[dev].last_access = hz_200;
-
-#elif CONF_WITH_FDC
+#if CONF_WITH_FDC
 
 #if CONF_WITH_FRB
     if (!IS_STRAM_POINTER(buf)) {
@@ -1086,10 +1059,7 @@ static WORD flopio(UBYTE *userbuf, WORD rw, WORD dev,
         /* TODO, maybe media changed ? */
     }
 
-#ifdef MACHINE_AMIGA
-    err = amiga_floprw(userbuf, rw, dev, sect, track, side, count);
-    units[dev].last_access = hz_200;
-#elif defined(MACHINE_LISA)
+#if defined(MACHINE_LISA)
     err = lisa_floprw(userbuf, rw, dev, sect, track, side, count);
     units[dev].last_access = hz_200;
 #elif CONF_WITH_FDC

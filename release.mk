@@ -192,58 +192,6 @@ release-firebee:
 	cd $(RELEASE_DIR) && zip -9 -r $(RELEASE_FIREBEE).zip $(RELEASE_FIREBEE)
 	rm -r $(RELEASE_DIR)/$(RELEASE_FIREBEE)
 
-.PHONY: release-amiga-rom
-NODEP += release-amiga-rom
-RELEASE_AMIGA_ROM = emutos-amiga-rom-$(VERSION)
-release-amiga-rom:
-	$(MAKE) clean
-	$(MAKE) amigakd
-	mkdir $(RELEASE_DIR)/$(RELEASE_AMIGA_ROM)
-	cp $(ROM_AMIGA) $(RELEASE_DIR)/$(RELEASE_AMIGA_ROM)
-	cp $(AMIGA_KICKDISK) $(RELEASE_DIR)/$(RELEASE_AMIGA_ROM)
-	$(MAKE) clean
-	$(MAKE) amigavampire
-	cp $(VAMPIRE_ROM_AMIGA) $(RELEASE_DIR)/$(RELEASE_AMIGA_ROM)
-	$(MAKE) clean
-	$(MAKE) v4sa
-	cp $(V4_ROM_AMIGA) $(RELEASE_DIR)/$(RELEASE_AMIGA_ROM)
-	cp desk/icon.def $(RELEASE_DIR)/$(RELEASE_AMIGA_ROM)/emuicon.def
-	cp desk/icon.rsc $(RELEASE_DIR)/$(RELEASE_AMIGA_ROM)/emuicon.rsc
-	cat doc/readme-amiga-rom.txt readme.txt >$(RELEASE_DIR)/$(RELEASE_AMIGA_ROM)/readme.txt
-	mkdir $(RELEASE_DIR)/$(RELEASE_AMIGA_ROM)/doc
-	cp $(DOCFILES) $(RELEASE_DIR)/$(RELEASE_AMIGA_ROM)/doc
-	mkdir $(RELEASE_DIR)/$(RELEASE_AMIGA_ROM)/extras
-	cp $(EXTRAFILES) $(RELEASE_DIR)/$(RELEASE_AMIGA_ROM)/extras
-	cp aes/mform.def $(RELEASE_DIR)/$(RELEASE_AMIGA_ROM)/extras/emucurs.def
-	cp aes/mform.rsc $(RELEASE_DIR)/$(RELEASE_AMIGA_ROM)/extras/emucurs.rsc
-	find $(RELEASE_DIR)/$(RELEASE_AMIGA_ROM) -name '*.txt' -exec unix2dos '{}' ';'
-	cd $(RELEASE_DIR) && zip -9 -r $(RELEASE_AMIGA_ROM).zip $(RELEASE_AMIGA_ROM)
-	rm -r $(RELEASE_DIR)/$(RELEASE_AMIGA_ROM)
-
-.PHONY: release-amiga-floppy
-NODEP += release-amiga-floppy
-RELEASE_AMIGA_FLOPPY = emutos-amiga-floppy-$(VERSION)
-release-amiga-floppy:
-	$(MAKE) clean
-	$(MAKE) amigaflop
-	mkdir $(RELEASE_DIR)/$(RELEASE_AMIGA_FLOPPY)
-	cp $(EMUTOS_ADF) $(RELEASE_DIR)/$(RELEASE_AMIGA_FLOPPY)
-	$(MAKE) clean
-	$(MAKE) amigaflopvampire
-	cp $(EMUTOS_VAMPIRE_ADF) $(RELEASE_DIR)/$(RELEASE_AMIGA_FLOPPY)
-	cp desk/icon.def $(RELEASE_DIR)/$(RELEASE_AMIGA_FLOPPY)/emuicon.def
-	cp desk/icon.rsc $(RELEASE_DIR)/$(RELEASE_AMIGA_FLOPPY)/emuicon.rsc
-	cat doc/readme-amiga-floppy.txt readme.txt >$(RELEASE_DIR)/$(RELEASE_AMIGA_FLOPPY)/readme.txt
-	mkdir $(RELEASE_DIR)/$(RELEASE_AMIGA_FLOPPY)/doc
-	cp $(DOCFILES) $(RELEASE_DIR)/$(RELEASE_AMIGA_FLOPPY)/doc
-	mkdir $(RELEASE_DIR)/$(RELEASE_AMIGA_FLOPPY)/extras
-	cp $(EXTRAFILES) $(RELEASE_DIR)/$(RELEASE_AMIGA_FLOPPY)/extras
-	cp aes/mform.def $(RELEASE_DIR)/$(RELEASE_AMIGA_FLOPPY)/extras/emucurs.def
-	cp aes/mform.rsc $(RELEASE_DIR)/$(RELEASE_AMIGA_FLOPPY)/extras/emucurs.rsc
-	find $(RELEASE_DIR)/$(RELEASE_AMIGA_FLOPPY) -name '*.txt' -exec unix2dos '{}' ';'
-	cd $(RELEASE_DIR) && zip -9 -r $(RELEASE_AMIGA_FLOPPY).zip $(RELEASE_AMIGA_FLOPPY)
-	rm -r $(RELEASE_DIR)/$(RELEASE_AMIGA_FLOPPY)
-
 .PHONY: release-m548x-dbug
 NODEP += release-m548x-dbug
 RELEASE_M548X_DBUG = emutos-m548x-dbug-$(VERSION)
@@ -376,7 +324,7 @@ release-emucon:
 NODEP += release
 release: clean release-clean release-mkdir \
   release-src release-1024k release-512k release-256k release-192k release-cartridge \
-  release-aranym release-firebee release-amiga-rom release-amiga-floppy \
+  release-aranym release-firebee \
   release-m548x-dbug release-m548x-bas release-prg release-prg256 release-floppy \
   release-pak3 release-emucon
 	$(MAKE) clean

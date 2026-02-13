@@ -34,7 +34,6 @@
 #include "biosext.h"
 #include "bios.h"
 #include "bdosbind.h"
-#include "amiga.h"
 #include "lisa.h"
 #include "nova.h"
 
@@ -409,10 +408,6 @@ WORD check_moderez(WORD moderez)
     if (!rez_changeable())
         return 0;
 
-#ifdef MACHINE_AMIGA
-    return amiga_check_moderez(moderez);
-#endif
-
 #if CONF_WITH_VIDEL
     if (has_videl)
         return videl_check_moderez(moderez);
@@ -621,10 +616,6 @@ void screen_init_mode(void)
 #endif /* CONF_WITH_ATARI_VIDEO */
     MAYBE_UNUSED(get_default_palmode);
 
-#ifdef MACHINE_AMIGA
-    amiga_screen_init();
-#endif
-
 #ifdef MACHINE_LISA
     lisa_screen_init();
 #endif
@@ -684,10 +675,6 @@ int rez_changeable(void)
     if (rez_was_hacked)
         return FALSE;
 
-#ifdef MACHINE_AMIGA
-    return TRUE;
-#endif
-
 #if CONF_WITH_VIDEL
     if (has_videl)  /* can't change if real ST monochrome monitor */
         return (VgetMonitor() != MON_MONO);
@@ -744,9 +731,7 @@ static const struct video_mode vmode_table[] = {
  */
 static ULONG calc_vram_size(void)
 {
-#ifdef MACHINE_AMIGA
-    return amiga_initial_vram_size();
-#elif defined(MACHINE_LISA)
+#if defined(MACHINE_LISA)
     return 32*1024UL;
 #else
     ULONG vram_size;
@@ -813,9 +798,7 @@ void screen_get_current_mode_info(UWORD *planes, UWORD *hz_rez, UWORD *vt_rez)
 {
     MAYBE_UNUSED(atari_get_current_mode_info);
 
-#ifdef MACHINE_AMIGA
-    amiga_get_current_mode_info(planes, hz_rez, vt_rez);
-#elif defined(MACHINE_LISA)
+#if defined(MACHINE_LISA)
     *planes = 1;
     *hz_rez = 720;
     *vt_rez = 364;
@@ -831,9 +814,6 @@ void screen_get_current_mode_info(UWORD *planes, UWORD *hz_rez, UWORD *vt_rez)
  */
 WORD get_palette(void)
 {
-#ifdef MACHINE_AMIGA
-    return 2;               /* we currently only support monochrome */
-#else
     WORD palette;
 
 #if CONF_WITH_VIDEL
@@ -866,7 +846,6 @@ WORD get_palette(void)
     }
 
     return palette;
-#endif
 }
 
 /* returns 'standard' pixel sizes */
@@ -895,9 +874,6 @@ static __inline__ void get_std_pixel_size(WORD *width,WORD *height)
  */
 void get_pixel_size(WORD *width,WORD *height)
 {
-#ifdef MACHINE_AMIGA
-    get_std_pixel_size(width,height);
-#else
     if (HAS_VIDEL || HAS_TT_SHIFTER)
         get_std_pixel_size(width,height);
     else
@@ -910,7 +886,6 @@ void get_pixel_size(WORD *width,WORD *height)
         else *width = 338;          /* ST low */
         *height = 372;
     }
-#endif
 }
 
 #if CONF_WITH_ATARI_VIDEO
@@ -1042,9 +1017,7 @@ static WORD atari_setcolor(WORD colorNum, WORD color)
 
 const UBYTE *physbase(void)
 {
-#ifdef MACHINE_AMIGA
-    return amiga_physbase();
-#elif defined(MACHINE_LISA)
+#if defined(MACHINE_LISA)
     return lisa_physbase();
 #elif CONF_WITH_ATARI_VIDEO
     return atari_physbase();
@@ -1061,9 +1034,7 @@ static void setphys(const UBYTE *addr)
 {
     KDEBUG(("setphys(%p)\n", addr));
 
-#ifdef MACHINE_AMIGA
-    amiga_setphys(addr);
-#elif defined(MACHINE_LISA)
+#if defined(MACHINE_LISA)
     lisa_setphys(addr);
 #elif CONF_WITH_ATARI_VIDEO
     atari_setphys(addr);
@@ -1152,9 +1123,7 @@ WORD setscreen(UBYTE *logLoc, const UBYTE *physLoc, WORD rez, WORD videlmode)
     /* Wait for the end of display to avoid the plane-shift bug on ST */
     vsync();
 
-#ifdef MACHINE_AMIGA
-    amiga_setrez(rez, videlmode);
-#elif CONF_WITH_ATARI_VIDEO
+#if CONF_WITH_ATARI_VIDEO
     atari_setrez(rez, videlmode);
 #endif
 
@@ -1196,9 +1165,7 @@ void setpalette(const UWORD *palettePtr)
  */
 WORD setcolor(WORD colorNum, WORD color)
 {
-#ifdef MACHINE_AMIGA
-    return amiga_setcolor(colorNum, color);
-#elif CONF_WITH_ATARI_VIDEO
+#if CONF_WITH_ATARI_VIDEO
     return atari_setcolor(colorNum, color);
 #else
     /* No hardware, fake return value */

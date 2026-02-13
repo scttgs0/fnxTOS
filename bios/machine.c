@@ -41,7 +41,6 @@
 #include "dma.h"
 #include "nova.h"
 #include "biosext.h"
-#include "amiga.h"
 
 #if CONF_WITH_ADVANCED_CPU
 UBYTE is_bus32; /* 1 if address bus is 32-bit, 0 if it is 24-bit */
@@ -549,9 +548,6 @@ void machine_detect(void)
 #if CONF_WITH_ARANYM
     aranym_machine_detect();
 #endif
-#ifdef MACHINE_AMIGA
-    amiga_machine_detect();
-#endif
 #if CONF_ATARI_HARDWARE
     detect_modectl();
 #endif
@@ -828,8 +824,6 @@ const char * machine_name(void)
     MAYBE_UNUSED(guess_machine_name);
 #ifdef MACHINE_FIREBEE
     return "FireBee";
-#elif defined(MACHINE_AMIGA)
-    return amiga_machine_name();
 #elif defined(MACHINE_LISA)
     return "Apple Lisa";
 #elif defined(MACHINE_M548X)

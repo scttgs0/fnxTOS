@@ -34,7 +34,6 @@
 #include "coldfire.h"
 #include "processor.h"
 #include "biosmem.h"
-#include "amiga.h"
 #include "intmath.h"
 
 #if CONF_WITH_IDE
@@ -131,11 +130,7 @@ struct IDE
 #endif /* MACHINE_M548X */
 
 /* the data register is naturally byteswapped on some hardware */
-#if defined(MACHINE_AMIGA)
-#define IDE_DATA_REGISTER_IS_BYTESWAPPED TRUE
-#else
 #define IDE_DATA_REGISTER_IS_BYTESWAPPED FALSE
-#endif
 
 /* set the following to 1 to use 32-bit data transfer */
 #if CONF_ATARI_HARDWARE
@@ -307,13 +302,7 @@ struct IDENTIFY {
 
 /* timing stuff */
 
-#ifdef MACHINE_AMIGA
-/* Amiga already provides proper delay at bus level, no need for more */
-#define DELAY_400NS     NULL_FUNCTION()
-#else
 #define DELAY_400NS     delay_loop(delay400ns)
-#endif
-
 #define DELAY_5US       delay_loop(delay5us)
 
 /*
@@ -560,9 +549,7 @@ BOOL detect_ide(void)
         ifinfo[i].twisted_cable = FALSE;
     }
 
-#ifdef MACHINE_AMIGA
-    has_ide = has_gayle ? 0x01 : 0x00;
-#elif defined(MACHINE_M548X)
+#if defined(MACHINE_M548X)
     has_ide = 0x01;
 #elif defined(MACHINE_FIREBEE)
     has_ide = 0x03;

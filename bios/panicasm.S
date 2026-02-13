@@ -117,13 +117,7 @@ _cold_reset:
 #if CONF_DETECT_FIRST_BOOT_WITHOUT_MEMCONF
         clr.l   _warm_magic.w   // Next boot will be a first boot
 #endif
-#ifdef MACHINE_AMIGA
-        clr.l   memvalid.w      // Invalidate memvalid
-        jsr     _flush_data_cache
-        move.l  0x00fc0004,a0   // Get the entry adress from offset 4 in the ROM
-        reset                   // The entry usually points just after reset
-        jmp     (a0)
-#elif defined(MACHINE_FIREBEE)
+#if defined(MACHINE_FIREBEE)
         // Do not invalidate memvalid, to keep the RAM settings
         jsr     _flush_data_cache
         move.l  0x00e00004,a0   // Get the entry adress from offset 4 in the ROM

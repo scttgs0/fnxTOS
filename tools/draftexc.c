@@ -113,9 +113,7 @@ char *exclude_items[] =
     "STREZ3",
     "STREZ4",
 #endif
-#if !defined(MACHINE_AMIGA)
     "ADAMIREZ",
-#endif
 
 #if !CONF_WITH_WINDOW_ICONS         /* icon-related */
     "ADINSWIN",

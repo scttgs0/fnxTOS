@@ -23,7 +23,6 @@
 #include "bios.h"
 #include "vectors.h"
 #include "../bdos/bdosstub.h"
-#include "amiga.h"
 #include "string.h"
 
 #define ZONECOUNT   32      /* for memory test */
@@ -203,11 +202,6 @@ void altram_init(void)
         xmaddalt((UBYTE *)0x400000L, magnum_ram*0x100000L);
     }
 #endif  /* CONF_WITH_MAGNUM */
-
-#ifdef MACHINE_AMIGA
-    KDEBUG(("amiga_add_alt_ram()\n"));
-    amiga_add_alt_ram();
-#endif
 }
 
 #endif /* CONF_WITH_ALT_RAM */

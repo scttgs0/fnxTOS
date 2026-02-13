@@ -32,7 +32,6 @@
 #include "../bdos/bdosstub.h"
 #include "ikbd.h"
 #include "midi.h"
-#include "amiga.h"
 
 #define DISPLAY_INSTRUCTION_AT_PC   0   /* set to 1 for extra info from dopanic() */
 #define DISPLAY_STACK               0   /* set to 1 for extra info from dopanic() */
@@ -222,12 +221,6 @@ static int vkprintf(const char *fmt, va_list ap)
 
 #if CARTRIDGE_DEBUG_PRINT
     return doprintf(kprintf_outc_cartridge, fmt, ap);
-#endif
-
-#if CONF_WITH_UAE
-    if (has_uaelib) {
-        return doprintf(kprintf_outc_uae, fmt, ap);
-    }
 #endif
 
 #if DETECT_NATIVE_FEATURES

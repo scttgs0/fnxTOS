@@ -13,24 +13,4 @@
 #ifndef BOOTPARAMS_H
 #define BOOTPARAMS_H
 
-#ifdef MACHINE_AMIGA
-
-/*
- * Alt-RAM regions can't be detected from hardware on warm boot. So the ramtos
- * loaders have to guess Alt-RAM regions detected by the previous OS, then
- * forward them to ramtos through this list.
- */
-
-typedef struct
-{
-    UBYTE *address;
-    ULONG size;
-} ALTRAM_REGION;
-
-#define MAX_ALTRAM_REGIONS 16 /* Arbitrary limit */
-
-extern const ALTRAM_REGION altram_regions[MAX_ALTRAM_REGIONS];
-
-#endif /* MACHINE_AMIGA */
-
 #endif /* BOOTPARAMS_H */
