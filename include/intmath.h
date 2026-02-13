@@ -7,6 +7,8 @@
  * option any later version.  See doc/license.txt for details.
  */
 
+#pragma once
+
 ULONG Isqrt(ULONG x);
 
 /*
