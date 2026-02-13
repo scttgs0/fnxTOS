@@ -110,7 +110,7 @@ int main(void)
 
   /* check that the address is realistic */
 
-  if((address <= (UBYTE *)0x800L) || (address >= (UBYTE *)0x80000)) {
+  if ((address <= (UBYTE *)0x800L) || (address >= (UBYTE *)0x80000)) {
     fatal("bad address in header");
   }
 

@@ -204,15 +204,15 @@ static long XHInqDriver(UWORD bios_device, char *name, char *version, char *comp
     if (disk_inquire(blkdev[bios_device].unit, NULL, NULL, NULL, 0) == EUNDEV)
         return EDRIVE;
 
-    if(name)
+    if (name)
         strlcpy(name, DRIVER_NAME, DRIVER_NAME_MAXLENGTH);
-    if(version)
+    if (version)
         strlcpy(version, DRIVER_VERSION, DRIVER_VERSION_MAXLENGTH);
-    if(company)
+    if (company)
         strlcpy(company, DRIVER_COMPANY, DRIVER_COMPANY_MAXLENGTH);
-    if(ahdi_version)
+    if (ahdi_version)
         *ahdi_version = pun_ptr->version_num;
-    if(max_IPL)
+    if (max_IPL)
         *max_IPL = MAX_IPL;
 
     return E_OK;

@@ -23,7 +23,7 @@
 #include "tosvars.h"
 
 #define FIRST_VDI_HANDLE    1
-#define LAST_VDI_HANDLE     (FIRST_VDI_HANDLE+NUM_VDI_HANDLES-1)
+#define LAST_VDI_HANDLE     (FIRST_VDI_HANDLE + NUM_VDI_HANDLES - 1)
 #define VDI_PHYS_HANDLE     FIRST_VDI_HANDLE
 
 
@@ -32,8 +32,7 @@
  * is only significant when running under FreeMiNT, since EmuTOS ignores
  * these bits of the mode field.
  */
-#define MX_SUPER            (3<<4)
-
+#define MX_SUPER (3 << 4)
 
 /*
  * ptr to current mouse cursor save area, based on v_planes
@@ -45,8 +44,9 @@ MCS *mcs_ptr;
  * entry n in the following array points to the Vwk corresponding to
  * VDI handle n.  entry 0 is unused.
  */
-static Vwk *vwk_ptr[NUM_VDI_HANDLES+1];
-extern Vwk phys_work;       /* attribute area for physical workstation */
+static Vwk *vwk_ptr[NUM_VDI_HANDLES + 1];
+extern Vwk phys_work; /* attribute area for physical workstation */
+
 #if CONF_WITH_VDI_16BIT
 static VwkExt phys_work_ext;
 #endif
@@ -69,7 +69,6 @@ static const WORD SIZ_TAB_rom[12] = {
     120,                        /* 10   max marker width        */
     88,                         /* 11   max marker height       */
 };
-
 
 
 /* Here's the template INQ_TAB, see lineavars.S for the normal INQ_TAB */
@@ -123,7 +122,6 @@ static const WORD INQ_TAB_rom[45] = {
 };
 
 
-
 /* Here's the template DEV_TAB, see lineavars.S for the normal DEV_TAB! */
 static const WORD DEV_TAB_rom[45] = {
     639,                        /* 0    x resolution             */
@@ -174,15 +172,13 @@ static const WORD DEV_TAB_rom[45] = {
 };
 
 
-
-Vwk * get_vwk_by_handle(WORD handle)
+Vwk *get_vwk_by_handle(WORD handle)
 {
     if ((handle < FIRST_VDI_HANDLE) || (handle > LAST_VDI_HANDLE))
         return NULL;
 
     return vwk_ptr[handle];
 }
-
 
 
 /*
@@ -202,17 +198,17 @@ void update_rez_dependent(void)
 
     DEV_TAB[0] = V_REZ_HZ - 1;
     DEV_TAB[1] = V_REZ_VT - 1;
-    get_pixel_size(&DEV_TAB[3],&DEV_TAB[4]);
-    DEV_TAB[13] = (v_planes<8) ? (1 << v_planes) : 256;
-    DEV_TAB[35] = (v_planes==1) ? 0 : 1;
-    DEV_TAB[39] = get_palette();    /* some versions of COLOR.CPX care about this */
+    get_pixel_size(&DEV_TAB[3], &DEV_TAB[4]);
+    DEV_TAB[13] = (v_planes < 8) ? (1 << v_planes) : 256;
+    DEV_TAB[35] = (v_planes == 1) ? 0 : 1;
+    DEV_TAB[39] = get_palette(); /* some versions of COLOR.CPX care about this */
 
     INQ_TAB[4] = v_planes;
     if ((v_planes == 16) || (get_monitor_type() == MON_MONO))
         INQ_TAB[5] = 0;
-    else INQ_TAB[5] = 1;
+    else
+        INQ_TAB[5] = 1;
 }
-
 
 
 /*
@@ -230,13 +226,12 @@ WORD validate_color_index(WORD colnum)
 }
 
 
-
 /* Set Clip Region */
-void vdi_vs_clip(Vwk * vwk)
+void vdi_vs_clip(Vwk *vwk)
 {
     vwk->clip = INTIN[0];
     if (vwk->clip) {
-        Rect * rect = (Rect*)PTSIN;
+        Rect *rect = (Rect *)PTSIN;
         arb_corner(rect);
         vwk->xmn_clip = max(0, rect->x1);
         vwk->ymn_clip = max(0, rect->y1);
@@ -251,22 +246,20 @@ void vdi_vs_clip(Vwk * vwk)
 }
 
 
-
 /* SET_WRITING_MODE: */
-void vdi_vswr_mode(Vwk * vwk)
+void vdi_vswr_mode(Vwk *vwk)
 {
     WORD wm;
 
     CONTRL[4] = 1;
-    wm = ((INTIN[0]<MIN_WRT_MODE) || (INTIN[0]>MAX_WRT_MODE)) ? DEF_WRT_MODE : INTIN[0];
+    wm = ((INTIN[0] < MIN_WRT_MODE) || (INTIN[0] > MAX_WRT_MODE)) ? DEF_WRT_MODE : INTIN[0];
 
     INTOUT[0] = wm;
     vwk->wrt_mode = wm - 1;
 }
 
 
-
-static void init_wk(Vwk * vwk)
+static void init_wk(Vwk *vwk)
 {
     WORD l;
     WORD *pointer;
@@ -275,7 +268,7 @@ static void init_wk(Vwk * vwk)
     pointer = INTIN;
     pointer++;
 
-    l = *pointer++;             /* INTIN[1] */
+    l = *pointer++;                         /* INTIN[1] */
     if ((l > MAX_LINE_STYLE) || (l < MIN_LINE_STYLE))
         l = DEF_LINE_STYLE;
     vwk->line_index = l - 1;
@@ -283,7 +276,7 @@ static void init_wk(Vwk * vwk)
     l = validate_color_index(*pointer++);   /* INTIN[2] */
     vwk->line_color = MAP_COL[l];
 
-    l = *pointer++;             /* INTIN[3] */
+    l = *pointer++;                         /* INTIN[3] */
     if ((l > MAX_MARK_STYLE) || (l < MIN_MARK_STYLE))
         l = DEF_MARK_STYLE;
     vwk->mark_index = l - 1;
@@ -292,7 +285,7 @@ static void init_wk(Vwk * vwk)
     vwk->mark_color = MAP_COL[l];
 
     /* You always get the default font */
-    pointer++;                  /* INTIN[5] */
+    pointer++;                              /* INTIN[5] */
 
     l = validate_color_index(*pointer++);   /* INTIN[6] */
     vwk->text_color = MAP_COL[l];
@@ -300,10 +293,10 @@ static void init_wk(Vwk * vwk)
     vwk->mark_height = DEF_MKHT;
     vwk->mark_scale = 1;
 
-    l = *pointer++;             /* INTIN[7] */
+    l = *pointer++;                         /* INTIN[7] */
     vwk->fill_style = ((l > MAX_FILL_STYLE) || (l < MIN_FILL_STYLE)) ? DEF_FILL_STYLE : l;
 
-    l = *pointer++;             /* INTIN[8] */
+    l = *pointer++;                         /* INTIN[8] */
     if (vwk->fill_style == FIS_PATTERN)
         l = ((l > MAX_FILL_PATTERN) || (l < MIN_FILL_PATTERN)) ? DEF_FILL_PATTERN : l;
     else
@@ -313,7 +306,7 @@ static void init_wk(Vwk * vwk)
     l = validate_color_index(*pointer++);   /* INTIN[9] */
     vwk->fill_color = MAP_COL[l];
 
-    vwk->xfm_mode = *pointer;      /* INTIN[10] */
+    vwk->xfm_mode = *pointer;               /* INTIN[10] */
 
     st_fl_ptr(vwk);                /* set the fill pattern as requested */
 
@@ -355,7 +348,7 @@ static void init_wk(Vwk * vwk)
     /* set up virtual palette stuff if we're not using a real one */
     if (TRUECOLOR_MODE) {
         memcpy(vwk->ext->req_col, REQ_COL, sizeof(REQ_COL));
-        memcpy(vwk->ext->req_col+16, req_col2, sizeof(req_col2));
+        memcpy(vwk->ext->req_col + 16, req_col2, sizeof(req_col2));
         /* convert requested colour values to pseudo-palette */
         for (l = 0; l < 255; l++)
             set_color16(vwk, l, vwk->ext->req_col[l]);
@@ -380,7 +373,6 @@ static void init_wk(Vwk * vwk)
 }
 
 
-
 /*
  * build a chain of Vwks
  *
@@ -393,7 +385,7 @@ static void build_vwk_chain(void)
     WORD handle;
 
     prev = &phys_work;
-    for (handle = VDI_PHYS_HANDLE+1, vwk = vwk_ptr+handle; handle <= LAST_VDI_HANDLE; handle++, vwk++) {
+    for (handle = VDI_PHYS_HANDLE + 1, vwk = vwk_ptr + handle; handle <= LAST_VDI_HANDLE; handle++, vwk++) {
         if (*vwk) {
             prev->next_work = *vwk;
             prev = *vwk;
@@ -403,8 +395,7 @@ static void build_vwk_chain(void)
 }
 
 
-
-void vdi_v_opnvwk(Vwk * vwk)
+void vdi_v_opnvwk(Vwk *vwk)
 {
     WORD handle;
     LONG size;
@@ -417,7 +408,7 @@ void vdi_v_opnvwk(Vwk * vwk)
     CUR_WORK = &phys_work;
 
     /* First find a free handle */
-    for (handle = VDI_PHYS_HANDLE+1, p = vwk_ptr+handle; handle <= LAST_VDI_HANDLE; handle++, p++) {
+    for (handle = VDI_PHYS_HANDLE + 1, p = vwk_ptr + handle; handle <= LAST_VDI_HANDLE; handle++, p++) {
         if (!*p) {
             break;
         }
@@ -436,10 +427,12 @@ void vdi_v_opnvwk(Vwk * vwk)
      * must allocate the virtual workstations in supervisor-accessible memory.
      */
     size = sizeof(Vwk);
+
 #if CONF_WITH_VDI_16BIT
     if (TRUECOLOR_MODE)
         size += sizeof(VwkExt); /* for simplicity, allocate them together */
 #endif
+
     vwk = (Vwk *)Mxalloc(size, MX_SUPER);
     if (vwk == NULL) {
         CONTRL[6] = 0;  /* No memory available, exit */
@@ -459,7 +452,8 @@ void vdi_v_opnvwk(Vwk * vwk)
     CUR_WORK = vwk;
 }
 
-void vdi_v_clsvwk(Vwk * vwk)
+
+void vdi_v_clsvwk(Vwk *vwk)
 {
     WORD handle;
 
@@ -491,9 +485,8 @@ void vdi_v_clsvwk(Vwk * vwk)
 }
 
 
-
 /* OPEN_WORKSTATION: */
-void vdi_v_opnwk(Vwk * vwk)
+void vdi_v_opnwk(Vwk *vwk)
 {
     int i;
     Vwk **p;
@@ -542,7 +535,8 @@ void vdi_v_opnwk(Vwk * vwk)
     vwk = &phys_work;
     vwk_ptr[VDI_PHYS_HANDLE] = vwk;
     CONTRL[6] = vwk->handle = VDI_PHYS_HANDLE;
-    for (i = VDI_PHYS_HANDLE+1, p = vwk_ptr+i; i <= LAST_VDI_HANDLE; i++)
+
+    for (i = VDI_PHYS_HANDLE + 1, p = vwk_ptr + i; i <= LAST_VDI_HANDLE; i++)
         *p++ = NULL;
 
     line_cw = -1;               /* invalidate current line width */
@@ -568,15 +562,14 @@ void vdi_v_opnwk(Vwk * vwk)
 }
 
 
-
 /* CLOSE_WORKSTATION: */
-void vdi_v_clswk(Vwk * vwk)
+void vdi_v_clswk(Vwk *vwk)
 {
     WORD handle;
     Vwk **p;
 
     /* close all open virtual workstations */
-    for (handle = VDI_PHYS_HANDLE+1, p = vwk_ptr+handle; handle <= LAST_VDI_HANDLE; handle++, p++) {
+    for (handle = VDI_PHYS_HANDLE + 1, p = vwk_ptr + handle; handle <= LAST_VDI_HANDLE; handle++, p++) {
         if (*p) {
             Mfree(*p);
             *p = NULL;
@@ -590,13 +583,12 @@ void vdi_v_clswk(Vwk * vwk)
 }
 
 
-
 /*
  * vdi_v_clrwk - clear screen
  *
  * Screen is cleared from the base address v_bas_ad.
  */
-void vdi_v_clrwk(Vwk * vwk)
+void vdi_v_clrwk(Vwk *vwk)
 {
     ULONG size;
     UBYTE fill;
@@ -619,11 +611,10 @@ void vdi_v_clrwk(Vwk * vwk)
 }
 
 
-
 /*
  * vdi_vq_extnd - Extended workstation inquire
  */
-void vdi_vq_extnd(Vwk * vwk)
+void vdi_vq_extnd(Vwk *vwk)
 {
     WORD i;
     WORD *dst, *src;

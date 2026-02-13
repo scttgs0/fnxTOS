@@ -126,6 +126,7 @@ static const WORD tt_palette2[240][3] =
     { 267, 133, 0 }, { 267, 67, 0 }, { 1000, 1000, 1000 }, { 0, 0, 0 }
 };
 #endif
+
 #if CONF_WITH_VIDEL
 static const WORD videl_palette1[16][3] =
 {
@@ -211,7 +212,9 @@ static int vdi2st(int col)
  *
  * we use a lookup table for speed and space savings
  */
-#define st2vdi(col) st2vdi_lookup_table[(col)&0x07]
+#define st2vdi(col) st2vdi_lookup_table[(col) & 0x07]
+
+
 /*
  * this table implements the following calculation, as used by ST TOS:
  *      VDI value = (ST palette hardware value * 1000) / 7
@@ -235,7 +238,9 @@ static int vdi2ste(int col)
  *
  * we use a lookup table for speed and space savings
  */
-#define ste2vdi(col) ste2vdi_lookup_table[(col)&0x0f]
+#define ste2vdi(col) ste2vdi_lookup_table[(col) & 0x0f]
+
+
 /*
  * this table implements the following calculation, as used by STe TOS:
  *      VDI value = (STe palette hardware value * 1000 + 7) / 15
@@ -261,7 +266,9 @@ static int vdi2tt(int col)
  *
  * we use a lookup table for speed & space savings
  */
-#define tt2vdi(col) tt2vdi_lookup_table[(col)&0x0f]
+#define tt2vdi(col) tt2vdi_lookup_table[(col) & 0x0f]
+
+
 /*
  * this table implements the following calculation, as used by TT TOS:
  *      VDI value = (TT palette hardware value * 1000 + 7) / 15
@@ -281,8 +288,8 @@ static WORD adjust_tt_colnum(WORD colnum)
     UWORD tt_shifter, rez, bank;
 
     tt_shifter = EgetShift();
-    rez = (tt_shifter>>8) & 0x07;
-    switch(rez) {
+    rez = (tt_shifter >> 8) & 0x07;
+    switch (rez) {
     case ST_LOW:
     case ST_MEDIUM:
     case TT_MEDIUM:
@@ -313,11 +320,11 @@ static void set_tt_color(WORD colnum, WORD *rgb)
     hwreg = MAP_COL[colnum];    /* default, can be modified below */
 
     tt_shifter = EgetShift();
-    rez = (tt_shifter>>8) & 0x07;
+    rez = (tt_shifter >> 8) & 0x07;
     bank = tt_shifter & 0x000f;
     mask = numcolors - 1;
 
-    switch(rez) {
+    switch (rez) {
     case ST_LOW:
     case ST_MEDIUM:
     case TT_MEDIUM:
@@ -351,13 +358,14 @@ static void set_tt_color(WORD colnum, WORD *rgb)
          * based on input RGB values; then, scale it to a value 0-255
          * (which the h/w applies to all 3 guns)
          */
-        hwvalue = mul_div(30,r,100) + mul_div(59,g,100) + mul_div(11,b,100);
-        hwvalue = mul_div(255,hwvalue,1000);
+        hwvalue = mul_div(30, r, 100) + mul_div(59, g, 100) + mul_div(11, b, 100);
+        hwvalue = mul_div(255, hwvalue, 1000);
     }
     else
     {
         hwvalue = (vdi2tt(r) << 8) | (vdi2tt(g) << 4) | vdi2tt(b);
     }
+
     EsetColor(hwreg, hwvalue);
 }
 
@@ -369,11 +377,11 @@ static void set_tt_color(WORD colnum, WORD *rgb)
  * preserved in the hardware palette registers.  So we do what TOS3 does:
  * we fake the return values based on the previously saved values.
  */
-static void get_tt_hyper_mono(WORD colnum,WORD *retval)
+static void get_tt_hyper_mono(WORD colnum, WORD *retval)
 {
     WORD *save, i, vditemp;
 
-    save = (colnum < 16) ? REQ_COL[colnum] : req_col2[colnum-16];
+    save = (colnum < 16) ? REQ_COL[colnum] : req_col2[colnum - 16];
 
     for (i = 0; i < 3; i++, save++, retval++)
     {
@@ -382,7 +390,8 @@ static void get_tt_hyper_mono(WORD colnum,WORD *retval)
             vditemp = 1000;
         else if (*save < 0)
             vditemp = 0;
-        else vditemp = *save;
+        else
+            vditemp = *save;
 
         /*
          * convert to h/w value then back to the equivalent VDI value,
@@ -400,7 +409,7 @@ static void get_tt_hyper_mono(WORD colnum,WORD *retval)
  *
  * Input colnum is VDI pen#, returned values are nominally 0-1000
  */
-static void query_tt_color(WORD colnum,WORD *retval)
+static void query_tt_color(WORD colnum, WORD *retval)
 {
     WORD hwreg, hwvalue;
     UWORD tt_shifter, rez, bank, mask;
@@ -411,11 +420,11 @@ static void query_tt_color(WORD colnum,WORD *retval)
     hwreg = MAP_COL[colnum];    /* default, can be modified below */
 
     tt_shifter = EgetShift();
-    rez = (tt_shifter>>8) & 0x07;
+    rez = (tt_shifter >> 8) & 0x07;
     bank = tt_shifter & 0x000f;
     mask = numcolors - 1;
 
-    switch(rez) {
+    switch (rez) {
     case ST_LOW:
     case ST_MEDIUM:
     case TT_MEDIUM:
@@ -427,10 +436,11 @@ static void query_tt_color(WORD colnum,WORD *retval)
          * set register 254 or 255 depending on the VDI pen#
          * and the invert bit in palette register 0
          */
-        hwvalue = EsetColor(0,-1);
+        hwvalue = EsetColor(0, -1);
         if (hwvalue & TT_DUOCHROME_INVERT)
             hwreg = 255 - colnum;
-        else hwreg = 254 + colnum;
+        else
+            hwreg = 254 + colnum;
         break;
     case TT_HIGH:
         retval[0] = retval[1] = retval[2] = colnum ? 0 : 1000;
@@ -439,11 +449,11 @@ static void query_tt_color(WORD colnum,WORD *retval)
 
     if (tt_shifter & TT_HYPER_MONO)
     {
-        get_tt_hyper_mono(colnum,retval);
+        get_tt_hyper_mono(colnum, retval);
     }
     else
     {
-        hwvalue = EsetColor(hwreg,-1);
+        hwvalue = EsetColor(hwreg, -1);
         retval[0] = tt2vdi(hwvalue >> 8);
         retval[1] = tt2vdi(hwvalue >> 4);
         retval[2] = tt2vdi(hwvalue);
@@ -456,14 +466,14 @@ static void query_tt_color(WORD colnum,WORD *retval)
 /* Create videl colour value from VDI colour */
 static LONG vdi2videl(WORD col)
 {
-    return divu((ULONG)col*255+500, 1000);      /* scale 1000 -> 255 */
+    return divu((ULONG)col * 255 + 500, 1000); /* scale 1000 -> 255 */
 }
 
 
 /* Create VDI colour value from videl colour */
 static WORD videl2vdi(LONG col)
 {
-    return divu((col&0xff)*1000+128, 255);      /* scale 255 -> 1000 */
+    return divu((col & 0xff) * 1000 + 128, 255); /* scale 255 -> 1000 */
 }
 #endif
 
@@ -488,7 +498,7 @@ static WORD videl2vdi(LONG col)
  *
  * We do the same ...
  */
-static WORD adjust_mono_values(WORD colnum,WORD *rgb)
+static WORD adjust_mono_values(WORD colnum, WORD *rgb)
 {
     WORD i, sum, fudge = ST_MONO_FUDGE_FACTOR;
 
@@ -501,7 +511,7 @@ static WORD adjust_mono_values(WORD colnum,WORD *rgb)
     {
         if (rgb[i] < fudge)
             rgb[i] = 0;
-        else if (rgb[i] >= (1000-fudge))
+        else if (rgb[i] >= (1000 - fudge))
             rgb[i] = 1000;
         sum += rgb[i];
     }
@@ -529,7 +539,7 @@ static void set_color(WORD colnum, WORD *rgb)
     WORD hwreg;
 
     /* get hardware register, clamped according to number of planes */
-    hwreg = MAP_COL[colnum] & (numcolors-1);
+    hwreg = MAP_COL[colnum] & (numcolors - 1);
 
     r = rgb[0];
     g = rgb[1];
@@ -541,7 +551,7 @@ static void set_color(WORD colnum, WORD *rgb)
         LONG videlrgb;
 
         videlrgb = (vdi2videl(r) << 16) | (vdi2videl(g) << 8) | vdi2videl(b);
-        VsetRGB(hwreg,1,(LONG)&videlrgb);
+        VsetRGB(hwreg, 1, (LONG)&videlrgb);
         return;
     }
 #endif
@@ -549,7 +559,7 @@ static void set_color(WORD colnum, WORD *rgb)
 #if CONF_WITH_TT_SHIFTER
     if (has_tt_shifter)
     {
-        set_tt_color(colnum,rgb);
+        set_tt_color(colnum, rgb);
         return;
     }
 #endif
@@ -587,7 +597,7 @@ static void set_color(WORD colnum, WORD *rgb)
 /* Create 5-bit colour value from VDI colour */
 static UWORD vdi2fivebits(WORD col)
 {
-    return divu((ULONG)col*31+500, 1000);   /* scale 1000 -> 31 */
+    return divu((ULONG)col * 31 + 500, 1000); /* scale 1000 -> 31 */
 }
 
 
@@ -635,14 +645,15 @@ static void vs_color16(Vwk *vwk)
      * Copy raw values to the "requested colour" array, then clamp
      * them to 0-1000 before calling set_color16()
      */
-    for (i = 0, intin = INTIN+1, rgbptr = rgb; i < 3; i++, intin++, rgbptr++)
+    for (i = 0, intin = INTIN + 1, rgbptr = rgb; i < 3; i++, intin++, rgbptr++)
     {
         vwk->ext->req_col[colnum][i] = *intin;
         if (*intin > 1000)
             *rgbptr = 1000;
         else if (*intin < 0)
             *rgbptr = 0;
-        else *rgbptr = *intin;
+        else
+            *rgbptr = *intin;
     }
 
     set_color16(vwk, colnum, rgb);
@@ -684,19 +695,21 @@ void vdi_vs_color(Vwk *vwk)
      * Copy raw values to the "requested colour" arrays, then clamp
      * them to 0-1000 before calling set_color()
      */
-    for (i = 0, intin = INTIN+1, rgbptr = rgb; i < 3; i++, intin++, rgbptr++)
+    for (i = 0, intin = INTIN + 1, rgbptr = rgb; i < 3; i++, intin++, rgbptr++)
     {
         if (colnum < 16)
             REQ_COL[colnum][i] = *intin;
 #if EXTENDED_PALETTE
         else
-            req_col2[colnum-16][i] = *intin;
+            req_col2[colnum - 16][i] = *intin;
 #endif
+
         if (*intin > 1000)
             *rgbptr = 1000;
         else if (*intin < 0)
             *rgbptr = 0;
-        else *rgbptr = *intin;
+        else
+            *rgbptr = *intin;
     }
 
     colnum = INTIN[0];      /* may have been munged on TT system, see above */
@@ -720,6 +733,7 @@ void init_colors(void)
     }
     else
 #endif
+
 #if CONF_WITH_TT_SHIFTER
     if (has_tt_shifter)
     {
@@ -737,7 +751,7 @@ void init_colors(void)
     MAP_COL[1] = numcolors - 1; /* pen 1 varies according to # of colours available */
 
 #if EXTENDED_PALETTE
-    for (i = 16; i < MAXCOLOURS-1; i++)
+    for (i = 16; i < MAXCOLOURS - 1; i++)
         MAP_COL[i] = i;
     MAP_COL[i] = 15;
 #endif
@@ -753,7 +767,7 @@ void init_colors(void)
             set_color(i, REQ_COL[i]);
 #if EXTENDED_PALETTE
         else
-            set_color(i, req_col2[i-16]);
+            set_color(i, req_col2[i - 16]);
 #endif
     }
 
@@ -793,7 +807,7 @@ void init_colors(void)
      */
 #if CONF_WITH_TT_SHIFTER
     if (has_tt_shifter && (sshiftmod == ST_HIGH))
-        EsetColor(0,0x0002);
+        EsetColor(0, 0x0002);
 #endif
 #endif
 }
@@ -803,7 +817,7 @@ void init_colors(void)
 /* Create VDI colour value from 5-bit colour */
 static WORD fivebits2vdi(UWORD col)
 {
-    return divu((col&0x1f)*1000+16, 31);    /* scale 31 -> 1000 */
+    return divu((col & 0x1f) * 1000 + 16, 31); /* scale 31 -> 1000 */
 }
 
 
@@ -829,7 +843,7 @@ static void vq_color16(Vwk *vwk)
     /*
      * return actual current value
      */
-    palnum = MAP_COL[colnum] & (numcolors-1);
+    palnum = MAP_COL[colnum] & (numcolors - 1);
     rgb = ext->palette[palnum];
 
     INTOUT[1] = fivebits2vdi(rgb >> 11);
@@ -883,9 +897,9 @@ void vdi_vq_color(Vwk *vwk)
 #if EXTENDED_PALETTE
         else
         {
-            INTOUT[1] = req_col2[colnum-16][0];
-            INTOUT[2] = req_col2[colnum-16][1];
-            INTOUT[3] = req_col2[colnum-16][2];
+            INTOUT[1] = req_col2[colnum - 16][0];
+            INTOUT[2] = req_col2[colnum - 16][1];
+            INTOUT[3] = req_col2[colnum - 16][2];
         }
 #endif
         return;
@@ -894,28 +908,30 @@ void vdi_vq_color(Vwk *vwk)
     /*
      * return actual current value
      */
-    colnum = INTIN[0];          /* may have been munged on TT system, see above */
-    hwreg = MAP_COL[colnum] & (numcolors-1);    /* get hardware register */
+    colnum = INTIN[0];                         /* may have been munged on TT system, see above */
+    hwreg = MAP_COL[colnum] & (numcolors - 1); /* get hardware register */
 
 #if CONF_WITH_VIDEL
     if (has_videl)
     {
     LONG rgb;
 
-        VgetRGB(hwreg,1,(LONG)&rgb);
+        VgetRGB(hwreg, 1, (LONG)&rgb);
         INTOUT[1] = videl2vdi(rgb >> 16);
         INTOUT[2] = videl2vdi(rgb >> 8);
         INTOUT[3] = videl2vdi(rgb);
         return;
     }
 #endif
+
 #if CONF_WITH_TT_SHIFTER
     if (has_tt_shifter)
     {
-        query_tt_color(colnum,&INTOUT[1]);
+        query_tt_color(colnum, &INTOUT[1]);
         return;
     }
 #endif
+
 #if CONF_WITH_STE_SHIFTER
     if (has_ste_shifter)
     {
@@ -926,6 +942,7 @@ void vdi_vq_color(Vwk *vwk)
         return;
     }
 #endif
+
     /* ST shifter */
     c = Setcolor(hwreg, -1);
     INTOUT[1] = st2vdi(c >> 8);

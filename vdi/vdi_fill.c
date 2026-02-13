@@ -142,11 +142,10 @@ const UWORD HOLLOW = 0;
 const UWORD SOLID = 0xFFFF;
 
 
-
 /*
  * vdi_vsf_udpat - Set user-defined fill pattern
  */
-void vdi_vsf_udpat(Vwk * vwk)
+void vdi_vsf_udpat(Vwk *vwk)
 {
     WORD *sp, *dp, i, count;
 
@@ -157,33 +156,32 @@ void vdi_vsf_udpat(Vwk * vwk)
     else if (count == (INQ_TAB[4] * 16))
         vwk->multifill = 1;        /* Valid Multi-plane pattern */
     else
-        return;             /* Invalid pattern, return */
+        return;                    /* Invalid pattern, return */
 
     sp = INTIN;
     dp = &vwk->ud_patrn[0];
+
     for (i = 0; i < count; i++)
         *dp++ = *sp++;
 }
 
 
-
 /*
  * vdi_vsf_interior - Set fill style
  */
-void vdi_vsf_interior(Vwk * vwk)
+void vdi_vsf_interior(Vwk *vwk)
 {
     WORD fs;
 
-    fs = ((INTIN[0]<MIN_FILL_STYLE) || (INTIN[0]>MAX_FILL_STYLE)) ? DEF_FILL_STYLE : INTIN[0];
+    fs = ((INTIN[0] < MIN_FILL_STYLE) || (INTIN[0] > MAX_FILL_STYLE)) ? DEF_FILL_STYLE : INTIN[0];
 
     INTOUT[0] = vwk->fill_style = fs;
     st_fl_ptr(vwk);
 }
 
 
-
 /* S_FILL_INDEX: */
-void vdi_vsf_style(Vwk * vwk)
+void vdi_vsf_style(Vwk *vwk)
 {
     WORD fi;
 
@@ -196,14 +194,14 @@ void vdi_vsf_style(Vwk * vwk)
         if ((fi > MAX_FILL_HATCH) || (fi < MIN_FILL_HATCH))
             fi = DEF_FILL_HATCH;
     }
+
     vwk->fill_index = (INTOUT[0] = fi) - 1;
     st_fl_ptr(vwk);
 }
 
 
-
 /* S_FILL_COLOR: */
-void vdi_vsf_color(Vwk * vwk)
+void vdi_vsf_color(Vwk *vwk)
 {
     WORD fc;
 
@@ -214,9 +212,8 @@ void vdi_vsf_color(Vwk * vwk)
 }
 
 
-
 /* ST_FILLPERIMETER: */
-void vdi_vsf_perimeter(Vwk * vwk)
+void vdi_vsf_perimeter(Vwk *vwk)
 {
     if (INTIN[0] == 0) {
         INTOUT[0] = 0;
@@ -226,7 +223,6 @@ void vdi_vsf_perimeter(Vwk * vwk)
         vwk->fill_per = TRUE;
     }
 }
-
 
 
 /*
@@ -262,11 +258,14 @@ static BOOL clipbox(const VwkClip *clip, Rect *rect)
     if (x1 < clip->xmn_clip) {
         if (x2 < clip->xmn_clip)
             return FALSE;           /* clipped box is null */
+
         rect->x1 = clip->xmn_clip;
     }
+
     if (x2 > clip->xmx_clip) {
         if (x1 > clip->xmx_clip)
             return FALSE;           /* clipped box is null */
+
         rect->x2 = clip->xmx_clip;
     }
 
@@ -274,11 +273,14 @@ static BOOL clipbox(const VwkClip *clip, Rect *rect)
     if (y1 < clip->ymn_clip) {
         if (y2 < clip->ymn_clip)
             return FALSE;           /* clipped box is null */
+
         rect->y1 = clip->ymn_clip;
     }
+
     if (y2 > clip->ymx_clip) {
         if (y1 > clip->ymx_clip)
             return FALSE;           /* clipped box is null */
+
         rect->y2 = clip->ymx_clip;
     }
 
@@ -286,24 +288,23 @@ static BOOL clipbox(const VwkClip *clip, Rect *rect)
 }
 
 
-
 /*
  * vdi_vr_recfl - draw filled rectangle
  */
-void vdi_vr_recfl(Vwk * vwk)
+void vdi_vr_recfl(Vwk *vwk)
 {
     Rect rect;
 
     /*
      * exchange corners to EmuTOS preferred format (ll, ur) if necessary
      */
-    arb_corner((Rect *) PTSIN);
+    arb_corner((Rect *)PTSIN);
 
     /*
      * make temporary copy to prevent the clipping code from damaging
      * the PTSIN values we might need later on for perimeter draws
      */
-    rect = * (Rect *) PTSIN;
+    rect = *(Rect *)PTSIN;
 
     if (vwk->clip)
         if (!clipbox(VDI_CLIP(vwk), &rect))
@@ -314,11 +315,10 @@ void vdi_vr_recfl(Vwk * vwk)
 }
 
 
-
 /*
  * vdi_vqf_attributes - Inquire current fill area attributes
  */
-void vdi_vqf_attributes(Vwk * vwk)
+void vdi_vqf_attributes(Vwk *vwk)
 {
     WORD *pointer;
 
@@ -331,12 +331,10 @@ void vdi_vqf_attributes(Vwk * vwk)
 }
 
 
-
 /*
  * st_fl_ptr - set fill pattern?
  */
-void
-st_fl_ptr(Vwk * vwk)
+void st_fl_ptr(Vwk *vwk)
 {
     WORD fi, pm;
     const UWORD *pp = NULL;
@@ -375,10 +373,10 @@ st_fl_ptr(Vwk * vwk)
         pp = (UWORD *)&vwk->ud_patrn[0];
         break;
     }
+
     vwk->patptr = (UWORD *)pp;
     vwk->patmsk = pm;
 }
-
 
 
 /*
@@ -390,23 +388,22 @@ st_fl_ptr(Vwk * vwk)
  *     buf   - ptr to start of array.
  *     count - number of words in array.
  */
-static void
-bub_sort (WORD * buf, WORD count)
+static void bub_sort(WORD *buf, WORD count)
 {
     int i, j;
 
-    for (i = count-1; i > 0; i--) {
-        WORD * ptr = buf;               /* reset pointer to the array */
+    for (i = count - 1; i > 0; i--) {
+        WORD *ptr = buf;            /* reset pointer to the array */
+
         for (j = 0; j < i; j++) {
-            WORD val = *ptr++;   /* word */    /* get next value */
-            if ( val > *ptr ) {    /* yes - do nothing */
-                *(ptr-1) = *ptr;   /* word */    /* nope - swap them */
-                *ptr = val;   /* word */
+            WORD val = *ptr++;      /* word */ /* get next value */
+            if (val > *ptr) {       /* yes - do nothing */
+                *(ptr - 1) = *ptr;  /* word */ /* nope - swap them */
+                *ptr = val;         /* word */
             }
         }
     }
 }
-
 
 
 /*
@@ -447,8 +444,8 @@ void clc_flit(const VwkAttrib *attr, const VwkClip *clipper, const Point *point,
         for (i = 0; i < vectors; i++) {
             WORD y1, y2, dy;
 
-            y1 = point[i].y;        /* fetch y-value of 1st endpoint. */
-            y2 = point[i+1].y;      /* fetch y-value of 2nd endpoint. */
+            y1 = point[i].y;     /* fetch y-value of 1st endpoint. */
+            y2 = point[i + 1].y; /* fetch y-value of 2nd endpoint. */
 
             /* if the current vector is horizontal, ignore it. */
             dy = y2 - y1;
@@ -467,11 +464,11 @@ void clc_flit(const VwkAttrib *attr, const VwkClip *clipper, const Point *point,
                  * not intersect and can be ignored.  The origin for this
                  * test is found in Newman and Sproull.
                  */
-                if ((dy1^dy2) < 0) {
+                if ((dy1 ^ dy2) < 0) {
                     int dx;
                     WORD x1, x2;
                     x1 = point[i].x;        /* fetch x-value of 1st endpoint. */
-                    x2 = point[i+1].x;      /* fetch x-value of 2nd endpoint. */
+                    x2 = point[i + 1].x;    /* fetch x-value of 2nd endpoint. */
                     dx = (x2 - x1) << 1;    /* so we can round by adding 1 below */
                     if (intersections >= MAX_VERTICES)
                         break;
@@ -518,7 +515,7 @@ void clc_flit(const VwkAttrib *attr, const VwkClip *clipper, const Point *point,
          */
         bufptr = vdishare.main.fill_buffer;
         i = intersections / 2;
-        while(i--) {
+        while (i--) {
             WORD x1, x2;
             Rect rect;
 
@@ -552,31 +549,29 @@ void clc_flit(const VwkAttrib *attr, const VwkClip *clipper, const Point *point,
 }
 
 
-
 /*
  * polygon - draw a filled polygon
  */
-void
-polygon(Vwk * vwk, Point * ptsin, int count)
+void polygon(Vwk *vwk, Point *ptsin, int count)
 {
     WORD i, k;
     WORD fill_maxy, fill_miny;
-    Point * point, * ptsget, * ptsput;
+    Point *point, *ptsget, *ptsput;
     const VwkClip *clipper;
     VwkAttrib attr;
 
     /* find out the total min and max y values */
     point = ptsin;
     fill_maxy = fill_miny = point->y;
+
     for (i = count - 1; i > 0; i--) {
         point++;
         k = point->y;
 
         if (k < fill_miny)
             fill_miny = k;
-        else
-            if (k > fill_maxy)
-                fill_maxy = k;
+        else if (k > fill_maxy)
+            fill_maxy = k;
     }
 
     /* cast structure needed by clc_flit */
@@ -605,23 +600,22 @@ polygon(Vwk * vwk, Point * ptsin, int count)
 
     if (vwk->fill_per == TRUE) {
         LN_MASK = 0xffff;
-        polyline(vwk, ptsin, count+1, vwk->fill_color);
+        polyline(vwk, ptsin, count + 1, vwk->fill_color);
     }
 }
-
 
 
 /*
  * vdi_v_fillarea - Fill an area
  */
-void vdi_v_fillarea(Vwk * vwk)
+void vdi_v_fillarea(Vwk *vwk)
 {
-    Point * point = (Point*)PTSIN;
+    Point *point = (Point *)PTSIN;
     int count = CONTRL[1];
 
 #if HAVE_BEZIER
     /* check, if we want to draw a filled bezier curve */
-    if (CONTRL[5] == 13 && vwk->bez_qual )
+    if (CONTRL[5] == 13 && vwk->bez_qual)
         v_bez_fill(vwk, point, count);
     else
 #endif
@@ -629,22 +623,20 @@ void vdi_v_fillarea(Vwk * vwk)
 }
 
 
-
 /*
  * get_color - Get color value of requested pixel.
  */
-static UWORD
-get_color (UWORD mask, UWORD * addr)
+static UWORD get_color(UWORD mask, UWORD *addr)
 {
     UWORD color = 0;                    /* clear the pixel value accumulator. */
     WORD plane = v_planes;
 
     while(1) {
         /* test the bit. */
-        if ( *--addr & mask )
-            color |= 1;         /* if 1, set color accumulator bit. */
+        if (*--addr & mask)
+            color |= 1; /* if 1, set color accumulator bit. */
 
-        if ( --plane == 0 )
+        if (--plane == 0)
             break;
 
         color <<= 1;            /* shift accumulator for next bit_plane. */
@@ -652,7 +644,6 @@ get_color (UWORD mask, UWORD * addr)
 
     return color;       /* this is the color we are searching for */
 }
-
 
 
 /*
@@ -667,8 +658,7 @@ get_color (UWORD mask, UWORD * addr)
  * output:
  *     pixel colour
  */
-static UWORD
-pixelread(const WORD x, const WORD y)
+static UWORD pixelread(const WORD x, const WORD y)
 {
     UWORD *addr;
     UWORD mask;
@@ -684,11 +674,10 @@ pixelread(const WORD x, const WORD y)
     /* convert x,y to start address and bit mask */
     addr = get_start_addr(x, y);
     addr += v_planes;                   /* start at highest-order bit_plane */
-    mask = 0x8000 >> (x&0xf);           /* initial bit position in WORD */
+    mask = 0x8000 >> (x & 0xf);         /* initial bit position in WORD */
 
     return get_color(mask, addr);       /* return the composed color value */
 }
-
 
 
 #if CONF_WITH_VDI_16BIT
@@ -704,7 +693,7 @@ static UWORD search_to_right16(const VwkClip *clip, WORD x, const UWORD search_c
     /*
      * scan upwards until pixel of different colour found
      */
-    for ( ; x <= clip->xmx_clip; x++)
+    for (; x <= clip->xmx_clip; x++)
     {
         pixel = *addr++ & ~OVERLAY_BIT; /* ignore overlay bit on screen */
         if (pixel != search)
@@ -713,7 +702,6 @@ static UWORD search_to_right16(const VwkClip *clip, WORD x, const UWORD search_c
 
     return x - 1;
 }
-
 
 
 /*
@@ -728,7 +716,7 @@ static UWORD search_to_left16(const VwkClip *clip, WORD x, const UWORD search_co
     /*
      * scan downwards until pixel of different colour found
      */
-    for ( ; x >= clip->xmn_clip; x--)
+    for (; x >= clip->xmn_clip; x--)
     {
         pixel = *addr-- & ~OVERLAY_BIT; /* ignore overlay bit on screen */
         if (pixel != search)
@@ -737,7 +725,6 @@ static UWORD search_to_left16(const VwkClip *clip, WORD x, const UWORD search_co
 
     return x + 1;
 }
-
 
 
 /*
@@ -768,34 +755,29 @@ static WORD end_pts16(const VwkClip *clip, WORD x, WORD y, WORD *xleftout, WORD 
 #endif
 
 
-
-static UWORD
-search_to_right (const VwkClip * clip, WORD x, UWORD mask, const UWORD search_col, UWORD * addr)
+static UWORD search_to_right(const VwkClip *clip, WORD x, UWORD mask, const UWORD search_col, UWORD *addr)
 {
     /* is x coord < x resolution ? */
-    while( x++ < clip->xmx_clip ) {
+    while (x++ < clip->xmx_clip) {
         UWORD color;
 
         /* need to jump over interleaved bit_plane? */
         rorw1(mask);    /* rotate right */
-        if ( mask & 0x8000 )
+        if (mask & 0x8000)
             addr += v_planes;
 
         /* search, while pixel color != search color */
         color = get_color(mask, addr);
-        if ( search_col != color ) {
+        if (search_col != color) {
             break;
         }
-
     }
 
     return x - 1;       /* output x coord -1 to endxright. */
 }
 
 
-
-static UWORD
-search_to_left (const VwkClip * clip, WORD x, UWORD mask, const UWORD search_col, UWORD * addr)
+static UWORD search_to_left(const VwkClip *clip, WORD x, UWORD mask, const UWORD search_col, UWORD *addr)
 {
     /* Now, search to the left. */
     while (x-- > clip->xmn_clip) {
@@ -803,19 +785,17 @@ search_to_left (const VwkClip * clip, WORD x, UWORD mask, const UWORD search_col
 
         /* need to jump over interleaved bit_plane? */
         rolw1(mask);    /* rotate left */
-        if ( mask & 0x0001 )
+        if (mask & 0x0001)
             addr -= v_planes;
 
         /* search, while pixel color != search color */
         color = get_color(mask, addr);
-        if ( search_col != color )
+        if (search_col != color)
             break;
-
     }
 
     return x + 1;       /* output x coord + 1 to endxleft. */
 }
-
 
 
 /*
@@ -836,11 +816,11 @@ search_to_left (const VwkClip * clip, WORD x, UWORD mask, const UWORD search_col
 static WORD end_pts(const VwkClip *clip, WORD x, WORD y, WORD *xleftout, WORD *xrightout)
 {
     UWORD color;
-    UWORD * addr;
+    UWORD *addr;
     UWORD mask;
 
     /* see, if we are in the y clipping range */
-    if ( y < clip->ymn_clip || y > clip->ymx_clip)
+    if (y < clip->ymn_clip || y > clip->ymx_clip)
         return 0;
 
 #if CONF_WITH_VDI_16BIT
@@ -856,17 +836,16 @@ static WORD end_pts(const VwkClip *clip, WORD x, WORD y, WORD *xleftout, WORD *x
     mask = 0x8000 >> (x & 0x000f);   /* fetch the pixel mask. */
 
     /* get search color and the left and right end */
-    color = get_color (mask, addr);
-    *xrightout = search_to_right (clip, x, mask, color, addr);
-    *xleftout = search_to_left (clip, x, mask, color, addr);
+    color = get_color(mask, addr);
+    *xrightout = search_to_right(clip, x, mask, color, addr);
+    *xleftout = search_to_left(clip, x, mask, color, addr);
 
     /* see, if the whole found segment is of search color? */
-    if ( color != search_color ) {
+    if (color != search_color) {
         return seed_type ^ 1;   /* return segment not of search color */
     }
     return seed_type ^ 0;       /* return segment is of search color */
 }
-
 
 
 /*
@@ -874,19 +853,19 @@ static WORD end_pts(const VwkClip *clip, WORD x, WORD y, WORD *xleftout, WORD *x
  */
 static void crunch_queue(void)
 {
-    while (((qtop-1)->y == EMPTY) && (qtop > qbottom))
+    while (((qtop - 1)->y == EMPTY) && (qtop > qbottom))
         qtop--;
+
     if (qptr >= qtop)
         qptr = qbottom;
 }
-
 
 
 /*
  * get_seed - put seeds into Q, if (xin,yin) is not of search_color
  */
 static WORD get_seed(const VwkAttrib *attr, const VwkClip *clip,
-                        WORD xin, WORD yin, WORD *xleftout, WORD *xrightout)
+                     WORD xin, WORD yin, WORD *xleftout, WORD *xrightout)
 {
     SEGMENT *qhole;         /* an empty space in the queue */
     SEGMENT *qtmp;
@@ -902,7 +881,7 @@ static WORD get_seed(const VwkAttrib *attr, const VwkClip *clip,
                 continue;
             }
             /* see, if we ran into another seed */
-            if ( ((qtmp->y ^ DOWN_FLAG) == yin) && (qtmp->xleft == *xleftout) )
+            if (((qtmp->y ^ DOWN_FLAG) == yin) && (qtmp->xleft == *xleftout))
             {
                 /* we ran into another seed so remove it and fill the line */
                 Rect rect;
@@ -916,7 +895,7 @@ static WORD get_seed(const VwkAttrib *attr, const VwkClip *clip,
                 draw_rect_common(attr, &rect);
 
                 qtmp->y = EMPTY;
-                if ((qtmp+1) == qtop)
+                if ((qtmp + 1) == qtop)
                     crunch_queue();
                 return 0;
             }
@@ -926,7 +905,7 @@ static WORD get_seed(const VwkAttrib *attr, const VwkClip *clip,
          * there were no holes, so raise qtop if we can
          */
         if (qhole == NULL) {
-            if (++qtop > vdishare.queue+QSIZE) { /* can't raise qtop ... */
+            if (++qtop > vdishare.queue + QSIZE) { /* can't raise qtop ... */
                 KDEBUG(("contourfill(): queue overflow\n"));
                 return -1;      /* error */
             }
@@ -943,9 +922,8 @@ static WORD get_seed(const VwkAttrib *attr, const VwkClip *clip,
 }
 
 
-
 /* common function for line-A linea_fill() and VDI d_countourfill() */
-void contourfill(const VwkAttrib * attr, const VwkClip *clip)
+void contourfill(const VwkAttrib *attr, const VwkClip *clip)
 {
     WORD newxleft;              /* ends of line at oldy +       */
     WORD newxright;             /* the current direction    */
@@ -969,13 +947,15 @@ void contourfill(const VwkAttrib * attr, const VwkClip *clip)
     search_color = INTIN[0];
 
     if ((WORD)search_color < 0) {
-        search_color = pixelread(xleft,oldy);
+        search_color = pixelread(xleft, oldy);
         seed_type = 1;
     } else {
         /* Range check the color and convert the index to a pixel value */
         if (search_color >= numcolors)
             return;
+
         search_color = MAP_COL[search_color];
+
 #if CONF_WITH_VDI_16BIT
         if (TRUECOLOR_MODE)
         {
@@ -1004,7 +984,7 @@ void contourfill(const VwkAttrib * attr, const VwkClip *clip)
         Rect rect;
 
         direction = (oldy & DOWN_FLAG) ? 1 : -1;
-        gotseed = get_seed(attr, clip, oldxleft, oldy+direction, &newxleft, &newxright);
+        gotseed = get_seed(attr, clip, oldxleft, oldy + direction, &newxleft, &newxright);
         if (gotseed < 0)
             return;         /* error, quit */
 
@@ -1012,21 +992,23 @@ void contourfill(const VwkAttrib * attr, const VwkClip *clip)
             xleft = oldxleft;
             while (xleft > newxleft) {
                 --xleft;
-                if (get_seed(attr, clip, xleft, oldy^DOWN_FLAG, &xleft, &xright) < 0)
+                if (get_seed(attr, clip, xleft, oldy ^ DOWN_FLAG, &xleft, &xright) < 0)
                     return; /* error, quit */
             }
         }
         while (newxright < oldxright) {
             ++newxright;
-            gotseed = get_seed(attr, clip, newxright, oldy+direction, &xleft, &newxright);
+            gotseed = get_seed(attr, clip, newxright, oldy + direction, &xleft, &newxright);
             if (gotseed < 0)
                 return;     /* error, quit */
         }
+
         if ((newxright > (oldxright + 1)) && gotseed) {
             xright = oldxright;
             while (xright < newxright) {
                 ++xright;
-                if (get_seed(attr, clip, xright, oldy^DOWN_FLAG, &xleft, &xright) < 0)
+
+                if (get_seed(attr, clip, xright, oldy ^ DOWN_FLAG, &xleft, &xright) < 0)
                     return; /* error, quit */
             }
         }
@@ -1045,6 +1027,7 @@ void contourfill(const VwkAttrib * attr, const VwkClip *clip)
         oldxleft = qptr->xleft;
         oldxright = qptr->xright;
         qptr->y = EMPTY;
+
         if (++qptr == qtop)
             crunch_queue();
 
@@ -1060,8 +1043,7 @@ void contourfill(const VwkAttrib * attr, const VwkClip *clip)
         if ((*SEEDABORT)())
             break;
     }
-}                               /* end of fill() */
-
+} /* end of fill() */
 
 
 /*
@@ -1079,9 +1061,8 @@ static WORD no_abort(void)
 }
 
 
-
 /* VDI version */
-void vdi_v_contourfill(Vwk * vwk)
+void vdi_v_contourfill(Vwk *vwk)
 {
     VwkAttrib attr;
 
@@ -1091,15 +1072,14 @@ void vdi_v_contourfill(Vwk * vwk)
 }
 
 
-
-void vdi_v_get_pixel(Vwk * vwk)
+void vdi_v_get_pixel(Vwk *vwk)
 {
     WORD pel;
     const WORD x = PTSIN[0];       /* fetch x coord. */
     const WORD y = PTSIN[1];       /* fetch y coord. */
 
     /* Get the requested pixel */
-    pel = (WORD)pixelread(x,y);
+    pel = (WORD)pixelread(x, y);
 
 #if CONF_WITH_VDI_16BIT
     if (TRUECOLOR_MODE)
@@ -1115,7 +1095,6 @@ void vdi_v_get_pixel(Vwk * vwk)
 }
 
 
-
 /*
  * get_pix - gets a pixel (just for line-A)
  *
@@ -1125,13 +1104,11 @@ void vdi_v_get_pixel(Vwk * vwk)
  * output:
  *     pixel value
  */
-WORD
-get_pix(void)
+WORD get_pix(void)
 {
     /* return the composed color value */
     return pixelread(PTSIN[0], PTSIN[1]);
 }
-
 
 
 /*
@@ -1154,8 +1131,7 @@ get_pix(void)
  *     PTSIN(0) = x coordinate.
  *     PTSIN(1) = y coordinate.
  */
-void
-put_pix(void)
+void put_pix(void)
 {
     UWORD *addr;
     UWORD color;
@@ -1172,7 +1148,7 @@ put_pix(void)
          * convert x,y to start address & validate
          */
         addr = get_start_addr16(x, y);
-        if (addr < (UWORD*)v_bas_ad || addr >= get_start_addr16(V_REZ_HZ, V_REZ_VT))
+        if (addr < (UWORD *)v_bas_ad || addr >= get_start_addr16(V_REZ_HZ, V_REZ_VT))
             return;
         *addr = INTIN[0];   /* store 16-bit Truecolor value */
         return;
@@ -1184,14 +1160,15 @@ put_pix(void)
     /* co-ordinates can wrap, but cannot write outside screen,
      * alternatively this could check against v_bas_ad+vram_size()
      */
-    if (addr < (UWORD*)v_bas_ad || addr >= get_start_addr(V_REZ_HZ, V_REZ_VT)) {
+    if (addr < (UWORD *)v_bas_ad || addr >= get_start_addr(V_REZ_HZ, V_REZ_VT)) {
         return;
     }
+
     color = INTIN[0];           /* device dependent encoded color bits */
-    mask = 0x8000 >> (x&0xf);   /* initial bit position in WORD */
+    mask = 0x8000 >> (x & 0xf); /* initial bit position in WORD */
 
     for (plane = v_planes; plane; plane--) {
-        if (color&0x0001)
+        if (color & 0x0001)
             *addr++ |= mask;
         else
             *addr++ &= ~mask;

@@ -632,6 +632,7 @@ void screen_init_mode(void)
     rez_was_hacked = FALSE; /* initial assumption */
 }
 
+
 /* Initialize the video address (mode is already set) */
 void screen_init_address(void)
 {
@@ -1053,6 +1054,7 @@ const UBYTE *physbase(void)
 #endif
 }
 
+
 /* Set physical screen address */
 
 static void setphys(const UBYTE *addr)
@@ -1068,10 +1070,12 @@ static void setphys(const UBYTE *addr)
 #endif
 }
 
+
 UBYTE *logbase(void)
 {
     return v_bas_ad;
 }
+
 
 WORD getrez(void)
 {
@@ -1173,7 +1177,7 @@ void setpalette(const UWORD *palettePtr)
     KDEBUG(("Setpalette("));
     for(i = 0 ; i <= max ; i++) {
         KDEBUG(("%03x", palettePtr[i]));
-        if(i < 15)
+        if (i < 15)
             KDEBUG((" "));
     }
     KDEBUG((")\n"));
@@ -1181,6 +1185,7 @@ void setpalette(const UWORD *palettePtr)
     /* next VBL will do this */
     colorptr = palettePtr;
 }
+
 
 /*
  * setcolor(): implement the Setcolor() xbios call
@@ -1226,6 +1231,7 @@ void vsync(void)
     set_sr(old_sr);
 #endif /* CONF_WITH_ATARI_VIDEO */
 }
+
 
 #if CONF_WITH_ATARI_VIDEO
 /*

@@ -12,22 +12,19 @@
 #include "emutos.h"
 #include "vdi_defs.h"
 
-
-
 /* Marker definitions */
-static const WORD m_dot[] = { 1, 2, 0, 0, 0, 0 };
-static const WORD m_plus[] = { 2, 2, 0, -3, 0, 3, 2, -4, 0, 4, 0 };
-static const WORD m_star[] = { 3, 2, 0, -3, 0, 3, 2, 3, 2, -3, -2, 2, 3, -2, -3, 2};
-static const WORD m_square[] = { 1, 5, -4, -3, 4, -3, 4, 3, -4, 3, -4, -3 };
-static const WORD m_cross[] = { 2, 2, -4, -3, 4, 3, 2, -4, 3, 4, -3 };
-static const WORD m_dmnd[] = { 1, 5, -4, 0, 0, -3, 4, 0, 0, 3, -4, 0 };
-
+static const WORD m_dot[] = {1, 2, 0, 0, 0, 0};
+static const WORD m_plus[] = {2, 2, 0, -3, 0, 3, 2, -4, 0, 4, 0};
+static const WORD m_star[] = {3, 2, 0, -3, 0, 3, 2, 3, 2, -3, -2, 2, 3, -2, -3, 2};
+static const WORD m_square[] = {1, 5, -4, -3, 4, -3, 4, 3, -4, 3, -4, -3};
+static const WORD m_cross[] = {2, 2, -4, -3, 4, 3, 2, -4, 3, 4, -3};
+static const WORD m_dmnd[] = {1, 5, -4, 0, 0, -3, 4, 0, 0, 3, -4, 0};
 
 
 /*
  * vdi_vsm_height - Sets the height of markers
  */
-void vdi_vsm_height(Vwk * vwk)
+void vdi_vsm_height(Vwk *vwk)
 {
     WORD h, *pts_out;
 
@@ -50,26 +47,24 @@ void vdi_vsm_height(Vwk * vwk)
 }
 
 
-
 /*
  * vdi_vsm_type - Sets the current type of marker
  */
-void vdi_vsm_type(Vwk * vwk)
+void vdi_vsm_type(Vwk *vwk)
 {
     WORD mk;
 
-    mk = ((INTIN[0]<MIN_MARK_STYLE) || (INTIN[0]>MAX_MARK_STYLE)) ? DEF_MARK_STYLE : INTIN[0];
+    mk = ((INTIN[0] < MIN_MARK_STYLE) || (INTIN[0] > MAX_MARK_STYLE)) ? DEF_MARK_STYLE : INTIN[0];
 
     vwk->mark_index = mk - 1;
     INTOUT[0] = mk;
 }
 
 
-
 /*
  * vdi_vsm_color - Set marker color
  */
-void vdi_vsm_color(Vwk * vwk)
+void vdi_vsm_color(Vwk *vwk)
 {
     WORD i;
 
@@ -79,18 +74,16 @@ void vdi_vsm_color(Vwk * vwk)
 }
 
 
-
 /*
  * vdi_v_pmarker - Polymarker
  */
-void vdi_v_pmarker(Vwk * vwk)
+void vdi_v_pmarker(Vwk *vwk)
 {
 /* If this constant goes greater than 5, you must increase size of sav_points */
 #define MARKSEGMAX 5
 
-    static const WORD * const markhead[] = {
-        m_dot, m_plus, m_star, m_square, m_cross, m_dmnd
-    };
+    static const WORD *const markhead[] = {
+        m_dot, m_plus, m_star, m_square, m_cross, m_dmnd};
 
     WORD i, j, num_lines, num_vert, x_center, y_center, sav_points[10];
     WORD sav_index, sav_color, sav_width, sav_beg, sav_end;
@@ -162,11 +155,10 @@ void vdi_v_pmarker(Vwk * vwk)
 }
 
 
-
 /*
  * vdi_vqm_attributes - Inquire current polymarker attributes
  */
-void vdi_vqm_attributes(Vwk * vwk)
+void vdi_vqm_attributes(Vwk *vwk)
 {
     INTOUT[0] = vwk->mark_index;
     INTOUT[1] = REV_MAP_COL[vwk->mark_color];

@@ -92,7 +92,7 @@ long get_xhdi_nfid(void)
 /* terminate the execution of the emulator if possible, else no-op */
 void nf_shutdown(void)
 {
-    if(nfid_shutdown) {
+    if (nfid_shutdown) {
         NFCall(nfid_shutdown);
     } else {
         KINFO(("NF_SHUTDOWN not available\n"));
@@ -108,8 +108,8 @@ BOOL has_nf_shutdown(void)
 /* load a new OS kernel into memory at 'addr' ('size' bytes available) */
 long nf_bootstrap(UBYTE *addr, long size)
 {
-    if(hasNF) {
-        if(bootstrap_id) {
+    if (hasNF) {
+        if (bootstrap_id) {
             return NFCall(bootstrap_id, addr, size);
         } else {
             KINFO(("BOOTSTRAP natfeat not available\n"));
@@ -121,8 +121,8 @@ long nf_bootstrap(UBYTE *addr, long size)
 /* get the boot drive number */
 UWORD nf_getbootdrive(void)
 {
-    if(hasNF) {
-        if(bootstrap_id) {
+    if (hasNF) {
+        if (bootstrap_id) {
             return NFCall(bootstrap_id | 0x0001);
         } else {
             KINFO(("BOOTSTRAP natfeat not available\n"));
@@ -134,8 +134,8 @@ UWORD nf_getbootdrive(void)
 /* get the bootstrap arguments */
 long nf_getbootstrap_args(char *addr, long size)
 {
-    if(hasNF) {
-        if(bootstrap_id) {
+    if (hasNF) {
+        if (bootstrap_id) {
             return NFCall(bootstrap_id | 0x0002, addr, size);
         } else {
             KINFO(("BOOTSTRAP natfeat not available\n"));
@@ -153,8 +153,8 @@ long nf_getbootstrap_args(char *addr, long size)
  */
 BOOL mmu_is_emulated(void)
 {
-    if(hasNF) {
-        if(nfid_config) {
+    if (hasNF) {
+        if (nfid_config) {
             return NFCall(nfid_config | 0x0001, NF_CONFIG_MMU);
         } else {
             KINFO(("NF_CONFIG not available\n"));
@@ -170,8 +170,8 @@ void nf_setlinea(void)
 {
     BOOL err = TRUE;
 
-    if(hasNF) {
-        if(nfid_config) {
+    if (hasNF) {
+        if (nfid_config) {
             if (NFCall(nfid_config | 0x0004, line_a_vars) >= 0)
                 err = FALSE;
         }

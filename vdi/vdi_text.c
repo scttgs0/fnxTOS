@@ -19,7 +19,6 @@
 #include "lineavars.h"
 #include "biosext.h"
 
-
 /*
  * start of calculations extracted from vdi_tblit.S
  *
@@ -47,7 +46,7 @@
 #define form_ht     16          /* form height */
 #define mxcelwd     8           /* maximum cell width */
 
-#define total_off   (l_off+r_off)       /* total skew offset */
+#define total_off (l_off + r_off) /* total skew offset */
 
 /*
  *  Since a character cell may be rotated 90 or 270 degrees, the cell
@@ -57,10 +56,10 @@
  *  represents the number of rows).  Cell width and cell height must be
  *  calculated two different ways in order to accommodate rotation.
  */
-#define cel_ww  (((total_off+mxcelwd+15)/16)*2) /* worst case # bytes/row if width */
-#define cel_wh  (total_off+mxcelwd)     /* cell "width" if used as height (90 rotation) */
-#define cel_hh  (form_ht)               /* cell height if used as height */
-#define cel_hw  (((form_ht+15)/16)*2)   /* cell "height" if used as width (90 rotation) */
+#define cel_ww (((total_off + mxcelwd + 15) / 16) * 2) /* worst case # bytes/row if width */
+#define cel_wh (total_off + mxcelwd)                   /* cell "width" if used as height (90 rotation) */
+#define cel_hh (form_ht)                               /* cell height if used as height */
+#define cel_hw (((form_ht + 15) / 16) * 2)             /* cell "height" if used as width (90 rotation) */
 
 /*
  *  The maximum of:
@@ -68,30 +67,30 @@
  *      cell width (as height) * cell height (as width)
  *  will be used for the basic buffer size.
  */
-#define cel_sz0 (cel_ww*cel_hh) /* cell size if no rotation */
-#define cel_sz9 (cel_wh*cel_hw) /* cell size if 90 deg rotation */
+#define cel_sz0 (cel_ww * cel_hh) /* cell size if no rotation */
+#define cel_sz9 (cel_wh * cel_hw) /* cell size if 90 deg rotation */
 
 #if cel_sz0 >= cel_sz9
-# define cel_siz    (cel_sz0*2)
+#define cel_siz (cel_sz0 * 2)
 #else
-# define cel_siz    (cel_sz9*2)
+#define cel_siz (cel_sz9 * 2)
 #endif
 
 /*
  *  Now we repeat the whole thing for doubled cell dimensions
  */
-#define cel2_ww     ((((2*(total_off+mxcelwd))+3+15)/16)*2)
-#define cel2_wh     ((2*(total_off+mxcelwd))+2)
-#define cel2_hh     ((2*form_ht)+2)
-#define cel2_hw     ((((2*form_ht)+3+15)/16)*2)
+#define cel2_ww ((((2 * (total_off + mxcelwd)) + 3 + 15) / 16) * 2)
+#define cel2_wh ((2 * (total_off + mxcelwd)) + 2)
+#define cel2_hh ((2 * form_ht) + 2)
+#define cel2_hw ((((2 * form_ht) + 3 + 15) / 16) * 2)
 
-#define cel2_sz0    (cel2_ww*cel2_hh)   /* doubled cell size, no rotation */
-#define cel2_sz9    (cel2_wh*cel2_hw)   /* doubled cell size, 90 deg rotation */
+#define cel2_sz0 (cel2_ww * cel2_hh) /* doubled cell size, no rotation */
+#define cel2_sz9 (cel2_wh * cel2_hw) /* doubled cell size, 90 deg rotation */
 
 #if cel2_sz0 >= cel2_sz9
-# define cel2_siz   (cel2_sz0)
+#define cel2_siz (cel2_sz0)
 #else
-# define cel2_siz   (cel2_sz9)
+#define cel2_siz (cel2_sz9)
 #endif
 
 /*
@@ -101,9 +100,9 @@
  *  For worst case add two bytes.
  */
 #if cel2_ww >= cel2_hw
-# define out_add    (cel2_ww+2)
+#define out_add (cel2_ww + 2)
 #else
-# define out_add    (cel2_hw+2)
+#define out_add (cel2_hw + 2)
 #endif
 
 /*
@@ -116,14 +115,13 @@
  *  the text in either buffer.  Therefore both buffers should be 'large'
  *  buffers.  The following defines & tests have been adjusted accordingly.
  */
-#define SCRATCHBUF_OFFSET   (cel2_siz+out_add)
-#if SCRATCHBUF_SIZE < (2*SCRATCHBUF_OFFSET)
-# error SCRATCHBUF_SIZE is too small for specified font metrics
+#define SCRATCHBUF_OFFSET (cel2_siz + out_add)
+#if SCRATCHBUF_SIZE < (2 * SCRATCHBUF_OFFSET)
+#error SCRATCHBUF_SIZE is too small for specified font metrics
 #endif
 /*
  * end of calculations extracted from vdi_tblit.S
  */
-
 
 /*
  * Local structure for passing justification info
@@ -150,9 +148,10 @@ typedef struct
 
 
 /* Prototypes for this module */
-static void make_header(Vwk * vwk);
-static UWORD clc_dda(Vwk * vwk, UWORD act, UWORD req);
-static UWORD act_siz(Vwk * vwk, UWORD top);
+static void make_header(Vwk *vwk);
+static UWORD clc_dda(Vwk *vwk, UWORD act, UWORD req);
+static UWORD act_siz(Vwk *vwk, UWORD top);
+
 
 /*
  * calculates height of text string
@@ -170,6 +169,7 @@ static WORD calc_height(Vwk *vwk)
     return height;
 }
 
+
 /*
  * calculates width of text string
  */
@@ -181,7 +181,7 @@ static WORD calc_width(Vwk *vwk, WORD cnt, WORD *str)
 
     if (fnt_ptr->flags & F_MONOSPACE)
     {
-        width = cnt * (fnt_ptr->off_table[1]-fnt_ptr->off_table[0]);
+        width = cnt * (fnt_ptr->off_table[1] - fnt_ptr->off_table[0]);
     }
     else
     {
@@ -209,6 +209,7 @@ static WORD calc_width(Vwk *vwk, WORD cnt, WORD *str)
 
     return width;
 }
+
 
 #if CONF_WITH_VDI_TEXT_SPEEDUP
 /*
@@ -270,14 +271,15 @@ static BOOL ok_for_direct_blit(Vwk *vwk, WORD width, JUSTINFO *justified)
     }
 
     /* check that string falls entirely within clip area */
-    if ((DESTX < xmin) || (DESTX+width > xmax))
+    if ((DESTX < xmin) || (DESTX + width > xmax))
         return FALSE;
-    if ((DESTY < ymin) || (DESTY+DELY > ymax))
+    if ((DESTY < ymin) || (DESTY + DELY > ymax))
         return FALSE;
 
     return TRUE;
 }
 #endif
+
 
 /*
  * output specified text string
@@ -297,7 +299,7 @@ static void output_text(Vwk *vwk, WORD count, WORD *str, WORD width, JUSTINFO *j
 
     WORD temp;
     const Fonthead *fnt_ptr;
-    Point * point;
+    Point *point;
 
     if (count <= 0)     /* quick out for unlikely occurrence */
         return;
@@ -338,6 +340,7 @@ static void output_text(Vwk *vwk, WORD count, WORD *str, WORD width, JUSTINFO *j
         d1 = 0;
         d2 = 0;
     }
+
     LOFF = d1;
     ROFF = d2;
 
@@ -351,7 +354,7 @@ static void output_text(Vwk *vwk, WORD count, WORD *str, WORD width, JUSTINFO *j
      */
     outline = (vwk->style & F_OUTLINE) ? OUTLINE_THICKNESS : 0;
 
-    switch(vwk->h_align) {
+    switch (vwk->h_align) {
     default:                /* normally case 0: left justified */
         delh = 0;
         break;
@@ -363,7 +366,7 @@ static void output_text(Vwk *vwk, WORD count, WORD *str, WORD width, JUSTINFO *j
         break;
     }
 
-    switch(vwk->v_align) {
+    switch (vwk->v_align) {
     default:                /* normally case 0: baseline */
         delv = fnt_ptr->top;
         delh += d1;
@@ -402,10 +405,11 @@ static void output_text(Vwk *vwk, WORD count, WORD *str, WORD width, JUSTINFO *j
         underline = -1;
     else
         underline = 0;
+
     underline += fnt_ptr->ul_size;
 
     point = (Point*)PTSIN;
-    switch(vwk->chup) {
+    switch (vwk->chup) {
     default:                /* normally case 0: no rotation */
         DESTX = point->x - delh - outline;
         DESTY = point->y - delv - outline;
@@ -491,6 +495,7 @@ static void output_text(Vwk *vwk, WORD count, WORD *str, WORD width, JUSTINFO *j
                 }
             }
         }
+
         /* end if justified */
         if (fnt_ptr->flags & F_HORZ_OFF)
             DESTX += fnt_ptr->hor_table[temp];
@@ -498,7 +503,7 @@ static void output_text(Vwk *vwk, WORD count, WORD *str, WORD width, JUSTINFO *j
     }                   /* for j */
 
     if (vwk->style & F_UNDER) {
-        Line * line = (Line*)PTSIN;
+        Line *line = (Line*)PTSIN;
         line->x1 = startx;
         line->y1 = starty;
 
@@ -543,10 +548,12 @@ static void output_text(Vwk *vwk, WORD count, WORD *str, WORD width, JUSTINFO *j
     }
 }
 
-void vdi_v_gtext(Vwk * vwk)
+
+void vdi_v_gtext(Vwk *vwk)
 {
     output_text(vwk, CONTRL[3], INTIN, -1, NULL);
 }
+
 
 #if CONF_WITH_GDOS
 /*
@@ -570,7 +577,8 @@ static void trnsfont(void)
 }
 #endif
 
-void text_init2(Vwk * vwk)
+
+void text_init2(Vwk *vwk)
 {
     vwk->cur_font = def_font;
     vwk->loaded_fonts = NULL;
@@ -588,6 +596,7 @@ void text_init2(Vwk * vwk)
     font_ring[2] = vwk->loaded_fonts;
     DEV_TAB[10] = vwk->num_fonts;
 }
+
 
 void text_init(void)
 {
@@ -662,6 +671,7 @@ void text_init(void)
     font_count = DEV_TAB[10] = ++j;     /* number of faces */
 }
 
+
 /*
  * set up width/height values returned by vst_height()/vst_point()
  */
@@ -678,7 +688,8 @@ static void setup_width_height(const Fonthead *font)
     flip_y = 1;
 }
 
-void vdi_vst_height(Vwk * vwk)
+
+void vdi_vst_height(Vwk *vwk)
 {
     const Fonthead **chain_ptr;
     const Fonthead *test_font, *single_font;
@@ -740,7 +751,7 @@ void vdi_vst_height(Vwk * vwk)
  * exit:
  *   actual size
  */
-static UWORD act_siz(Vwk * vwk, UWORD top)
+static UWORD act_siz(Vwk *vwk, UWORD top)
 {
     UWORD accu;
     UWORD retval;
@@ -748,8 +759,9 @@ static UWORD act_siz(Vwk * vwk, UWORD top)
 
     if (vwk->dda_inc == 0xffff) {
         /* double size */
-        return (top<<1);
+        return (top << 1);
     }
+
     accu = 0x7fff;
     retval = vwk->t_sclsts ? top : 0;
 
@@ -767,7 +779,7 @@ static UWORD act_siz(Vwk * vwk, UWORD top)
 }
 
 
-static void make_header(Vwk * vwk)
+static void make_header(Vwk *vwk)
 {
     const Fonthead *source_font;
     Fonthead *dest_font;
@@ -792,6 +804,7 @@ static void make_header(Vwk * vwk)
         dest_font->ascent = act_siz(vwk, source_font->ascent);
         dest_font->half = act_siz(vwk, source_font->half);
     }
+
     dest_font->descent = act_siz(vwk, source_font->descent);
     dest_font->bottom = act_siz(vwk, source_font->bottom);
     dest_font->max_char_width = act_siz(vwk, source_font->max_char_width);
@@ -817,7 +830,7 @@ static void make_header(Vwk * vwk)
 }
 
 
-void vdi_vst_point(Vwk * vwk)
+void vdi_vst_point(Vwk *vwk)
 {
     WORD font_id;
     const Fonthead **chain_ptr, *double_font;
@@ -878,13 +891,13 @@ void vdi_vst_point(Vwk * vwk)
 }
 
 
-void vdi_vst_effects(Vwk * vwk)
+void vdi_vst_effects(Vwk *vwk)
 {
     INTOUT[0] = vwk->style = INTIN[0] & INQ_TAB[2];
 }
 
 
-void vdi_vst_alignment(Vwk * vwk)
+void vdi_vst_alignment(Vwk *vwk)
 {
     WORD a, *int_out, *int_in;
 
@@ -921,14 +934,14 @@ void vdi_vst_alignment(Vwk * vwk)
  * range of 0 to 3600 inclusive cause vqt_extent() to not return
  * values ...
  */
-void vdi_vst_rotation(Vwk * vwk)
+void vdi_vst_rotation(Vwk *vwk)
 {
     WORD angle = INTIN[0];
 
-    while(angle < 0)        /* ensure positive angle */
+    while (angle < 0) /* ensure positive angle */
         angle += 3600;
 
-    while(angle >= 3600)    /* between 0 and 3599 inclusive */
+    while (angle >= 3600) /* between 0 and 3599 inclusive */
         angle -= 3600;
 
     /* this sets a value of 0, 900, 1800, 2700 or 3600, just like TOS3/TOS4 */
@@ -936,7 +949,7 @@ void vdi_vst_rotation(Vwk * vwk)
 }
 
 
-void vdi_vst_font(Vwk * vwk)
+void vdi_vst_font(Vwk *vwk)
 {
     WORD *old_intin, point, *old_ptsout, dummy[4], *old_ptsin;
     WORD face;
@@ -985,7 +998,7 @@ void vdi_vst_font(Vwk * vwk)
 }
 
 
-void vdi_vst_color(Vwk * vwk)
+void vdi_vst_color(Vwk *vwk)
 {
     WORD r;
 
@@ -996,7 +1009,7 @@ void vdi_vst_color(Vwk * vwk)
 }
 
 
-void vdi_vqt_attributes(Vwk * vwk)
+void vdi_vqt_attributes(Vwk *vwk)
 {
     WORD *pointer;
     const Fonthead *fnt_ptr;
@@ -1021,14 +1034,14 @@ void vdi_vqt_attributes(Vwk * vwk)
 }
 
 
-void vdi_vqt_extent(Vwk * vwk)
+void vdi_vqt_extent(Vwk *vwk)
 {
     WORD height, width;
 
     height = calc_height(vwk);
     width = calc_width(vwk, CONTRL[3], INTIN);
 
-    bzero(PTSOUT,8*sizeof(WORD));
+    bzero(PTSOUT, 8 * sizeof(WORD));
     switch (vwk->chup) {
     default:                    /* 0 or 3600 ... see vdi_vst_rotation() */
         PTSOUT[2] = width;
@@ -1055,11 +1068,12 @@ void vdi_vqt_extent(Vwk * vwk)
         PTSOUT[7] = width;
         break;
     }
+
     flip_y = 1;
 }
 
 
-void vdi_vqt_width(Vwk * vwk)
+void vdi_vqt_width(Vwk *vwk)
 {
     WORD k;
     WORD *pointer;
@@ -1073,6 +1087,7 @@ void vdi_vqt_width(Vwk * vwk)
     *(pointer + 4) = 0;
 
     k = INTIN[0];
+
     if ((k < fnt_ptr->first_ade) || (k > fnt_ptr->last_ade))
         INTOUT[0] = -1;
     else {
@@ -1096,8 +1111,7 @@ void vdi_vqt_width(Vwk * vwk)
 }
 
 
-
-void vdi_vqt_name(Vwk * vwk)
+void vdi_vqt_name(Vwk *vwk)
 {
     WORD i, element, current_font_id;
     const char *name;
@@ -1127,14 +1141,16 @@ void vdi_vqt_name(Vwk * vwk)
 
     int_out = INTOUT;
     *int_out++ = tmp_font->font_id;
+
     for (i = 0, name = tmp_font->name; (*int_out++ = *name++); i++)
         ;
+
     while (i++ < FONT_NAME_LEN)
         *int_out++ = 0;
 }
 
 
-void vdi_vqt_fontinfo(Vwk * vwk)
+void vdi_vqt_fontinfo(Vwk *vwk)
 {
     WORD *pointer;
     const Fonthead *fnt_ptr;
@@ -1174,7 +1190,7 @@ void vdi_vqt_fontinfo(Vwk * vwk)
 }
 
 
-void gdp_justified(Vwk * vwk)
+void gdp_justified(Vwk *vwk)
 {
     WORD spaces = 0;
     WORD expand;
@@ -1289,7 +1305,7 @@ void gdp_justified(Vwk * vwk)
 }
 
 
-void vdi_vst_load_fonts(Vwk * vwk)
+void vdi_vst_load_fonts(Vwk *vwk)
 {
 #if CONF_WITH_GDOS
     WORD id, count, *control;
@@ -1312,9 +1328,9 @@ void vdi_vst_load_fonts(Vwk * vwk)
 
     /* Init the global structures           */
     vwk->scrpt2 = control[9];
-    vwk->scrtchp = (WORD *) ULONG_AT(&control[7]);
+    vwk->scrtchp = (WORD *)ULONG_AT(&control[7]);
 
-    first_font = (Fonthead *) ULONG_AT(&control[10]);
+    first_font = (Fonthead *)ULONG_AT(&control[10]);
     vwk->loaded_fonts = first_font;
 
     /* Find out how many distinct font id numbers have just been linked in. */
@@ -1350,7 +1366,7 @@ void vdi_vst_load_fonts(Vwk * vwk)
 }
 
 
-void vdi_vst_unload_fonts(Vwk * vwk)
+void vdi_vst_unload_fonts(Vwk *vwk)
 {
 #if CONF_WITH_GDOS
     /* Since we always unload all fonts, this is easy. */
@@ -1371,21 +1387,21 @@ void vdi_vst_unload_fonts(Vwk * vwk)
  * output:
  *   vwk->t_sclsts is the text scaling flag (means: scale up or down)
  */
-static UWORD clc_dda(Vwk * vwk, UWORD act, UWORD req)
+static UWORD clc_dda(Vwk *vwk, UWORD act, UWORD req)
 {
     if ( req < act ) {
-        vwk->t_sclsts = 0;           /* we do scale down */
-        if ( req == 0 ) {
-            req = 1;            /* if 0 then make it 1 (minimum value) */
+        vwk->t_sclsts = 0;          /* we do scale down */
+        if (req == 0)  {
+            req = 1;                /* if 0 then make it 1 (minimum value) */
         }
     }
     else {
-        vwk->t_sclsts = 1;           /* we do scale up */
+        vwk->t_sclsts = 1;          /* we do scale up */
         req -= act;
         /* if larger than 2x? */
-        if ( req >= act )
+        if (req >= act)
             return 0xFFFF;          /* indicates 2x scale up */
     }
 
-    return divu(((ULONG)req)<<16, act);
+    return divu(((ULONG)req) << 16, act);
 }

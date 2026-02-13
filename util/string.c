@@ -170,7 +170,7 @@ int strncasecmp(const char *a, const char *b, size_t n)
 
 int toupper(int c)
 {
-    if(c>='a' && c<='z')
+    if (c >= 'a' && c <= 'z')
         return(c-'a'+'A');
     else
         return(c);

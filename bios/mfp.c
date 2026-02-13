@@ -162,7 +162,7 @@ static const WORD timer_num[] = { MFP_TIMERA, MFP_TIMERB, MFP_200HZ, MFP_TIMERD 
 
 void xbtimer(WORD timer, WORD control, WORD data, LONG vector)
 {
-    if(timer < 0 || timer > 3)
+    if (timer < 0 || timer > 3)
         return;
     setup_timer(MFP_BASE,timer, control, data);
     mfpint(timer_num[timer], vector);
@@ -175,7 +175,7 @@ int timeout_gpip(LONG delay)
     LONG next = hz_200 + delay;
 
     while(hz_200 < next) {
-        if((mfp->gpip & 0x20) == 0) {
+        if ((mfp->gpip & 0x20) == 0) {
             return 0;
         }
     }

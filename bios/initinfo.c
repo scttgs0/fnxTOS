@@ -87,13 +87,13 @@ static void print_art(const char *s)
     set_margin();
     while(*s) {
         color = (*s++) & 15;
-        if(color != old) {
+        if (color != old) {
             cprintf("\033c%c", color + 32);
             old = color;
         }
         cprintf(" ");
     }
-    if(old != 0) {
+    if (old != 0) {
         cprintf("\033c ");
     }
     cprintf("\r\n");

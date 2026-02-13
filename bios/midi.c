@@ -94,6 +94,7 @@ LONG bconout3(WORD dev, WORD c)
 #endif
 }
 
+
 /*==== MIDI xbios function =========================================*/
 
 /* cnt = number of bytes to send less one

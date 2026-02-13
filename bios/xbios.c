@@ -353,7 +353,7 @@ static LONG xbios_e(WORD devno)
     LONG ret;
     kprintf("XBIOS: Iorec(%d)\n", devno);
     ret = iorec(devno);
-    if(ret == -1) {
+    if (ret == -1) {
         kprintf("Iorec(%d) : bad input device\n", devno);
     }
     return ret;
@@ -420,7 +420,7 @@ static ULONG rseed;
 
 static LONG random(void)
 {
-    if(rseed == 0) {
+    if (rseed == 0) {
         rseed = hz_200 << 16;
         rseed += hz_200;
     }

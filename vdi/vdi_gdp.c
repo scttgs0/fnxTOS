@@ -15,14 +15,13 @@
 #include "vdi_defs.h"
 #include "lineavars.h"
 
-
 /*
  * the number of points used to describe the corners of a rounded
  * rectangle.  this should be 5 for TOS visual compatibility.
  */
 #define CORNER_POINTS   5
-#define RBOX_POINTS     (4*CORNER_POINTS+1)     /* for polyline()/wideline() */
-#define RFBOX_POINTS    (4*CORNER_POINTS)       /* for polygon() */
+#define RBOX_POINTS     (4 * CORNER_POINTS + 1)   /* for polyline()/wideline() */
+#define RFBOX_POINTS    (4 * CORNER_POINTS)       /* for polygon() */
 
 /* Definitions for sine and cosine */
 #define    HALFPI    900
@@ -34,7 +33,7 @@
  * in sin_tbl[] below
  */
 #define MAX_TABLE_ANGLE 896
-#define SINE_TABLE_SIZE ((MAX_TABLE_ANGLE/8)+1)
+#define SINE_TABLE_SIZE ((MAX_TABLE_ANGLE / 8) + 1)
 
 /*
  * local GDP variables
@@ -104,7 +103,6 @@ static UWORD Isin(WORD angle)
 }
 
 
-
 /*
  * Icos - Return integer cosine between 0 and 32767
  *
@@ -112,9 +110,8 @@ static UWORD Isin(WORD angle)
  */
 static UWORD Icos(UWORD angle)
 {
-    return Isin(HALFPI-angle);
+    return Isin(HALFPI - angle);
 }
-
 
 
 /*
@@ -131,7 +128,7 @@ static void clc_pts(Point *point, WORD angle)
     while (angle >= TWOPI)          /* normalise angle to 0-3599 inclusive */
         angle -= TWOPI;
 
-    if (angle > 3*HALFPI) {         /* fourth quadrant */
+    if (angle > 3 * HALFPI) {       /* fourth quadrant */
         angle = TWOPI - angle;
         negative = 0;
     } else if (angle > PI) {        /* third quadrant */
@@ -139,7 +136,7 @@ static void clc_pts(Point *point, WORD angle)
         negative = X_NEGATIVE;
     } else if (angle > HALFPI) {    /* second quadrant */
         angle = PI - angle;
-        negative = X_NEGATIVE|Y_NEGATIVE;
+        negative = X_NEGATIVE | Y_NEGATIVE;
     }
 
     /* handle the values not handled by the table */
@@ -148,7 +145,7 @@ static void clc_pts(Point *point, WORD angle)
         xdiff = 0;
         ydiff = yrad;
     }
-    else if (angle < HALFPI-MAX_TABLE_ANGLE)
+    else if (angle < HALFPI - MAX_TABLE_ANGLE)
     {
         xdiff = xrad;
         ydiff = 0;
@@ -170,15 +167,14 @@ static void clc_pts(Point *point, WORD angle)
 }
 
 
-
 /*
  * clc_arc - calculates the positions of all the points necessary to draw
  *           a circular/elliptical arc (or a circle/ellipse), and draws it
  */
-static void clc_arc(Vwk * vwk, int steps)
+static void clc_arc(Vwk *vwk, int steps)
 {
     WORD i, start, angle;
-    Point * point;
+    Point *point;
 
     point = (Point *)PTSIN;
     start = beg_ang;
@@ -186,7 +182,7 @@ static void clc_arc(Vwk * vwk, int steps)
     for (i = 1; i < steps; i++) {
         angle = mul_div(del_ang, i, steps) + start;
         clc_pts(point, angle);
-        if (*(LONG *)point != *(LONG *)(point-1))   /* ignore duplicates */
+        if (*(LONG *)point != *(LONG *)(point - 1)) /* ignore duplicates */
             point++;
     }
     clc_pts(point++, end_ang);
@@ -222,7 +218,6 @@ static void clc_arc(Vwk * vwk, int steps)
 }
 
 
-
 /*
  * gdp_rbox - implements v_rbox(), v_rfbox()
  */
@@ -232,7 +227,7 @@ static void gdp_rbox(Vwk *vwk)
     WORD x1, y1, x2, y2;
     WORD xoff[CORNER_POINTS], yoff[CORNER_POINTS];
     WORD *p, *xp, *yp;
-    Line * line = (Line*)PTSIN;
+    Line *line = (Line *)PTSIN;
 
     /*
      * set (x1,y1) to LL corner of box, (x2,y2) to UR corner of box
@@ -251,8 +246,8 @@ static void gdp_rbox(Vwk *vwk)
      * . we clamp both radii to a maximum of half the length of the
      *   corresponding box side
      */
-    xradius = min(xres>>6,(x2-x1)/2);
-    yradius = min(mul_div(xradius,xsize,ysize),(y1-y2)/2);
+    xradius = min(xres >> 6, (x2 - x1) / 2);
+    yradius = min(mul_div(xradius, xsize, ysize), (y1 - y2) / 2);
 
     /*
      * for each corner we generate 5 points.  the following calculates
@@ -333,10 +328,9 @@ static void gdp_rbox(Vwk *vwk)
             wideline(vwk, (Point*)PTSIN, RBOX_POINTS);
     } else {                    /* v_rfbox() */
         /* polygon() will join up the first & last points itself */
-        polygon(vwk, (Point*)PTSIN, RFBOX_POINTS);
+        polygon(vwk, (Point *)PTSIN, RFBOX_POINTS);
     }
 }
-
 
 
 /*
@@ -361,7 +355,6 @@ static int clc_nsteps(void)
 
     return steps;
 }
-
 
 
 /*
@@ -419,11 +412,10 @@ static void gdp_curve(Vwk *vwk)
 }
 
 
-
 /*
  * vdi_v_gdp - Major opcode for graphics device primitives
  */
-void vdi_v_gdp(Vwk * vwk)
+void vdi_v_gdp(Vwk *vwk)
 {
     WORD save_beg, save_end;
     WORD *xy;
@@ -441,7 +433,7 @@ void vdi_v_gdp(Vwk * vwk)
             xy[4] = xy[2];
             xy[6] = xy[8] = xy[0];
 
-            polyline(vwk, (Point*)PTSIN, 5, vwk->fill_color);
+            polyline(vwk, (Point *)PTSIN, 5, vwk->fill_color);
         }
         break;
 

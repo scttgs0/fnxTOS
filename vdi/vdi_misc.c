@@ -18,8 +18,7 @@
 #include "lineavars.h"
 #include "biosext.h"
 
-static BOOL in_proc;                   /* flag, if we are still running */
-
+static BOOL in_proc; /* flag, if we are still running */
 
 
 /*
@@ -27,7 +26,7 @@ static BOOL in_proc;                   /* flag, if we are still running */
  *
  * raster (ll, ur) format is desired.
  */
-void arb_corner(Rect * rect)
+void arb_corner(Rect *rect)
 {
     /* Fix the x coordinate values, if necessary. */
     if (rect->x1 > rect->x2) {
@@ -45,13 +44,12 @@ void arb_corner(Rect * rect)
 }
 
 
-
 /*
  * arb_line - copy and sort (arbitrate) the lines coordinates
  *
  * traditional (ll, ur) format is desired.
  */
-void arb_line(Line * line)
+void arb_line(Line *line)
 {
     /* Fix the x coordinate values, if necessary. */
     if (line->x1 > line->x2) {
@@ -67,7 +65,6 @@ void arb_line(Line * line)
         line->y2 = temp;
     }
 }
-
 
 
 /*
@@ -90,27 +87,25 @@ static void tick_int(int u)
 }
 
 
-
 /*
  * vdi_vex_timv - exchange timer interrupt vector
  *
  * entry:          new vector in CONTRL[7-8]
  * exit:           old vector in CONTRL[9-10]
  */
-void vdi_vex_timv(Vwk * vwk)
+void vdi_vex_timv(Vwk *vwk)
 {
     WORD old_sr;
 
     old_sr = set_sr(0x2700);
 
-    ULONG_AT(&CONTRL[9]) = (ULONG) tim_addr;
-    tim_addr = (ETV_TIMER_T) ULONG_AT(&CONTRL[7]);
+    ULONG_AT(&CONTRL[9]) = (ULONG)tim_addr;
+    tim_addr = (ETV_TIMER_T)ULONG_AT(&CONTRL[7]);
 
     set_sr(old_sr);
 
     INTOUT[0] = (WORD)Tickcal();        /* ms between timer C calls */
 }
-
 
 
 /*
@@ -135,7 +130,6 @@ void timer_init(void)
 }
 
 
-
 /*
  * timer_exit - de-initialize the time
  *
@@ -151,7 +145,6 @@ void timer_exit(void)
 }
 
 
-
 /*
  * get_start_addr - return memory address for column x, row y
  *
@@ -163,7 +156,7 @@ void timer_exit(void)
  * our point of view: high-order bits are 1-filled, so the number remains
  * negative.
  */
-UWORD * get_start_addr(const WORD x, const WORD y)
+UWORD *get_start_addr(const WORD x, const WORD y)
 {
     UBYTE * addr;
     WORD x2 = x & 0xfff0;   /* ensure that value to be shifted remains signed! */
@@ -173,5 +166,5 @@ UWORD * get_start_addr(const WORD x, const WORD y)
     addr += x2 >> v_planes_shift;       /* add x coordinate part of addr */
     addr += muls(y, v_lin_wr);          /* add y coordinate part of addr */
 
-    return (UWORD*)addr;
+    return (UWORD *)addr;
 }

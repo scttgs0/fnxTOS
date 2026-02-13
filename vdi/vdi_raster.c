@@ -28,10 +28,9 @@
 #define ASM_BLIT_IS_AVAILABLE   1   /* may use m68k assembler fast_bit_blt routine */
 #endif
 
-
 #if CONF_WITH_BLITTER || !ASM_BLIT_IS_AVAILABLE
-#define GetMemW(addr) ((ULONG)*(UWORD*)(addr))
-#define SetMemW(addr, val) *(UWORD*)(addr) = val
+#define GetMemW(addr) ((ULONG) * (UWORD *)(addr))
+#define SetMemW(addr, val) *(UWORD *)(addr) = val
 
 /* structure passed to raster blit functions */
 typedef struct {
@@ -44,7 +43,6 @@ typedef struct {
     UWORD          x_cnt, y_cnt;
     UBYTE          hop, op, status, skew;
 } BLITVARS;
-
 
 /* setting of skew flags */
 
@@ -77,19 +75,18 @@ typedef struct {
  */
 
 static const UBYTE skew_flags[8] = {
-                        /* for blit direction Right->Left */
-    NFSR,                   /* Source span < Destination span */
-    FXSR,                   /* Source span > Destination span */
-    NFSR+FXSR,              /* Spans equal, Shift Source right */
-    0,                      /* Spans equal, Shift Source left */
-                        /* for blit direction Left->Right */
-    NFSR,                   /* Source span < Destination span */
-    FXSR,                   /* Source span > Destination span */
-    0,                      /* Spans equal, Shift Source right */
-    NFSR+FXSR               /* Spans equal, Shift Source left */
+    /* for blit direction Right->Left */
+    NFSR,        /* Source span < Destination span */
+    FXSR,        /* Source span > Destination span */
+    NFSR + FXSR, /* Spans equal, Shift Source right */
+    0,           /* Spans equal, Shift Source left */
+                 /* for blit direction Left->Right */
+    NFSR,        /* Source span < Destination span */
+    FXSR,        /* Source span > Destination span */
+    0,           /* Spans equal, Shift Source right */
+    NFSR + FXSR  /* Spans equal, Shift Source left */
 };
 #endif
-
 
 /* bitblt modes */
 #define BM_ALL_WHITE   0
@@ -134,27 +131,27 @@ struct blit_frame {
     UBYTE op_tab[4];    /* +10 logic ops for all fore and background combos */
     WORD s_xmin;        /* +14 minimum X: source */
     WORD s_ymin;        /* +16 minimum Y: source */
-    UWORD * s_form;     /* +18 source form base address */
+    UWORD *s_form;      /* +18 source form base address */
     WORD s_nxwd;        /* +22 offset to next word in line  (in bytes) */
     WORD s_nxln;        /* +24 offset to next line in plane (in bytes) */
     WORD s_nxpl;        /* +26 offset to next plane from start of current plane */
     WORD d_xmin;        /* +28 minimum X: destination */
     WORD d_ymin;        /* +30 minimum Y: destination */
-    UWORD * d_form;     /* +32 destination form base address */
+    UWORD *d_form;      /* +32 destination form base address */
     WORD d_nxwd;        /* +36 offset to next word in line  (in bytes) */
     WORD d_nxln;        /* +38 offset to next line in plane (in bytes) */
     WORD d_nxpl;        /* +40 offset to next plane from start of current plane */
-    UWORD * p_addr;     /* +42 address of pattern buffer   (0:no pattern) */
+    UWORD *p_addr;      /* +42 address of pattern buffer   (0:no pattern) */
     WORD p_nxln;        /* +46 offset to next line in pattern  (in bytes) */
     WORD p_nxpl;        /* +48 offset to next plane in pattern (in bytes) */
     WORD p_mask;        /* +50 pattern index mask */
 
     /* these frame parameters are internally set */
     WORD p_indx;        /* +52 initial pattern index */
-    UWORD * s_addr;     /* +54 initial source address */
+    UWORD *s_addr;      /* +54 initial source address */
     WORD s_xmax;        /* +58 maximum X: source */
     WORD s_ymax;        /* +60 maximum Y: source */
-    UWORD * d_addr;     /* +62 initial destination address */
+    UWORD *d_addr;      /* +62 initial destination address */
     WORD d_xmax;        /* +66 maximum X: destination */
     WORD d_ymax;        /* +68 maximum Y: destination */
     WORD inner_ct;      /* +70 blt inner loop initial count */
@@ -175,13 +172,13 @@ typedef struct {
     WORD fd_r3;
 } MFDB;
 
-
 #if ASM_BLIT_IS_AVAILABLE
 void fast_bit_blt(struct blit_frame *blit_info);    /* defined in vdi_blit.S */
 #endif
 
 /* holds VDI internal info for bit_blt(), fast_bit_blt() */
 static struct blit_frame vdi_info;
+
 
 #if CONF_WITH_VDI_16BIT
 /*
@@ -256,6 +253,7 @@ static void vr_trnfm16(MFDB *src_mfdb, MFDB *dst_mfdb)
 }
 #endif
 
+
 /*
  * vdi_vr_trnfm - transform screen bitmaps
  *
@@ -266,7 +264,7 @@ static void vr_trnfm16(MFDB *src_mfdb, MFDB *dst_mfdb)
  * the Atari screen they are interleaved (for 1-8 planes) or pixel-packed
  * (Falcon Truecolor mode).
  */
-void vdi_vr_trnfm(Vwk * vwk)
+void vdi_vr_trnfm(Vwk *vwk)
 {
     MFDB *src_mfdb, *dst_mfdb;
     WORD *src, *dst, *work;
@@ -298,7 +296,7 @@ void vdi_vr_trnfm(Vwk * vwk)
     dst = dst_mfdb->fd_addr;
     planes = src_mfdb->fd_nplanes;
     size = (LONG)src_mfdb->fd_h * src_mfdb->fd_wdwidth; /* size of plane in words */
-    inplace = (src==dst);
+    inplace = (src == dst);
 
     if (src_mfdb->fd_stand)     /* source is standard format */
     {
@@ -374,7 +372,7 @@ hwblit_raster(BLITVARS *blt)
      * routines ignore it & act on the whole cache anyway.
      */
     length = (blt->y_cnt * blt->dst_y_inc) + (blt->x_cnt * blt->dst_x_inc);
-    flush_data_cache((void *)blt->dst_addr,length);
+    flush_data_cache((void *)blt->dst_addr, length);
 
     BLITTER->src_x_incr = blt->src_x_inc;
     BLITTER->src_y_incr = blt->src_y_inc;
@@ -397,21 +395,21 @@ hwblit_raster(BLITVARS *blt)
      */
     BLITTER->status = BUSY;     /* no-HOG mode */
     __asm__ __volatile__(
-    "lea    0xFFFF8A3C,a0\n\t"
-    "0:\n\t"
-    "tas    (a0)\n\t"
-    "nop\n\t"
-    "jbmi   0b\n\t"
-    :
-    :
-    : "a0", "memory", "cc"
+        "lea    0xFFFF8A3C,a0\n\t"
+        "0:\n\t"
+        "tas    (a0)\n\t"
+        "nop\n\t"
+        "jbmi   0b\n\t"
+        :
+        :
+        : "a0", "memory", "cc"
     );
 
     /*
      * we've modified data behind the cpu's back, so we must
      * invalidate any cached data.
      */
-    invalidate_data_cache((void *)blt->dst_addr,length);
+    invalidate_data_cache((void *)blt->dst_addr, length);
 }
 #endif
 
@@ -422,7 +420,7 @@ hwblit_raster(BLITVARS *blt)
  * processing removed since it is always called with a HOP value of 2 (source)
  */
 static void
-do_blit(BLITVARS * blt)
+do_blit(BLITVARS *blt)
 {
     ULONG   blt_src_in;
     UWORD   blt_src_out, blt_dst_in, blt_dst_out, mask_out;
@@ -435,18 +433,18 @@ do_blit(BLITVARS * blt)
      * and the starting halftone line number (status&0x0f) are not
      * used and so are not dumped at the moment ...
      */
-    KDEBUG(("X COUNT %u\n",blt->x_cnt));
-    KDEBUG(("Y COUNT %u\n",blt->y_cnt));
-    KDEBUG(("X S INC %d\n",blt->src_x_inc));
-    KDEBUG(("Y S INC %d\n",blt->src_y_inc));
-    KDEBUG(("X D INC %d\n",blt->dst_x_inc));
-    KDEBUG(("Y D INC %d\n",blt->dst_y_inc));
-    KDEBUG(("ENDMASK 0x%04x-%04x-%04x\n",(UWORD)blt->end_1,(UWORD)blt->end_2,(UWORD)blt->end_3));
-    KDEBUG(("S_ADDR  %p\n",(UWORD *)blt->src_addr));
-    KDEBUG(("D_ADDR  %p\n",(UWORD *)blt->dst_addr));
-    KDEBUG(("HOP %d, OP %d\n",blt->hop&0x03,blt->op&0x0f));
+    KDEBUG(("X COUNT %u\n", blt->x_cnt));
+    KDEBUG(("Y COUNT %u\n", blt->y_cnt));
+    KDEBUG(("X S INC %d\n", blt->src_x_inc));
+    KDEBUG(("Y S INC %d\n", blt->src_y_inc));
+    KDEBUG(("X D INC %d\n", blt->dst_x_inc));
+    KDEBUG(("Y D INC %d\n", blt->dst_y_inc));
+    KDEBUG(("ENDMASK 0x%04x-%04x-%04x\n", (UWORD)blt->end_1, (UWORD)blt->end_2, (UWORD)blt->end_3));
+    KDEBUG(("S_ADDR  %p\n", (UWORD *)blt->src_addr));
+    KDEBUG(("D_ADDR  %p\n", (UWORD *)blt->dst_addr));
+    KDEBUG(("HOP %d, OP %d\n", blt->hop & 0x03, blt->op & 0x0f));
     KDEBUG(("NFSR=%d,FXSR=%d,SKEW=%d\n",
-            (blt->skew&NFSR)!=0,(blt->skew&FXSR)!=0,(blt->skew & SKEW)));
+            (blt->skew & NFSR) != 0, (blt->skew & FXSR) != 0, (blt->skew & SKEW)));
 
     do {
         xc = blt->x_cnt;
@@ -457,7 +455,7 @@ do_blit(BLITVARS * blt)
             /* read source into blt_src_in */
             if (blt->src_x_inc >= 0) {
                 if (first && (blt->skew & FXSR)) {
-                    blt_src_in = GetMemW (blt->src_addr);
+                    blt_src_in = GetMemW(blt->src_addr);
                     blt->src_addr += blt->src_x_inc;
                 }
                 blt_src_in <<= 16;
@@ -465,22 +463,22 @@ do_blit(BLITVARS * blt)
                 if (last && (blt->skew & NFSR)) {
                     blt->src_addr -= blt->src_x_inc;
                 } else {
-                    blt_src_in |= GetMemW (blt->src_addr);
+                    blt_src_in |= GetMemW(blt->src_addr);
                     if (!last) {
                         blt->src_addr += blt->src_x_inc;
                     }
                 }
             } else {
-                if (first &&  (blt->skew & FXSR)) {
-                    blt_src_in = GetMemW (blt->src_addr);
-                    blt->src_addr +=blt->src_x_inc;
+                if (first && (blt->skew & FXSR)) {
+                    blt_src_in = GetMemW(blt->src_addr);
+                    blt->src_addr += blt->src_x_inc;
                 } else {
                     blt_src_in >>= 16;
                 }
                 if (last && (blt->skew & NFSR)) {
                     blt->src_addr -= blt->src_x_inc;
                 } else {
-                    blt_src_in |= (GetMemW (blt->src_addr) << 16);
+                    blt_src_in |= (GetMemW(blt->src_addr) << 16);
                     if (!last) {
                         blt->src_addr += blt->src_x_inc;
                     }
@@ -551,16 +549,17 @@ do_blit(BLITVARS * blt)
             } else {
                 mask_out = (blt_dst_out & blt->end_2) | (blt_dst_in & ~blt->end_2);
             }
-            SetMemW (blt->dst_addr, mask_out);
+            SetMemW(blt->dst_addr, mask_out);
             if (!last) {
                 blt->dst_addr += blt->dst_x_inc;
             }
             first = 0;
-        } while(--xc != 0);
+        } while (--xc != 0);
+
         blt->status = (blt->status + ((blt->dst_y_inc >= 0) ? 1 : 15)) & 0xef;
         blt->src_addr += blt->src_y_inc;
         blt->dst_addr += blt->dst_y_inc;
-    } while(--blt->y_cnt != 0);
+    } while (--blt->y_cnt != 0);
     /* blt->status &= ~BUSY; */
 }
 #endif
@@ -640,7 +639,7 @@ static void bit_blt(struct blit_frame *blit_info)
     d_span = d_xmax_off - d_xmin_off;   /* d3<- dst span - 1 */
 
                                         /* the last discriminator is the */
-    if ( d_span == s_span ) {           /* equality of src and dst spans */
+    if (d_span == s_span) {             /* equality of src and dst spans */
         skew_idx |= 0x0002;             /* d6[bit1]:1 => equal spans */
     }
 
@@ -648,13 +647,13 @@ static void bit_blt(struct blit_frame *blit_info)
     blt->x_cnt = d_span + 1;            /* set value in BLiTTER */
 
     /* Endmasks derived from dst Xmin mod 16 and dst Xmax mod 16 */
-    lendmask=0xffff>>(d_xmin%16);
-    rendmask=~(0x7fff>>(d_xmax%16));
+    lendmask = 0xffff >> (d_xmin % 16);
+    rendmask = ~(0x7fff >> (d_xmax % 16));
 
     /* d7<- Dst Xmin mod16 - Src Xmin mod16 */
     skew = (d_xmin & 0x0f) - (s_xmin & 0x0f);
-    if (skew < 0 )
-        skew_idx |= 0x0001;             /* d6[bit0]<- alignment flag */
+    if (skew < 0)
+        skew_idx |= 0x0001; /* d6[bit0]<- alignment flag */
 
     /* Calculate starting addresses */
     s_addr = (ULONG)blit_info->s_form
@@ -704,7 +703,7 @@ static void bit_blt(struct blit_frame *blit_info)
     }
 
     /* does destination just span a single word? */
-    if ( !d_span ) {
+    if (!d_span) {
         /* merge both end masks into Endmask1. */
         blt->end_1 &= blt->end_3;       /* single word end mask */
         /* The other end masks will be ignored by the BLiTTER */
@@ -741,8 +740,8 @@ static void bit_blt(struct blit_frame *blit_info)
         blt->y_cnt = blit_info->b_ht;   /* load the line count   */
 
         /* calculate operation for actual plane */
-        op_tabidx = ((blit_info->fg_col>>plane) & 0x0001 ) <<1;
-        op_tabidx |= (blit_info->bg_col>>plane) & 0x0001;
+        op_tabidx = ((blit_info->fg_col >> plane) & 0x0001) << 1;
+        op_tabidx |= (blit_info->bg_col >> plane) & 0x0001;
         blt->op = blit_info->op_tab[op_tabidx] & 0x000f;
 
         /*
@@ -784,11 +783,12 @@ struct raster_t {
     int transparent;
 };
 
+
 /*
  * setup_pattern - if bit 5 of mode is set, use pattern with blit
  */
 static void
-setup_pattern (struct raster_t *raster, struct blit_frame *info)
+setup_pattern(struct raster_t *raster, struct blit_frame *info)
 {
     /* multi-plane pattern? */
     info->p_nxpl = 0;           /* next plane pattern offset default. */
@@ -799,6 +799,7 @@ setup_pattern (struct raster_t *raster, struct blit_frame *info)
     info->p_mask = 0xf;      /* pattern index mask */
 }
 
+
 /*
  * do_clip - clip, if dest is screen and clipping is wanted
  *
@@ -806,7 +807,7 @@ setup_pattern (struct raster_t *raster, struct blit_frame *info)
  */
 /* not fully optimized yet*/
 static BOOL
-do_clip (VwkClip *clipper, struct blit_frame *info)
+do_clip(VwkClip *clipper, struct blit_frame *info)
 {
     WORD s_xmin, s_ymin;
     WORD d_xmin, d_ymin;
@@ -819,9 +820,9 @@ do_clip (VwkClip *clipper, struct blit_frame *info)
     clip = clipper->xmn_clip;
 
     /* Xmin dest < Xmin clip */
-    if ( d_xmin < clip ) {    /* Xmin dest > Xmin clip => branch */
-        s_xmin -= d_xmin - clip;    /* subtract amount clipped in x */
-        d_xmin = clip;               /* clip Xmin dest */
+    if (d_xmin < clip) {         /* Xmin dest > Xmin clip => branch */
+        s_xmin -= d_xmin - clip; /* subtract amount clipped in x */
+        d_xmin = clip;           /* clip Xmin dest */
     }
     info->s_xmin = s_xmin;      /* d0 <- clipped Xmin source */
     info->d_xmin = d_xmin;      /* d2 <- clipped Xmin destination */
@@ -831,14 +832,16 @@ do_clip (VwkClip *clipper, struct blit_frame *info)
     clip = clipper->xmx_clip;
 
     /* Xmax dest > Xmax clip */
-    if ( d_xmax > clip )
-        d_xmax = clip;          /* clip Xmax dest */
+    if (d_xmax > clip)
+        d_xmax = clip; /* clip Xmax dest */
+
     info->d_xmax = d_xmax;
 
     /* match source and destination rectangles */
     deltax = d_xmax - d_xmin;
-    if ( deltax < 0 )
-        return TRUE;                    /* block entirely clipped */
+    if (deltax < 0)
+        return TRUE; /* block entirely clipped */
+
     info->b_wd = deltax + 1;
     info->s_xmax = s_xmin + deltax;     /* d4 <- Xmax Source */
 
@@ -848,9 +851,9 @@ do_clip (VwkClip *clipper, struct blit_frame *info)
     clip = clipper->ymn_clip;
 
     /* Ymin dest < Ymin clip => clip Ymin */
-    if ( d_ymin < clip ) {
-        s_ymin -= d_ymin - clip;    /* subtract amount clipped in y */
-        d_ymin = clip;               /* clip Ymin dest */
+    if (d_ymin < clip) {
+        s_ymin -= d_ymin - clip; /* subtract amount clipped in y */
+        d_ymin = clip;           /* clip Ymin dest */
     }
     info->s_ymin = s_ymin;       /* d1, Dy Source */
     info->d_ymin = d_ymin;       /* d3, Ymax destination */
@@ -860,27 +863,29 @@ do_clip (VwkClip *clipper, struct blit_frame *info)
     clip = clipper->ymx_clip;
 
     /* if Ymax dest > Ymax clip */
-    if ( d_ymax > clip ) {
+    if (d_ymax > clip) {
         /* clip Ymax dest */
         d_ymax = clip;          /* d7 <- Xmax dest = Xmax clip */
     }
+
     info->d_ymax = d_ymax;
 
     /* match source and destination rectangles */
     deltay = d_ymax - d_ymin;
-    if ( deltay < 0 )
-        return TRUE;             /* block entirely clipped */
+    if (deltay < 0)
+        return TRUE; /* block entirely clipped */
+
     info->b_ht = deltay + 1;
     info->s_ymax = s_ymin + deltay;             /* d5 <- Ymax Source */
 
     return FALSE;
 }
 
+
 /*
  * dont_clip - clip, if dest is screen and clipping is wanted
  */
-static void
-dont_clip (struct blit_frame * info)
+static void dont_clip(struct blit_frame *info)
 {
     /* source */
     info->s_xmin = PTSIN[XMIN_S];       /* d0 x of upper left of source */
@@ -899,16 +904,16 @@ dont_clip (struct blit_frame * info)
     info->d_ymax = PTSIN[YMAX_D];       /* d7 y of lower right of dest. */
 }
 
+
 /*
  * setup_info - fill the info structure with MFDB values
  *
  * returns TRUE iff there is nothing to do (everything is clipped away,
  *              or the destination plane plane count is invalid)
  */
-static BOOL
-setup_info (struct raster_t *raster, struct blit_frame * info)
+static BOOL setup_info(struct raster_t *raster, struct blit_frame *info)
 {
-    MFDB *src,*dst;
+    MFDB *src, *dst;
     BOOL use_clip = FALSE;
 
     /* Get the pointers to the MFDBs */
@@ -916,7 +921,7 @@ setup_info (struct raster_t *raster, struct blit_frame * info)
     dst = *(MFDB **)&CONTRL[9]; /* a4, destination MFDB */
 
     /* setup plane info for source MFDB */
-    if ( src->fd_addr ) {
+    if (src->fd_addr) {
         /* for a positive source address */
         info->s_form = src->fd_addr;
         info->s_nxwd = src->fd_nplanes * 2;
@@ -924,13 +929,13 @@ setup_info (struct raster_t *raster, struct blit_frame * info)
     }
     else {
         /* source form is screen */
-        info->s_form = (UWORD*) v_bas_ad;
+        info->s_form = (UWORD *)v_bas_ad;
         info->s_nxwd = v_planes * 2;
         info->s_nxln = v_lin_wr;
     }
 
     /* setup plane info for destination MFDB */
-    if ( dst->fd_addr ) {
+    if (dst->fd_addr) {
         /* for a positive address */
         info->d_form = dst->fd_addr;
         info->plane_ct = dst->fd_nplanes;
@@ -939,7 +944,7 @@ setup_info (struct raster_t *raster, struct blit_frame * info)
     }
     else {
         /* destination form is screen */
-        info->d_form = (UWORD*) v_bas_ad;
+        info->d_form = (UWORD *)v_bas_ad;
         info->plane_ct = v_planes;
         info->d_nxwd = v_planes * 2;
         info->d_nxln = v_lin_wr;
@@ -965,6 +970,7 @@ setup_info (struct raster_t *raster, struct blit_frame * info)
     return (info->plane_ct <= 8) ? FALSE : TRUE;
 #endif
 }
+
 
 #if CONF_WITH_VDI_16BIT
 /*
@@ -1007,9 +1013,9 @@ static void vro_cpyfm16(struct blit_frame *info)
 
     switch(mode) {
     case BM_ALL_WHITE:  /* D1 = 0 */
-        while(rows-- > 0) {
+        while (rows-- > 0) {
             cols = info->s_xmax - info->s_xmin + 1;
-            while(cols-- > 0) {
+            while (cols-- > 0) {
                 *q = 0;
                 q += next_pixel;
             }
@@ -1018,9 +1024,9 @@ static void vro_cpyfm16(struct blit_frame *info)
         }
         break;
     case BM_S_AND_D:    /* D1 = S AND D */
-        while(rows-- > 0) {
+        while (rows-- > 0) {
             cols = info->s_xmax - info->s_xmin + 1;
-            while(cols-- > 0) {
+            while (cols-- > 0) {
                 *q = *p & *q;
                 p += next_pixel;
                 q += next_pixel;
@@ -1032,9 +1038,9 @@ static void vro_cpyfm16(struct blit_frame *info)
         }
         break;
     case BM_S_AND_NOTD: /* D1 = S AND (NOT D) */
-        while(rows-- > 0) {
+        while (rows-- > 0) {
             cols = info->s_xmax - info->s_xmin + 1;
-            while(cols-- > 0) {
+            while (cols-- > 0) {
                 *q = *p & ~*q;
                 p += next_pixel;
                 q += next_pixel;
@@ -1049,14 +1055,14 @@ static void vro_cpyfm16(struct blit_frame *info)
         /*
          * this is the common case, so we optimize a bit
          */
-        while(rows-- > 0) {
+        while (rows-- > 0) {
             cols = info->s_xmax - info->s_xmin + 1;
             if (src < dst) {
-                while(cols-- > 0) {
+                while (cols-- > 0) {
                     *q-- = *p--;
                 }
             } else {
-                while(cols-- > 0) {
+                while (cols-- > 0) {
                     *q++ = *p++;
                 }
             }
@@ -1067,9 +1073,9 @@ static void vro_cpyfm16(struct blit_frame *info)
         }
         break;
     case BM_NOTS_AND_D: /* D1 = (NOT S) AND D */    /* erase */
-        while(rows-- > 0) {
+        while (rows-- > 0) {
             cols = info->s_xmax - info->s_xmin + 1;
-            while(cols-- > 0) {
+            while (cols-- > 0) {
                 *q = ~*p & *q;
                 p += next_pixel;
                 q += next_pixel;
@@ -1084,9 +1090,9 @@ static void vro_cpyfm16(struct blit_frame *info)
         /* nothing to do */
         break;
     case BM_S_XOR_D:    /* D1 = S XOR D */          /* XOR */
-        while(rows-- > 0) {
+        while (rows-- > 0) {
             cols = info->s_xmax - info->s_xmin + 1;
-            while(cols-- > 0) {
+            while (cols-- > 0) {
                 *q = *p ^ *q;
                 p += next_pixel;
                 q += next_pixel;
@@ -1098,9 +1104,9 @@ static void vro_cpyfm16(struct blit_frame *info)
         }
         break;
     case BM_S_OR_D:     /* D1 = S OR D */           /* transparent */
-        while(rows-- > 0) {
+        while (rows-- > 0) {
             cols = info->s_xmax - info->s_xmin + 1;
-            while(cols-- > 0) {
+            while (cols-- > 0) {
                 *q = *p | *q;
                 p += next_pixel;
                 q += next_pixel;
@@ -1112,9 +1118,9 @@ static void vro_cpyfm16(struct blit_frame *info)
         }
         break;
     case BM_NOT_SORD:   /* D1 = NOT (S OR D) */
-        while(rows-- > 0) {
+        while (rows-- > 0) {
             cols = info->s_xmax - info->s_xmin + 1;
-            while(cols-- > 0) {
+            while (cols-- > 0) {
                 *q = ~(*p | *q);
                 p += next_pixel;
                 q += next_pixel;
@@ -1126,9 +1132,9 @@ static void vro_cpyfm16(struct blit_frame *info)
         }
         break;
     case BM_NOT_SXORD:  /* D1 = NOT (S XOR D) */
-        while(rows-- > 0) {
+        while (rows-- > 0) {
             cols = info->s_xmax - info->s_xmin + 1;
-            while(cols-- > 0) {
+            while (cols-- > 0) {
                 *q = ~(*p ^ *q);
                 p += next_pixel;
                 q += next_pixel;
@@ -1140,9 +1146,9 @@ static void vro_cpyfm16(struct blit_frame *info)
         }
         break;
     case BM_NOT_D:      /* D1 = NOT D */
-        while(rows-- > 0) {
+        while (rows-- > 0) {
             cols = info->s_xmax - info->s_xmin + 1;
-            while(cols-- > 0) {
+            while (cols-- > 0) {
                 *q = ~*q;
                 q += next_pixel;
             }
@@ -1151,9 +1157,9 @@ static void vro_cpyfm16(struct blit_frame *info)
         }
         break;
     case BM_S_OR_NOTD:  /* D1 = S OR (NOT D) */
-        while(rows-- > 0) {
+        while (rows-- > 0) {
             cols = info->s_xmax - info->s_xmin + 1;
-            while(cols-- > 0) {
+            while (cols-- > 0) {
                 *q = *p | ~*q;
                 p += next_pixel;
                 q += next_pixel;
@@ -1165,9 +1171,9 @@ static void vro_cpyfm16(struct blit_frame *info)
         }
         break;
     case BM_NOT_S:      /* D1 = NOT S */
-        while(rows-- > 0) {
+        while (rows-- > 0) {
             cols = info->s_xmax - info->s_xmin + 1;
-            while(cols-- > 0) {
+            while (cols-- > 0) {
                 *q = ~*p;
                 p += next_pixel;
                 q += next_pixel;
@@ -1179,9 +1185,9 @@ static void vro_cpyfm16(struct blit_frame *info)
         }
         break;
     case BM_NOTS_OR_D:  /* D1 = (NOT S) OR D */     /* reverse transparent */
-        while(rows-- > 0) {
+        while (rows-- > 0) {
             cols = info->s_xmax - info->s_xmin + 1;
-            while(cols-- > 0) {
+            while (cols-- > 0) {
                 *q = ~*p | *q;
                 p += next_pixel;
                 q += next_pixel;
@@ -1193,9 +1199,9 @@ static void vro_cpyfm16(struct blit_frame *info)
         }
         break;
     case BM_NOT_SANDD:  /* D1 = NOT (S AND D) */
-        while(rows-- > 0) {
+        while (rows-- > 0) {
             cols = info->s_xmax - info->s_xmin + 1;
-            while(cols-- > 0) {
+            while (cols-- > 0) {
                 *q = ~(*p & *q);
                 p += next_pixel;
                 q += next_pixel;
@@ -1207,9 +1213,9 @@ static void vro_cpyfm16(struct blit_frame *info)
         }
         break;
     case BM_ALL_BLACK:  /* D1 = 1 */
-        while(rows-- > 0) {
+        while (rows-- > 0) {
             cols = info->s_xmax - info->s_xmin + 1;
-            while(cols-- > 0) {
+            while (cols-- > 0) {
                 *q = 0xffff;
                 q += next_pixel;
             }
@@ -1219,6 +1225,7 @@ static void vro_cpyfm16(struct blit_frame *info)
         break;
     }
 }
+
 
 /*
  * vrt_cpyfm16() - handle vrt_cpyfm() for 16-bit graphics
@@ -1240,7 +1247,7 @@ static void vrt_cpyfm16(struct blit_frame *info)
      */
     src_width = info->s_nxln / sizeof(WORD);/* width in words */
     src_off = info->s_xmin >> 4;            /* starting x offset in words */
-    bit_mask = src_mask = 0x8000U >> (info->s_xmin&0x000f); /* starting bit mask */
+    bit_mask = src_mask = 0x8000U >> (info->s_xmin & 0x000f); /* starting bit mask */
     p = src = info->s_form + ((LONG)info->s_ymin * src_width) + src_off;
 
     /*
@@ -1249,7 +1256,7 @@ static void vrt_cpyfm16(struct blit_frame *info)
     dst_width = info->d_nxln / sizeof(WORD);    /* in words */
     q = dst = info->d_form + ((LONG)info->d_ymin * dst_width) + info->d_xmin;
 
-    switch(mode) {
+    switch (mode) {
     case MD_ERASE:
         for (y = info->s_ymin; y <= info->s_ymax; y++) {
             for (x = info->s_xmin; x <= info->s_xmax; x++, q++) {
@@ -1326,15 +1333,15 @@ static void vrt_cpyfm16(struct blit_frame *info)
 }
 #endif
 
+
 /* common functionality for vdi_vro_cpyfm, vdi_vrt_cpyfm, linea_raster */
-static void
-cpy_raster(struct raster_t *raster, struct blit_frame *info)
+static void cpy_raster(struct raster_t *raster, struct blit_frame *info)
 {
     WORD mode;
     WORD fg_col, bg_col;
 
-    arb_corner((Rect*)PTSIN);
-    arb_corner((Rect*)(PTSIN+4));
+    arb_corner((Rect *)PTSIN);
+    arb_corner((Rect *)(PTSIN + 4));
     mode = INTIN[0];
 
     /* if mode is made up of more than the first 5 bits */
@@ -1394,7 +1401,7 @@ cpy_raster(struct raster_t *raster, struct blit_frame *info)
         bg_col = validate_color_index(INTIN[2]);
         bg_col = MAP_COL[bg_col];
 
-        switch(mode) {
+        switch (mode) {
         case MD_TRANS:
             info->op_tab[0] = 04;    /* fg:0 bg:0  D' <- [not S] and D */
             info->op_tab[2] = 07;    /* fg:1 bg:0  D' <- S or D */
@@ -1436,7 +1443,6 @@ cpy_raster(struct raster_t *raster, struct blit_frame *info)
             return;
         }
 #endif
-
     }
 
     /*
@@ -1461,14 +1467,14 @@ cpy_raster(struct raster_t *raster, struct blit_frame *info)
 #endif
 }
 
+
 /*
  * vdi_vro_cpyfm - copy raster opaque
  *
  * This function copies a rectangular raster area from source form to
  * destination form using the logic operation specified by the application.
  */
-void
-vdi_vro_cpyfm(Vwk * vwk)
+void vdi_vro_cpyfm(Vwk *vwk)
 {
     struct raster_t raster;
 
@@ -1482,6 +1488,7 @@ vdi_vro_cpyfm(Vwk * vwk)
     cpy_raster(&raster, &vdi_info);
 }
 
+
 /*
  * vdi_vrt_cpyfm - copy raster transparent
  *
@@ -1489,8 +1496,7 @@ vdi_vro_cpyfm(Vwk * vwk)
  * color area. A writing mode and color indices for both 0's and 1's
  * are specified in the INTIN array.
  */
-void
-vdi_vrt_cpyfm(Vwk * vwk)
+void vdi_vrt_cpyfm(Vwk *vwk)
 {
     struct raster_t raster;
 
@@ -1504,6 +1510,7 @@ vdi_vrt_cpyfm(Vwk * vwk)
     cpy_raster(&raster, &vdi_info);
 }
 
+
 /* line-A wrapper for Copy raster form */
 void linea_raster(void)
 {
@@ -1516,6 +1523,7 @@ void linea_raster(void)
 
     cpy_raster(&raster, &vdi_info);
 }
+
 
 /* line-A wrapper for blitting */
 void linea_blit(struct blit_frame *info)

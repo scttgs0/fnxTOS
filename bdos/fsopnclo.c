@@ -339,7 +339,7 @@ static long opnfil(FCB *f, DND *dn, int mod)
 
     /* find free sft handle */
     for (i = 0; i < OPNFILES; i++)
-        if( !sft[i].f_own )
+        if (!sft[i].f_own)
             break;
 
     if (i == OPNFILES)

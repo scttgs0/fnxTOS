@@ -14,7 +14,6 @@
 #include "xbiosbind.h"
 #include "vdi_defs.h"
 
-
 static WORD gchc_key(void);
 static WORD gchr_key(void);
 static WORD gshift_s(void);
@@ -28,13 +27,11 @@ static WORD gshift_s(void);
  * are not required, and both Atari TOS and EmuTOS (using the original
  * imported DRI source) implement them as dummy functions.
  */
-void vdi_v_choice(Vwk * vwk)
+void vdi_v_choice(Vwk *vwk)
 {
     gchc_key();
     INTOUT[0] = TERM_CH & 0x00ff;
-
 }
-
 
 
 /*
@@ -76,7 +73,7 @@ void vdi_v_choice(Vwk * vwk)
  *    the same results as described above for vrq_string().
  * 3. The 'echo' argument is ignored.
  */
-void vdi_v_string(Vwk * vwk)
+void vdi_v_string(Vwk *vwk)
 {
     WORD i, j, mask;
 
@@ -105,17 +102,15 @@ void vdi_v_string(Vwk * vwk)
 }
 
 
-
 /* Return Shift, Control, Alt State */
-void vdi_vq_key_s(Vwk * vwk)
+void vdi_vq_key_s(Vwk *vwk)
 {
     INTOUT[0] = gshift_s();
 }
 
 
-
 /* SET_INPUT_MODE: */
-void vdi_vsin_mode(Vwk * vwk)
+void vdi_vsin_mode(Vwk *vwk)
 {
     WORD i;
 
@@ -142,7 +137,6 @@ void vdi_vsin_mode(Vwk * vwk)
 }
 
 
-
 /*
  * INQUIRE INPUT MODE: implements vqin_mode()
  *
@@ -151,7 +145,7 @@ void vdi_vsin_mode(Vwk * vwk)
  * However, like all versions of Atari TOS, it actually returns the mode
  * value minus 1 (i.e. 0 or 1).
  */
-void vdi_vqin_mode(Vwk * vwk)
+void vdi_vqin_mode(Vwk *vwk)
 {
     WORD *int_out;
 
@@ -176,7 +170,6 @@ void vdi_vqin_mode(Vwk * vwk)
 }
 
 
-
 /*
  * gshift_s - get shift state
  *
@@ -186,7 +179,6 @@ static WORD gshift_s(void)
 {
     return (Kbshift(-1) & 0x000f);
 }
-
 
 
 /*
@@ -201,7 +193,6 @@ static WORD gchc_key(void)
     TERM_CH = 1;                /* 16 bit char info */
     return TERM_CH;
 }
-
 
 
 /*
@@ -219,7 +210,7 @@ static WORD gchr_key(void)
     if (Bconstat(2)) {                  /* see if a character present at con */
         ch = Bconin(2);
         TERM_CH = (WORD)
-            (ch >> 8)|                  /* scancode down to bit 8-15 */
+            (ch >> 8) |                 /* scancode down to bit 8-15 */
             (ch & 0xff);                /* asciicode to bit 0-7 */
         return 1;
     }

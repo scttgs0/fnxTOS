@@ -478,6 +478,7 @@ vbl_no_dump:
 #else
         movem.l (sp)+, d0-d7/a0-a6      // restore registers
 #endif
+
 vbl_end:
 #ifdef __mcoldfire__
         moveq   #0,d0

@@ -131,7 +131,7 @@ LONG bcostat0(void)
 #if CONF_WITH_PRINTER_PORT
     MFP *mfp=MFP_BASE;
 
-    if(mfp->gpip & 1) {
+    if (mfp->gpip & 1) {
         return 0;   /* busy high: printer not available */
     } else {
         return -1;

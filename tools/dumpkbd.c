@@ -58,7 +58,7 @@ void dump_table(char *table, char *name, FILE *out, char *prefix)
             );
     for(i = 0 ; i < 128 ; i++) {
         int c = table[i];
-        if((i & 7) == 0) {
+        if ((i & 7) == 0) {
             fprintf(out, "    ");
         }
         switch(c) {
@@ -68,16 +68,16 @@ void dump_table(char *table, char *name, FILE *out, char *prefix)
             fprintf(out, "\'\\%c\', ", c);
             break;
         default:
-            if(c >= 0 && c <= 8) {
+            if (c >= 0 && c <= 8) {
                 fprintf(out, "   %d, ", c);
-            } else if(c >= 32 && c <= 126) {
+            } else if (c >= 32 && c <= 126) {
                 fprintf(out, " \'%c\', ", c);
             } else {
                 fprintf(out, "0x%02x, ", c & 0xFF);
             }
             break;
         }
-        if((i & 7) == 7) {
+        if ((i & 7) == 7) {
             fprintf(out, "\n");
         }
     }
@@ -89,7 +89,7 @@ void dump_tables(struct ktbl *ktbl, char *fname, char *name)
     char prefix[3];
     char ucprefix[3];
     FILE *out = fopen(fname, "w");
-    if(out == NULL) {
+    if (out == NULL) {
         fprintf(stderr, "cannot open %s\n", fname);
         exit(EXIT_FAILURE);
     }

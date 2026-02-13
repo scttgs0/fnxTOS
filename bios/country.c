@@ -79,11 +79,11 @@ static const struct country_record *get_country_record(int country_code)
     int i;
 
     for(i = 0 ; i < ARRAY_SIZE(countries) ; i++) {
-        if(countries[i].country == country_code) {
+        if (countries[i].country == country_code) {
             return &countries[i]; /* Found */
         }
 
-        if(countries[i].country == default_country) {
+        if (countries[i].country == default_country) {
             default_country_index = i;
         }
     }

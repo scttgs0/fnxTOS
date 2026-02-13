@@ -39,7 +39,7 @@ void nls_set_lang(const char *s)
   const struct lang_info *lang;
 
   for(lang = langs; lang->name[0]; lang++) {
-    if(!strcmp(s, lang->name)) {
+    if (!strcmp(s, lang->name)) {
       nls_offsets = lang->offsets;
       nls_translations = lang->translations;
       return ;

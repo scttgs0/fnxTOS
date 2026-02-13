@@ -219,10 +219,12 @@ static void bios_init(void)
     KDEBUG(("natfeat_init()\n"));
     natfeat_init();
 #endif
+
 #if STONX_NATIVE_PRINT
     KDEBUG(("stonx_kprintf_init()\n"));
     stonx_kprintf_init();
 #endif
+
 #if CONF_WITH_UAE
     KDEBUG(("amiga_uae_init()\n"));
     amiga_uae_init();
@@ -235,6 +237,7 @@ static void bios_init(void)
 #if CONF_WITH_ADVANCED_CPU
     is_bus32 = (UBYTE)detect_32bit_address_bus();
 #endif
+
     KDEBUG(("Address Bus width is %d-bit\n", IS_BUS32 ? 32 : 24));
 
     KDEBUG(("vecs_init()\n"));
@@ -442,6 +445,7 @@ static void bios_init(void)
     KDEBUG(("dmasound_init()\n"));
     dmasound_init();
 #endif
+
     KDEBUG(("snd_init()\n"));
     snd_init();         /* Reset Soundchip, deselect floppies */
 
@@ -702,7 +706,7 @@ static void autoexec(void)
     bootstrap();                        /* try to boot the new OS kernel directly */
 #endif
 
-    if(!blkdev_avail(bootdev))          /* check, if bootdev available */
+    if (!blkdev_avail(bootdev))          /* check, if bootdev available */
         return;
 
     Fsetdta(&dta);
@@ -826,6 +830,7 @@ void biosmain(void)
     run_reset_resident();       /* see comments above */
 #endif
 
+
 #if WITH_CLI
     if (bootflags & BOOTFLAG_EARLY_CLI) {
         /*
@@ -842,7 +847,7 @@ void biosmain(void)
 
     /* clear commandline */
 
-    if(cmdload != 0) {
+    if (cmdload != 0) {
         /*
          * Pexec a program called COMMAND.PRG
          * like Atari TOS, it inherits an empty environment
@@ -1068,7 +1073,7 @@ LONG setexc(WORD num, LONG vector)
     LONG *addr = (LONG *) (4L * num);
     oldvector = *addr;
 
-    if(vector != -1) {
+    if (vector != -1) {
         *addr = vector;
     }
     return oldvector;
