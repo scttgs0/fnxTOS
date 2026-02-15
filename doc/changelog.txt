@@ -131,7 +131,6 @@ Other changes:
 - AES: Fix file selector behaviour to make it more like Atari TOS
 - AES: Improve handling of FTEXT validation characters
 - AES: Fix handling of window arrow gadgets
-- BIOS: Add Magnum ST/STe alt-RAM support
 - BIOS: Add monitor change detection
 - BIOS: Add optional cold-boot delay prior to hard disk access
 - BIOS: Fix an NVDI crash due to accessing memory beyond the screen

@@ -104,9 +104,6 @@
 # ifndef CONF_WITH_68040_PMMU
 #  define CONF_WITH_68040_PMMU 1
 # endif
-# ifndef CONF_WITH_MAGNUM
-#  define CONF_WITH_MAGNUM 0
-# endif
 # ifndef CONF_WITH_FORMAT
 #  define CONF_WITH_FORMAT 0
 # endif
@@ -147,9 +144,6 @@
 # endif
 # ifndef CONF_WITH_ALT_RAM
 #  define CONF_WITH_ALT_RAM 0
-# endif
-# ifndef CONF_WITH_MAGNUM
-#  define CONF_WITH_MAGNUM 0
 # endif
 # ifndef CONF_WITH_TTRAM
 #  define CONF_WITH_TTRAM 0
@@ -370,7 +364,7 @@
  *      . alternate/TT RAM is not supported
  *      . the 68040 PMMU is not supported
  *      . the Apollo 68080 is not supported
- *      . support for add-on cards such as Magnum is disabled
+ *      . support for add-on cards is disabled
  *      . extended mouse functions (extra buttons etc) are not supported
  */
 #ifdef TARGET_CART
@@ -442,9 +436,6 @@
 # endif
 # ifndef CONF_WITH_SHUTDOWN
 #  define CONF_WITH_SHUTDOWN 0
-# endif
-# ifndef CONF_WITH_MAGNUM
-#  define CONF_WITH_MAGNUM 0
 # endif
 # ifndef MAX_VERTICES
 #  define MAX_VERTICES 512
@@ -589,9 +580,6 @@
 # ifndef CONF_WITH_BUS_ERROR
 #  define CONF_WITH_BUS_ERROR 0
 # endif
-# ifndef CONF_WITH_MAGNUM
-#  define CONF_WITH_MAGNUM 0
-# endif
 # ifndef CONF_WITH_ALT_DESKTOP_GRAPHICS
 #  define CONF_WITH_ALT_DESKTOP_GRAPHICS 0 /* Like ST, not Falcon */
 # endif
@@ -695,14 +683,6 @@
  */
 #ifndef CONF_TTRAM_SIZE
 # define CONF_TTRAM_SIZE 0
-#endif
-
-/*
- * Define CONF_WITH_MAGNUM to enable detection and usage of Magnum
- * RAM expansion card
- */
-#ifndef CONF_WITH_MAGNUM
-# define CONF_WITH_MAGNUM 1
 #endif
 
 /*

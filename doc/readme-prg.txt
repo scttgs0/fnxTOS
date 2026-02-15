@@ -39,8 +39,6 @@ Notes:
 - on the ST(e)/MegaST(e) you can also use the smaller PRG256 versions
 - the language of the Norwegian/Swedish versions is English; however the
   keyboard layouts are Norwegian/Swedish
-- when using these versions with a Magnum ST/STE alt-RAM card, the Magnum
-  driver for TOS must not have been loaded before running emutos*.prg
 
 For the multilanguage version, the default language is English.
 It can be changed by setting the NVRAM appropriately.

@@ -43,7 +43,6 @@ Christian Zietz <czietz at gmx.net>
 - Fixed cold boot problems caused by some ST MMUs
 - Fixed screen corruption after a reset on some Mega(STe) systems
 - Add-on graphics support: Nova/ET4000, Nova/Mach32, Vofa/ET4000, Wittich/ET4000
-- Added Magnum Alt-RAM support
 - Added initial support for NTSC on Amiga
 - Various bug fixes and cleanups
 

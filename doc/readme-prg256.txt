@@ -52,8 +52,6 @@ Notes:
   will continually reload itself each time it processes the AUTO folder
 - the language of the Norwegian/Swedish versions is English; however the
   keyboard layouts are Norwegian/Swedish
-- when using these versions with a Magnum ST/STE alt-RAM card, the Magnum
-  driver for TOS must not have been loaded before running emu256*.prg
 - there is no multilanguage version since NVRAM is not supported by ST(e)
   hardware
 

@@ -62,10 +62,6 @@ extern int has_vme;
   #define HAS_VME 0
 #endif
 
-#if CONF_WITH_MAGNUM
-extern int has_magnum;
-#endif
-
 #if CONF_WITH_ICDRTC
 extern int has_icdrtc;    /* in clock.c */
   #define HAS_ICDRTC has_icdrtc
