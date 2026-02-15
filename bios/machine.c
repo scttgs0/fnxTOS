@@ -38,7 +38,6 @@
 #include "scc.h"
 #include "memory.h"
 #include "dma.h"
-#include "nova.h"
 #include "biosext.h"
 
 #if CONF_WITH_ADVANCED_CPU
@@ -604,10 +603,6 @@ void machine_detect(void)
 #endif
 #if CONF_WITH_MAGNUM
     detect_magnum();
-#endif
-#if CONF_WITH_NOVA
-    if (!IS_ARANYM)
-        detect_nova();
 #endif
 }
 

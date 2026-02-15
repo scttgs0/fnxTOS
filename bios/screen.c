@@ -34,7 +34,6 @@
 #include "biosext.h"
 #include "bios.h"
 #include "bdosbind.h"
-#include "nova.h"
 
 void detect_monitor_change(void);
 static void setphys(const UBYTE *addr);
@@ -649,7 +648,7 @@ void screen_init_address(void)
 /*
  * Mark resolution as hacked
  *
- * called by bios_init() if a special video mode (Nova support, Hatari
+ * called by bios_init() if a special video mode (Hatari
  * cartridge extended VDI) has altered key lineA variables
  */
 void set_rez_hacked(void)
@@ -878,13 +877,6 @@ void get_pixel_size(WORD *width,WORD *height)
 static const UBYTE *atari_physbase(void)
 {
     ULONG addr;
-
-#if CONF_WITH_NOVA
-    if (HAS_NOVA && rez_was_hacked) {
-        /* Nova/Vofa present and in use? Return its screen memory */
-        return get_novamembase();
-    }
-#endif
 
     addr = *(volatile UBYTE *) VIDEOBASE_ADDR_HI;
     addr <<= 8;

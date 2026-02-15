@@ -297,7 +297,7 @@ bios_src +=  memory.S processor.S vectors.S aciavecs.S bios.c xbios.c acsi.c \
              mfp.c midi.c mouse.c natfeat.S natfeats.c nvram.c panicasm.S \
              parport.c screen.c serport.c sound.c videl.c vt52.c xhdi.c \
              pmmu030.c 68040_pmmu.S \
-             delay.c delayasm.S sd.c memory2.c bootparams.c scsi.c nova.c \
+             delay.c delayasm.S sd.c memory2.c bootparams.c scsi.c \
              dsp.c dsp2.S \
              scsidriv.c
 

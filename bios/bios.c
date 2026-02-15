@@ -57,7 +57,6 @@
 #include "delay.h"
 #include "biosbind.h"
 #include "memory.h"
-#include "nova.h"
 #include "tosvars.h"
 #if WITH_CLI
 #include "../cli/clistub.h"
@@ -485,16 +484,6 @@ static void bios_init(void)
     KDEBUG(("clock_init()\n"));
     clock_init();       /* init clock */
     KDEBUG(("after clock_init()\n"));
-
-#if CONF_WITH_NOVA
-    /* Detect and initialize a Nova card, skip if Ctrl is pressed */
-    if (HAS_NOVA && !(kbshift(-1) & MODE_CTRL)) {
-        KDEBUG(("init_nova()\n"));
-        if (init_nova()) {
-            set_rez_hacked();   /* also reinitializes the vt52 console */
-        }
-    }
-#endif
 
 #if CONF_WITH_NLS
     KDEBUG(("nls_init()\n"));

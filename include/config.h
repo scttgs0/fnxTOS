@@ -110,9 +110,6 @@
 # ifndef CONF_WITH_MAGNUM
 #  define CONF_WITH_MAGNUM 0
 # endif
-# ifndef CONF_WITH_NOVA
-#  define CONF_WITH_NOVA 0
-# endif
 # ifndef CONF_WITH_FORMAT
 #  define CONF_WITH_FORMAT 0
 # endif
@@ -159,9 +156,6 @@
 # endif
 # ifndef CONF_WITH_MAGNUM
 #  define CONF_WITH_MAGNUM 0
-# endif
-# ifndef CONF_WITH_NOVA
-#  define CONF_WITH_NOVA 0
 # endif
 # ifndef CONF_WITH_TTRAM
 #  define CONF_WITH_TTRAM 0
@@ -461,9 +455,6 @@
 # ifndef CONF_WITH_MAGNUM
 #  define CONF_WITH_MAGNUM 0
 # endif
-# ifndef CONF_WITH_NOVA
-#  define CONF_WITH_NOVA 0
-# endif
 # ifndef MAX_VERTICES
 #  define MAX_VERTICES 512
 # endif
@@ -612,9 +603,6 @@
 # endif
 # ifndef CONF_WITH_MAGNUM
 #  define CONF_WITH_MAGNUM 0
-# endif
-# ifndef CONF_WITH_NOVA
-#  define CONF_WITH_NOVA 0
 # endif
 # ifndef CONF_WITH_ALT_DESKTOP_GRAPHICS
 #  define CONF_WITH_ALT_DESKTOP_GRAPHICS 0 /* Like ST, not Falcon */
@@ -965,13 +953,6 @@
  */
 #ifndef CONF_WITH_SFP004
 # define CONF_WITH_SFP004 1
-#endif
-
-/*
- * Set CONF_WITH_NOVA to 1 to enable support for Nova graphic card adapter
- */
-#ifndef CONF_WITH_NOVA
-# define CONF_WITH_NOVA 1
 #endif
 
 /*
