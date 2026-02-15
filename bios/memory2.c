@@ -29,96 +29,6 @@
 
 UBYTE meminit_flags;
 
-#if CONF_WITH_TTRAM
-
-/* Detect hardware TT-RAM size */
-static ULONG detect_ttram_size(void)
-{
-#if CONF_TTRAM_SIZE
-    /* Fixed-size TT-RAM */
-    return CONF_TTRAM_SIZE;
-#else
-    volatile UBYTE *addr;
-
-    /* By design, TT-RAM is always in 32-bit address space */
-    if (!IS_BUS32)
-        return 0;
-
-    /* Special note for TT: we can safely use the TT-RAM here, as the refresh
-     * rate has already been set in memconf(). */
-
-    /* Detect TT-RAM size. Assume that the size is always a multiple of 1 MB.
-     * Try to read the last byte of each TT-RAM megabyte. If it does not cause
-     * a Bus Error, assume that that megabyte is valid TT-RAM.
-     * We artificially limit TT-RAM detection to positive addresses to avoid
-     * shocking BDOS. */
-    for (addr = TTRAM_START + 1024UL*1024 - 1;
-        (long)addr > 0; addr += 1024UL*1024)
-    {
-        /* First check for bus error, then try writing to memory and
-         * reading back. */
-        if (!check_read_byte((long)addr))
-            break;
-
-        *addr     = 0x12;
-        *(addr-1) = 0x34;
-        invalidate_data_cache((UBYTE *)(addr-1), 2);
-        if ((*addr != 0x12) || (*(addr-1) != 0x34))
-            break;
-    }
-
-    /* Valid TT-RAM stops at the beginning of current megabyte */
-    return ((ULONG)addr & 0xfff00000) - (ULONG)TTRAM_START;
-#endif /* !CONF_TTRAM_SIZE */
-}
-
-#endif /* CONF_WITH_TTRAM */
-
-/* Detect TT-RAM and set ramtop/ramvalid */
-void ttram_detect(void)
-{
-#if CONF_WITH_TTRAM
-    if (ramvalid == RAMVALID_MAGIC)
-    {
-        /* Previous TT-RAM settings were valid. */
-        if (ramtop != NULL)
-        {
-            /* There was some TT-RAM. Be sure it is still valid.
-             * TT-RAM may disappear on CT60, after reset into 68030 mode. */
-            if (ramtop < (TTRAM_START + 1)
-                || !IS_BUS32
-#if CONF_WITH_BUS_ERROR
-                || !check_read_byte((long)TTRAM_START) /* First byte */
-                || !check_read_byte((long)(ramtop - 1)) /* Last byte */
-#endif
-            ) {
-                /* Previous TT-RAM settings aren't valid any more */
-                ramtop = NULL;
-            }
-        }
-    }
-    else
-    {
-        /* Previous TT-RAM settings were invalid, detect them now. */
-        ULONG ttram_size = detect_ttram_size();
-
-        if (ttram_size)
-            ramtop = TTRAM_START + ttram_size;
-        else
-            ramtop = NULL;
-
-        /* Always validate ramvalid even if ramtop == 0, like TOS 1.6+ */
-        ramvalid = RAMVALID_MAGIC;
-    }
-#else
-    /* Force no TT-RAM */
-    ramtop = NULL;
-    ramvalid = RAMVALID_MAGIC;
-#endif
-
-    KDEBUG(("ttram_detect(): ramtop=%p\n", ramtop));
-}
-
 #if CONF_WITH_ALT_RAM
 
 /* Initialize all Alt-RAM */
@@ -129,12 +39,6 @@ void altram_init(void)
         (UBYTE *)STATIC_ALT_RAM_ADDRESS, STATIC_ALT_RAM_SIZE));
     xmaddalt((UBYTE *)STATIC_ALT_RAM_ADDRESS, STATIC_ALT_RAM_SIZE);
     return;
-#endif
-
-#if CONF_WITH_TTRAM
-    /* Add eventual TT-RAM to BDOS pool */
-    if (ramtop != NULL)
-        xmaddalt(TTRAM_START, ramtop - TTRAM_START);
 #endif
 }
 
@@ -176,10 +80,10 @@ static BOOL testzone(UBYTE *start, LONG size)
     return TRUE;
 }
 
-static void init_line(BOOL is_ttram)
+static void init_line()
 {
     /* disable line wrap, display title, switch to inverse video */
-    cprintf("\x1bw%cT RAM \x1bp", is_ttram ? 'T' : 'S');
+    cprintf("\x1bwST RAM \x1bp");
     /* save cursor posn, display 32 spaces, restore cursor posn */
     cprintf("\x1bj%32s\x1bk", " ");
 }
@@ -217,15 +121,14 @@ static BOOL testtype(BOOL is_ttram, LONG memsize)
     WORD i;
     BOOL ok;
 
-    init_line(is_ttram);
-    startaddr = is_ttram ? TTRAM_START : (UBYTE *)0L;
+    init_line();
+    startaddr = (UBYTE *)0L;
     zonesize = (memsize / ZONECOUNT);
     for (i = 0, testaddr = startaddr; i < ZONECOUNT; i++, testaddr += zonesize)
     {
         ok = TRUE;
         /* we skip testing areas in use by the system! */
-        if (is_ttram
-         || ((testaddr >= membot) && (testaddr+zonesize <= memtop)))
+        if ((testaddr >= membot) && (testaddr+zonesize <= memtop))
             ok = testzone(testaddr, zonesize);
         cprintf(ok?"-":"X");
         if (bconstat(2))    /* abort */
@@ -253,13 +156,6 @@ BOOL memory_test(void)
     /* handle ST RAM */
     if (!testtype(FALSE, (LONG)phystop))
         return FALSE;
-
-#if CONF_WITH_TTRAM
-    /* handle TT RAM */
-    if (ramtop)         /* TT RAM detected */
-        if (!testtype(TRUE, ramtop-TTRAM_START))
-            return FALSE;
-#endif
 
     return TRUE;
 }

@@ -15,7 +15,7 @@
 #ifndef MFP_H
 #define MFP_H
 
-#if CONF_WITH_MFP || CONF_WITH_TT_MFP
+#if CONF_WITH_MFP
 
 /*==== MFP memory mapping =================================================*/
 typedef struct
@@ -69,16 +69,6 @@ typedef struct
         UBYTE   dum24;
         volatile UBYTE  udr;    /* USART data register               */
 } MFP;
-
-#endif
-
-
-#if CONF_WITH_TT_MFP
-
-#define TT_MFP_BASE     ((MFP *)(0xfffffa80L))
-
-void tt_mfp_init(void);
-void tt_mfpint(WORD num, LONG vector);
 
 #endif
 

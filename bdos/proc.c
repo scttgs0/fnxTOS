@@ -421,7 +421,7 @@ static char *alloc_env(ULONG flags, char *env)
     size = (envsize(env) + 1) & ~1;  /* must be even */
 
     /* allocate it */
-    new_env = xmxalloc(size, (flags&PF_TTRAMLOAD) ? MX_PREFTTRAM : MX_STRAM);
+    new_env = xmxalloc(size, MX_STRAM);
     if (new_env)
     {
         memcpy(new_env, env, size);     /* copy it */
@@ -472,7 +472,7 @@ static UBYTE *alloc_tpa(ULONG flags,LONG needed,LONG *avail)
         LONG alt_ram_size = 0L, tpasize;
         BOOL alt_ram_available = FALSE;
 
-        if (has_alt_ram && (flags & PF_TTRAMLOAD)) {
+        if (has_alt_ram) {
             alt_ram_size = (LONG) ffit(-1L, &pmdalt);
             if (alt_ram_size >= needed)
                 alt_ram_available = TRUE;

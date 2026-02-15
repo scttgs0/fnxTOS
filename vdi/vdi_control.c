@@ -499,9 +499,6 @@ void vdi_v_opnwk(Vwk *vwk)
     newrez = INTIN[0] - 2;
     if (
         (newrez == ST_LOW) || (newrez == ST_MEDIUM) || (newrez == ST_HIGH)
-#if CONF_WITH_TT_SHIFTER
-        || (newrez == TT_LOW) || (newrez == TT_MEDIUM)
-#endif
        ) {
         if (newrez != Getrez()) {
             Setscreen(-1L, -1L, newrez, 0);

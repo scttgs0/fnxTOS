@@ -39,17 +39,6 @@
 #include "biosext.h"
 
 
-#if CONF_WITH_TT_SHIFTER
-
-/*
- * maps TT dialog buttons to resolution
- */
-#define NUM_TT_BUTTONS  5
-static const WORD ttrez_from_button[NUM_TT_BUTTONS] =
-    { ST_LOW, ST_MEDIUM, ST_HIGH, TT_LOW, TT_MEDIUM };
-
-#endif /* CONF_WITH_TT_SHIFTER */
-
 #if CONF_WITH_VIDEL
 
 /*
@@ -98,49 +87,6 @@ static int change_st_rez(WORD *newres)
     return 1;
 }
 
-#if CONF_WITH_TT_SHIFTER
-/*
- *  change_tt_rez(): change desktop TT resolution
- *  returns:    0   user cancelled change
- *              1   user wants to change; newres is updated with new resolution.
- */
-static int change_tt_rez(WORD *newres)
-{
-OBJECT *tree, *obj;
-int i, selected;
-WORD oldres;
-
-    oldres = Getrez();
-    for (i = 0; i < NUM_TT_BUTTONS; i++)
-        if (oldres == ttrez_from_button[i])
-            break;
-
-    selected = i;
-
-    /* set up dialog & display */
-    tree = desk_rs_trees[ADTTREZ];
-    for (i = 0, obj = tree+TTREZSTL; i < NUM_TT_BUTTONS; i++, obj++) {
-        if (i == selected)
-            obj->ob_state |= SELECTED;
-        else obj->ob_state &= ~SELECTED;
-    }
-
-    inf_show(tree,ROOT);
-
-    if (inf_what(tree,TTREZOK) == 0)
-        return 0;
-
-    /* look for button with SELECTED state */
-    i = inf_gindex(tree,TTREZSTL,NUM_TT_BUTTONS);
-    if (i < 0)                  /* paranoia */
-        return 0;
-    if (i == selected)          /* no change */
-        return 0;
-
-    *newres = ttrez_from_button[i];
-    return 1;
-}
-#endif
 
 #if CONF_WITH_VIDEL
 /*
@@ -248,11 +194,6 @@ int change_resolution(WORD *newres,WORD *newmode)
 #if CONF_WITH_VIDEL
     if (has_videl)
         return change_falcon_rez(newres,newmode);
-#endif
-
-#if CONF_WITH_TT_SHIFTER
-    if (has_tt_shifter)
-        return change_tt_rez(newres);
 #endif
 
     return change_st_rez(newres);

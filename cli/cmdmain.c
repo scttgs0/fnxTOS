@@ -72,11 +72,7 @@ WORD argc, rc;
 
     if (getcookie(_VDO_COOKIE,&vdo_value) == 0)
         vdo_value = _VDO_ST;
-#if CONF_WITH_TT_SHIFTER
-    original_res = (vdo_value < _VDO_VIDEL) ? Getrez() : -1;
-#else
-    original_res = (vdo_value < _VDO_TT) ? Getrez() : -1;
-#endif
+    original_res = Getrez();
     current_res = original_res;
     original_color3 = Setcolor(3,-1);
 
@@ -307,21 +303,10 @@ int valid_res(WORD res)
     if (vdo_value == _VDO_VIDEL)    /* can't change Falcon resolutions */
         return FALSE;
 
-    if (current_res == TT_HIGH)     /* can't change from TT high */
-        return FALSE;
-
-    if ((current_res == ST_HIGH) && (vdo_value != _VDO_TT))
+    if (current_res == ST_HIGH)
         return FALSE;               /* only TTs can change from ST high */
 
     switch(res) {
-#if CONF_WITH_TT_SHIFTER
-    case TT_LOW:
-    case TT_MEDIUM:
-    case ST_HIGH:
-        if (vdo_value != _VDO_TT)
-            return FALSE;
-        FALLTHROUGH;
-#endif  /* CONF_WITH_TT_SHIFTER */
     case ST_LOW:
     case ST_MEDIUM:
         return TRUE;

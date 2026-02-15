@@ -15,7 +15,7 @@
 
 #include "iorec.h"
 
-#define BCONMAP_AVAILABLE (CONF_WITH_SCC || CONF_WITH_TT_MFP)
+#define BCONMAP_AVAILABLE (CONF_WITH_SCC)
 
 /*
  * baud rate codes
@@ -92,11 +92,6 @@ void scc_es_interrupt_handler(WORD portnum);
 #if CONF_WITH_MFP_RS232
 void mfp_rs232_rx_interrupt_handler(void);
 void mfp_rs232_tx_interrupt_handler(void);
-#endif
-
-#if CONF_WITH_TT_MFP
-void mfp_tt_rx_interrupt_handler(void);
-void mfp_tt_tx_interrupt_handler(void);
 #endif
 
 #if BCONMAP_AVAILABLE

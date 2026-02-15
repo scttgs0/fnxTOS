@@ -79,7 +79,6 @@
 #endif
         .extern _screenpt
         .extern _has_videl
-        .extern _has_tt_shifter
         .extern _has_ste_shifter
         .extern _flopvbl
         .extern _nvbls
@@ -345,15 +344,11 @@ vbl_no_palette:
         tst.w   _has_videl
         jne     set_video_low
 #endif
-#if CONF_WITH_TT_SHIFTER
-        tst.w   _has_tt_shifter
-        jne     set_video_low
-#endif
 #if CONF_WITH_STE_SHIFTER
         tst.w   _has_ste_shifter
         jne     set_video_low
 #endif
-#if CONF_WITH_VIDEL || CONF_WITH_TT_SHIFTER || CONF_WITH_STE_SHIFTER
+#if CONF_WITH_VIDEL || CONF_WITH_STE_SHIFTER
         jra     st_shifter
 set_video_low:
         // this must be set *after* setting mid/hi bytes
@@ -471,29 +466,6 @@ _mfp_rs232_tx_interrupt:
 
 #endif
 
-#if CONF_WITH_TT_MFP
-
-// ==== TT MFP USART interrupt handlers ============================================
-
-        .globl _mfp_tt_rx_interrupt
-        .globl _mfp_tt_tx_interrupt
-
-_mfp_tt_rx_interrupt:
-        movem.l d0-d1/a0-a1,-(sp)
-
-        jbsr    _mfp_tt_rx_interrupt_handler
-        movem.l (sp)+,d0-d1/a0-a1
-        rte
-
-_mfp_tt_tx_interrupt:
-        movem.l d0-d1/a0-a1,-(sp)
-
-        jbsr    _mfp_tt_tx_interrupt_handler
-
-        movem.l (sp)+,d0-d1/a0-a1
-        rte
-
-#endif
 
 #if CONF_WITH_SCC
 

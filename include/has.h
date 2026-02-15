@@ -30,25 +30,11 @@ extern int has_ste_shifter;
   #define HAS_STE_SHIFTER 0
 #endif
 
-#if CONF_WITH_TT_SHIFTER
-extern int has_tt_shifter;
-  #define HAS_TT_SHIFTER has_tt_shifter
-#else
-  #define HAS_TT_SHIFTER 0
-#endif
-
 #if CONF_WITH_VIDEL
 extern int has_videl;
   #define HAS_VIDEL has_videl
 #else
   #define HAS_VIDEL 0
-#endif
-
-#if CONF_WITH_TT_MFP
-extern int has_tt_mfp;
-  #define HAS_TT_MFP has_tt_mfp
-#else
-  #define HAS_TT_MFP 0
 #endif
 
 #if CONF_WITH_SCC

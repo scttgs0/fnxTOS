@@ -104,11 +104,6 @@ void mfp_rs232_rx_interrupt(void);
 void mfp_rs232_tx_interrupt(void);
 #endif
 
-#if CONF_WITH_TT_MFP
-void mfp_tt_rx_interrupt(void);
-void mfp_tt_tx_interrupt(void);
-#endif
-
 #if CONF_WITH_SCC
 void scca_rx_interrupt(void);
 void scca_tx_interrupt(void);

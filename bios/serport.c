@@ -58,14 +58,6 @@ static LONG bcostatB(void);
 static ULONG rsconfB(WORD baud, WORD ctrl, WORD ucr, WORD rsr, WORD tsr, WORD scr);
 #endif  /* CONF_WITH_SCC */
 
-#if CONF_WITH_TT_MFP
-static LONG bconstatTT(void);
-static LONG bconinTT(void);
-static LONG bcostatTT(void);
-static LONG bconoutTT(WORD,WORD);
-static ULONG rsconfTT(WORD baud, WORD ctrl, WORD ucr, WORD rsr, WORD tsr, WORD scr);
-#endif  /* CONF_WITH_TT_MFP */
-
 /*
  * global variables
  */
@@ -107,12 +99,6 @@ static const MAPTAB maptable_port_b =
     { bconstatB, bconinB, bcostatB, bconoutB, rsconfB, &iorecB };
 #endif  /* CONF_WITH_SCC */
 
-#if CONF_WITH_TT_MFP
-static EXT_IOREC iorecTT;
-static UBYTE ibufTT[RS232_BUFSIZE], obufTT[RS232_BUFSIZE];
-static const MAPTAB maptable_mfp_tt =
-    { bconstatTT, bconinTT, bcostatTT, bconoutTT, rsconfTT, &iorecTT };
-#endif  /* CONF_WITH_TT_MFP */
 
 #if CONF_WITH_MFP_RS232
 struct mfp_rs232_table {
@@ -152,7 +138,7 @@ static WORD incr_tail(IOREC *iorec)
     return tail;
 }
 
-#if (CONF_WITH_MFP_RS232 && !RS232_DEBUG_PRINT) || CONF_WITH_TT_MFP || CONF_WITH_SCC
+#if (CONF_WITH_MFP_RS232 && !RS232_DEBUG_PRINT) || CONF_WITH_SCC
 static void put_iorecbuf(IOREC *out, WORD b)
 {
     WORD tail;
@@ -208,7 +194,7 @@ static LONG bconin_iorec(EXT_IOREC *iorec)
 }
 
 
-#if CONF_WITH_MFP_RS232 || CONF_WITH_TT_MFP
+#if CONF_WITH_MFP_RS232
 /*
  * routines shared by both MFPs
  */
@@ -384,105 +370,6 @@ ULONG rsconf1(WORD baud, WORD ctrl, WORD ucr, WORD rsr, WORD tsr, WORD scr)
     return 0UL;
 #endif  /* CONF_WITH_MFP_RS232 */
 }
-
-
-#if CONF_WITH_TT_MFP
-/*
- * TT MFP i/o routines
- */
-static LONG bconstatTT(void)
-{
-    return bconstat_iorec(&iorecTT);
-}
-
-static LONG bconinTT(void)
-{
-    return bconin_iorec(&iorecTT);
-}
-
-static LONG bcostatTT(void)
-{
-    IOREC *out = &iorecTT.out;
-
-    /* set the status according to buffer availability */
-    return (out->head == incr_tail(out)) ? 0L : -1L;
-}
-
-static LONG bconoutTT(WORD dev, WORD b)
-{
-    WORD old_sr;
-
-    /* Wait for transmit buffer to become empty */
-    while(!bcostatTT())
-        ;
-
-    /* disable interrupts */
-    old_sr = set_sr(0x2700);
-
-     /*
-     * If the buffer is empty & the port is empty, output directly.
-     * otherwise queue the data.
-     */
-    if ((iorecTT.out.head == iorecTT.out.tail) && (TT_MFP_BASE->tsr & 0x80)) {
-        TT_MFP_BASE->udr = (UBYTE)b;
-    } else {
-        put_iorecbuf(&iorecTT.out, b);
-    }
-
-    /* restore interrupts */
-    set_sr(old_sr);
-
-    return 1L;
-}
-
-/*
- * the following routines are called by assembler interrupt handlers.
- * they run at interrupt level 6 and are therefore never interrupted.
- */
-void mfp_tt_rx_interrupt_handler(void)
-{
-    IOREC *in = &iorecTT.in;
-    WORD tail;
-
-    if (TT_MFP_BASE->rsr & 0x80) {
-        UBYTE data = TT_MFP_BASE->udr;
-        tail = incr_tail(in);
-        if (tail != in->head) {
-            /* space available in iorec buffer */
-            *((UBYTE *)(in->buf + tail)) = data;
-            in->tail = tail;
-        }
-    }
-
-    /* clear the interrupt service bit (bit 4) */
-    TT_MFP_BASE->isra = 0xef;
-}
-
-void mfp_tt_tx_interrupt_handler(void)
-{
-    IOREC *out = &iorecTT.out;
-
-    /*
-     * if there's any queued output data, send it
-     */
-    if (out->head != out->tail) {
-        TT_MFP_BASE->udr = *(out->buf + out->head);
-        if (++out->head >= out->size)
-            out->head = 0;
-    }
-
-    /* clear the interrupt service bit (bit 2) */
-    TT_MFP_BASE->isra = 0xfb;
-}
-
-/*
- * TT Rsconf() routine
- */
-static ULONG rsconfTT(WORD baud, WORD ctrl, WORD ucr, WORD rsr, WORD tsr, WORD scr)
-{
-    return rsconf_mfp(TT_MFP_BASE,&iorecTT,baud,ctrl,ucr,rsr,tsr,scr);
-}
-#endif  /* CONF_WITH_TT_MFP */
 
 
 #if CONF_WITH_SCC
@@ -972,18 +859,6 @@ static void init_bconmap(void)
         }
 #endif
         bconmap_root.maptabsize = 3;
-    } else if (cookie_mch == MCH_TT) {
-#if CONF_WITH_SCC
-        if (has_scc) {
-            memcpy(&maptable[1],&maptable_port_b,sizeof(MAPTAB));
-            memcpy(&maptable[3],&maptable_port_a,sizeof(MAPTAB));
-        }
-#endif
-#if CONF_WITH_TT_MFP
-        if (has_tt_mfp)
-            memcpy(&maptable[2],&maptable_mfp_tt,sizeof(MAPTAB));
-#endif
-        bconmap_root.maptabsize = 4;
     }
 
     /* set up to use mapped device values */
@@ -1034,17 +909,6 @@ void init_serport(void)
         write_scc(&scc->portA, 9, 0x09);        /* set Master Interrupt Enable */
     }
 #endif  /* CONF_WITH_SCC */
-
-#if CONF_WITH_TT_MFP
-    memcpy(&iorecTT,&iorec_init,sizeof(EXT_IOREC));
-    iorecTT.in.buf = ibufTT;
-    iorecTT.out.buf = obufTT;
-    if (has_tt_mfp) {
-        rsconfTT(DEFAULT_BAUDRATE, 0, 0x88, 1, 1, 0);  /* set default initial values for TT MFP */
-        tt_mfpint(MFP_RBF, (LONG)mfp_tt_rx_interrupt);  /* for MFP USART buffer interrupts */
-        tt_mfpint(MFP_TBE, (LONG)mfp_tt_tx_interrupt);
-    }
-#endif  /* CONF_WITH_TT_MFP */
 
 #if BCONMAP_AVAILABLE
     memcpy(&iorec_dummy,&iorec_init,sizeof(EXT_IOREC));

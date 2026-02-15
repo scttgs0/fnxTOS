@@ -25,13 +25,7 @@
 # define MEMINIT_BIT_FALCON_MMU 1 /* This machine has Falcon MMU */
 #endif
 
-#if CONF_WITH_TT_MMU
-# define MEMINIT_BIT_TT_MMU 2 /* This machine has TT MMU */
-#endif
-
 #ifndef ASM_SOURCE
-
-void ttram_detect(void);
 
 #if CONF_WITH_ALT_RAM
 
@@ -51,10 +45,6 @@ extern UBYTE meminit_flags;
 
 #if CONF_WITH_FALCON_MMU
 # define MEMINIT_FALCON_MMU (1 << MEMINIT_BIT_FALCON_MMU)
-#endif
-
-#if CONF_WITH_TT_MMU
-# define MEMINIT_TT_MMU (1 << MEMINIT_BIT_TT_MMU)
 #endif
 
 #endif /* ASM_SOURCE */

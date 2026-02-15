@@ -16,9 +16,7 @@
 
 /* Values for Mxalloc() mode */
 #define MX_STRAM 0
-#define MX_TTRAM 1
 #define MX_PREFSTRAM 2
-#define MX_PREFTTRAM 3
 #define MX_MODEMASK  0x03   /* mask for supported mode bits */
 
 /* Values of 'mode' for Pexec() */
@@ -98,9 +96,7 @@ struct _pd
 
 /* p_flags values: */
 #define PF_FASTLOAD     0x0001
-#define PF_TTRAMLOAD    0x0002
-#define PF_TTRAMMEM     0x0004
-#define PF_STANDARD     (PF_FASTLOAD | PF_TTRAMLOAD | PF_TTRAMMEM)
+#define PF_STANDARD     (PF_FASTLOAD)
 
 /*
  *  MD - Memory Descriptor

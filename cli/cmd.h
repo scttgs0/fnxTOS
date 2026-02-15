@@ -16,7 +16,6 @@
 #else
  /* config.h */
  #define CONF_ATARI_HARDWARE    1
- #define CONF_WITH_TT_SHIFTER   1
  #define MAXPATHLEN      256
  #define BLKDEVNUM       26
  /* sysconf.h */
@@ -126,14 +125,10 @@ extern LONG jmp_xbios(WORD, ...);
  */
 #define _VDO_COOKIE     0x5f56444fL     /* '_VDO' */
 #define _VDO_ST         0x00000000L     /* ST */
-#define _VDO_TT         0x00020000L     /* TT */
 #define _VDO_VIDEL      0x00030000L     /* Falcon videl */
 #define ST_LOW          0               /* from Getrez() */
 #define ST_MEDIUM       1
 #define ST_HIGH         2
-#define TT_MEDIUM       4
-#define TT_HIGH         6
-#define TT_LOW          7
 #define BLACK           0x0000          /* for Setcolor() */
 
 /*

@@ -103,9 +103,6 @@ char *exclude_items[] =
     "STPRINFO",
 #endif
 
-#if !CONF_WITH_TT_SHIFTER           /* resolution setting */
-    "ADTTREZ",
-#endif
 #if !CONF_WITH_VIDEL
     "ADFALREZ",
     "STREZ1",

@@ -15,7 +15,6 @@
 #define SCREEN_H
 
 #define ST_VRAM_SIZE        32000UL
-#define TT_VRAM_SIZE        153600UL
 #define FALCON_VRAM_SIZE    368640UL    /* 768x480x256 (including overscan) */
 
 #if CONF_WITH_ATARI_VIDEO
@@ -27,10 +26,7 @@
 #define SYNCMODE            0xffff820aL
 
 #define ST_SHIFTER          0xffff8260L
-#define TT_SHIFTER          0xffff8262L
 #define SPSHIFT             0xffff8266L
-
-#define TT_SHIFTER_BITMASK  0x970f      /* valid bits in TT_SHIFTER */
 
 #define STE_LINE_OFFSET     0xffff820fL /* additional registers in STe */
 #define STE_HORZ_SCROLL     0xffff8265L
@@ -38,7 +34,6 @@
 #define ST_PALETTE_REGS     0xffff8240L
 #define FALCON_PALETTE_REGS 0xffff9800L
 
-#define TT_PALETTE_BITMASK  0x0fff      /* valid bits in TT_PALETTE_REGS */
 
 /* hardware-dependent xbios routines */
 

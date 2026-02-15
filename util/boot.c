@@ -36,7 +36,6 @@ extern const UBYTE end_ramtos[];
 #define _p_cookies  *(struct cookie **)0x5a0
 #define _CPU        0x5f435055L
 #define _MCH        0x5f4d4348L
-#define MCH_TT      0x00020000L
 
 struct cookie {
   ULONG id;
@@ -123,17 +122,6 @@ int main(void)
   Super(0);
 
   cpu = get_cookie(_CPU);
-
-#ifdef TARGET_256
-  /* prg256 variants don't support TT and beyond */
-  if (get_cookie(_MCH) >= MCH_TT) {
-    (void)Cconws("\033EEMU256*.PRG only supports\r\nST/MegaST/STe/MegaSTe.\r\n");
-    (void)Cconws("Use EMUTOS*.PRG instead.\r\n");
-    (void)Cconws("Hit RETURN to exit");
-    (void)Cconin();
-    return 1;
-  }
-#endif
 
   /* do the rest in assembler */
 

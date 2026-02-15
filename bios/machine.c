@@ -63,9 +63,6 @@ ULONG cookie_swi;
 #if CONF_WITH_STE_SHIFTER
 int has_ste_shifter;
 #endif
-#if CONF_WITH_TT_SHIFTER
-int has_tt_shifter;
-#endif
 #if CONF_WITH_VIDEL
 int has_videl;
 #endif
@@ -121,15 +118,6 @@ static void detect_video(void)
     KDEBUG(("has_ste_shifter = %d\n", has_ste_shifter));
 #endif
 
-#if CONF_WITH_TT_SHIFTER
-    /* test if we have a TT Shifter by testing for TT color palette */
-    has_tt_shifter = 0;
-    if (check_read_byte((long)TT_PALETTE_REGS))
-        has_tt_shifter = 1;
-
-    KDEBUG(("has_tt_shifter = %d\n", has_tt_shifter));
-#endif
-
 #if CONF_WITH_VIDEL
     /* test if we have Falcon VIDEL by testing for f030_xreg */
     has_videl = 0;
@@ -157,24 +145,6 @@ static void detect_video(void)
     }
 #endif
 }
-
-#if CONF_WITH_TT_MFP
-
-int has_tt_mfp;
-
-/*
- * detect second MFP (TT only)
- */
-static void detect_tt_mfp(void)
-{
-    has_tt_mfp = 0;
-    if (check_read_byte((LONG)TT_MFP_BASE+1))
-        has_tt_mfp = 1;
-
-    KDEBUG(("has_tt_mfp = %d\n", has_tt_mfp));
-}
-
-#endif /* CONF_WITH_TT_MFP */
 
 #if CONF_WITH_SCC
 
@@ -287,8 +257,6 @@ static void setvalue_vdo(void)
 #if CONF_ATARI_HARDWARE
     if (HAS_VIDEL)
         cookie_vdo = VDO_FALCON;
-    else if (HAS_TT_SHIFTER)
-        cookie_vdo = VDO_TT;
     else if (HAS_STE_SHIFTER)
         cookie_vdo = VDO_STE;
     else
@@ -308,8 +276,6 @@ static void setvalue_mch(void)
         cookie_mch = MCH_ARANYM;
     else if (HAS_VIDEL)
         cookie_mch = MCH_FALCON;
-    else if (HAS_TT_SHIFTER)
-        cookie_mch = MCH_TT;
     else if (HAS_STE_SHIFTER)
     {
         if (HAS_VME)
@@ -380,12 +346,6 @@ static void setvalue_snd(void)
 static void add_cookie_frb(void)
 {
     BOOL need_frb = FALSE; /* Required only if the system has Alt-RAM */
-
-#if CONF_WITH_TTRAM
-    /* We need FRB if TT-RAM is present */
-    need_frb = (ramtop != NULL);
-#endif
-
     if (need_frb)
     {
         UBYTE *cookie_frb = balloc_stram(FRB_SIZE, FALSE);
@@ -467,15 +427,8 @@ void machine_detect(void)
     detect_modectl();
 #endif
 
-    /* Detect TT-RAM and set up ramtop/ramvalid */
-    KDEBUG(("ttram_detect()\n"));
-    ttram_detect();
-
     detect_video();
-#if CONF_WITH_TT_MFP
-    if (!IS_ARANYM)
-        detect_tt_mfp();
-#endif
+
 #if CONF_WITH_SCC
     if (!IS_ARANYM)
         detect_scc();
@@ -528,16 +481,6 @@ void machine_init(void)
         MFP *mfp = MFP_BASE;  /* set base address of MFP */
 
         mfp->iera = 0x00;     /* disable MFP interrupts */
-        mfp->ierb = 0x00;
-    }
- #endif
-
- #if CONF_WITH_TT_MFP
-    if (has_tt_mfp)
-    {
-        MFP *mfp = TT_MFP_BASE; /* set base address of TT MFP */
-
-        mfp->iera = 0x00;       /* disable MFP interrupts */
         mfp->ierb = 0x00;
     }
  #endif
@@ -701,8 +644,6 @@ static const char * guess_machine_name(void)
         return "Atari STe";
     case MCH_MSTE:
         return "Atari Mega STe";
-    case MCH_TT:
-        return "Atari TT";
     case MCH_FALCON:
         return "Atari Falcon";
     default:

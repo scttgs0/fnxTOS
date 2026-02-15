@@ -54,78 +54,7 @@ static const WORD st_palette[16][3] =
     { 1000, 1000, 428 },
     { 1000, 428, 1000 }
 };
-#if CONF_WITH_TT_SHIFTER
-static const WORD tt_palette1[16][3] =
-{
-    { 1000, 1000, 1000 }, { 0, 0, 0 }, { 1000, 0, 0 }, { 0, 1000, 0 },
-    { 0, 0, 1000 }, { 0, 1000, 1000 }, { 1000, 1000, 0 }, { 1000, 0, 1000 },
-    { 667, 667, 667 }, { 400, 400, 400 }, { 1000, 600, 600 }, { 600, 1000, 600 },
-    { 600, 600, 1000 }, { 600, 1000, 1000 }, { 1000, 1000, 600 }, { 1000, 600, 1000 }
-};
-static const WORD tt_palette2[240][3] =
-{
-    { 1000, 1000, 1000 }, { 933, 933, 933 }, { 867, 867, 867 }, { 800, 800, 800 },
-    { 733, 733, 733 }, { 667, 667, 667 }, { 600, 600, 600 }, { 533, 533, 533 },
-    { 467, 467, 467 }, { 400, 400, 400 }, { 333, 333, 333 }, { 267, 267, 267 },
-    { 200, 200, 200 }, { 133, 133, 133 }, { 67, 67, 67 }, { 0, 0, 0 },
-    { 1000, 0, 0 }, { 1000, 0, 67 }, { 1000, 0, 133 }, { 1000, 0, 200 },
-    { 1000, 0, 267 }, { 1000, 0, 333 }, { 1000, 0, 400 }, { 1000, 0, 467 },
-    { 1000, 0, 533 }, { 1000, 0, 600 }, { 1000, 0, 667 }, { 1000, 0, 733 },
-    { 1000, 0, 800 }, { 1000, 0, 867 }, { 1000, 0, 933 }, { 1000, 0, 1000 },
-    { 933, 0, 1000 }, { 867, 0, 1000 }, { 800, 0, 1000 }, { 733, 0, 1000 },
-    { 667, 0, 1000 }, { 600, 0, 1000 }, { 533, 0, 1000 }, { 467, 0, 1000 },
-    { 400, 0, 1000 }, { 333, 0, 1000 }, { 267, 0, 1000 }, { 200, 0, 1000 },
-    { 133, 0, 1000 }, { 67, 0, 1000 }, { 0, 0, 1000 }, { 0, 67, 1000 },
-    { 0, 133, 1000 }, { 0, 200, 1000 }, { 0, 267, 1000 }, { 0, 333, 1000 },
-    { 0, 400, 1000 }, { 0, 467, 1000 }, { 0, 533, 1000 }, { 0, 600, 1000 },
-    { 0, 667, 1000 }, { 0, 733, 1000 }, { 0, 800, 1000 }, { 0, 867, 1000 },
-    { 0, 933, 1000 }, { 0, 1000, 1000 }, { 0, 1000, 933 }, { 0, 1000, 867 },
-    { 0, 1000, 800 }, { 0, 1000, 733 }, { 0, 1000, 667 }, { 0, 1000, 600 },
-    { 0, 1000, 533 }, { 0, 1000, 467 }, { 0, 1000, 400 }, { 0, 1000, 333 },
-    { 0, 1000, 267 }, { 0, 1000, 200 }, { 0, 1000, 133 }, { 0, 1000, 67 },
-    { 0, 1000, 0 }, { 67, 1000, 0 }, { 133, 1000, 0 }, { 200, 1000, 0 },
-    { 267, 1000, 0 }, { 333, 1000, 0 }, { 400, 1000, 0 }, { 467, 1000, 0 },
-    { 533, 1000, 0 }, { 600, 1000, 0 }, { 667, 1000, 0 }, { 733, 1000, 0 },
-    { 800, 1000, 0 }, { 867, 1000, 0 }, { 933, 1000, 0 }, { 1000, 1000, 0 },
-    { 1000, 933, 0 }, { 1000, 867, 0 }, { 1000, 800, 0 }, { 1000, 733, 0 },
-    { 1000, 667, 0 }, { 1000, 600, 0 }, { 1000, 533, 0 }, { 1000, 467, 0 },
-    { 1000, 400, 0 }, { 1000, 333, 0 }, { 1000, 267, 0 }, { 1000, 200, 0 },
-    { 1000, 133, 0 }, { 1000, 67, 0 }, { 733, 0, 0 }, { 733, 0, 67 },
-    { 733, 0, 133 }, { 733, 0, 200 }, { 733, 0, 267 }, { 733, 0, 333 },
-    { 733, 0, 400 }, { 733, 0, 467 }, { 733, 0, 533 }, { 733, 0, 600 },
-    { 733, 0, 667 }, { 733, 0, 733 }, { 667, 0, 733 }, { 600, 0, 733 },
-    { 533, 0, 733 }, { 467, 0, 733 }, { 400, 0, 733 }, { 333, 0, 733 },
-    { 267, 0, 733 }, { 200, 0, 733 }, { 133, 0, 733 }, { 67, 0, 733 },
-    { 0, 0, 733 }, { 0, 67, 733 }, { 0, 133, 733 }, { 0, 200, 733 },
-    { 0, 267, 733 }, { 0, 333, 733 }, { 0, 400, 733 }, { 0, 467, 733 },
-    { 0, 533, 733 }, { 0, 600, 733 }, { 0, 667, 733 }, { 0, 733, 733 },
-    { 0, 733, 667 }, { 0, 733, 600 }, { 0, 733, 533 }, { 0, 733, 467 },
-    { 0, 733, 400 }, { 0, 733, 333 }, { 0, 733, 267 }, { 0, 733, 200 },
-    { 0, 733, 133 }, { 0, 733, 67 }, { 0, 733, 0 }, { 67, 733, 0 },
-    { 133, 733, 0 }, { 200, 733, 0 }, { 267, 733, 0 }, { 333, 733, 0 },
-    { 400, 733, 0 }, { 467, 733, 0 }, { 533, 733, 0 }, { 600, 733, 0 },
-    { 667, 733, 0 }, { 733, 733, 0 }, { 733, 667, 0 }, { 733, 600, 0 },
-    { 733, 533, 0 }, { 733, 467, 0 }, { 733, 400, 0 }, { 733, 333, 0 },
-    { 733, 267, 0 }, { 733, 200, 0 }, { 733, 133, 0 }, { 733, 67, 0 },
-    { 467, 0, 0 }, { 467, 0, 67 }, { 467, 0, 133 }, { 467, 0, 200 },
-    { 467, 0, 267 }, { 467, 0, 333 }, { 467, 0, 400 }, { 467, 0, 467 },
-    { 400, 0, 467 }, { 333, 0, 467 }, { 267, 0, 467 }, { 200, 0, 467 },
-    { 133, 0, 467 }, { 67, 0, 467 }, { 0, 0, 467 }, { 0, 67, 467 },
-    { 0, 133, 467 }, { 0, 200, 467 }, { 0, 267, 467 }, { 0, 333, 467 },
-    { 0, 400, 467 }, { 0, 467, 467 }, { 0, 467, 400 }, { 0, 467, 333 },
-    { 0, 467, 267 }, { 0, 467, 200 }, { 0, 467, 133 }, { 0, 467, 67 },
-    { 0, 467, 0 }, { 67, 467, 0 }, { 133, 467, 0 }, { 200, 467, 0 },
-    { 267, 467, 0 }, { 333, 467, 0 }, { 400, 467, 0 }, { 467, 467, 0 },
-    { 467, 400, 0 }, { 467, 333, 0 }, { 467, 267, 0 }, { 467, 200, 0 },
-    { 467, 133, 0 }, { 467, 67, 0 }, { 267, 0, 0 }, { 267, 0, 67 },
-    { 267, 0, 133 }, { 267, 0, 200 }, { 267, 0, 267 }, { 200, 0, 267 },
-    { 133, 0, 267 }, { 67, 0, 267 }, { 0, 0, 267 }, { 0, 67, 267 },
-    { 0, 133, 267 }, { 0, 200, 267 }, { 0, 267, 267 }, { 0, 267, 200 },
-    { 0, 267, 133 }, { 0, 267, 67 }, { 0, 267, 0 }, { 67, 267, 0 },
-    { 133, 267, 0 }, { 200, 267, 0 }, { 267, 267, 0 }, { 267, 200, 0 },
-    { 267, 133, 0 }, { 267, 67, 0 }, { 1000, 1000, 1000 }, { 0, 0, 0 }
-};
-#endif
+
 
 #if CONF_WITH_VIDEL
 static const WORD videl_palette1[16][3] =
@@ -254,214 +183,6 @@ static const WORD ste2vdi_lookup_table[16] =
 #endif
 
 
-#if CONF_WITH_TT_SHIFTER
-/* Create a TT color value from VDI color */
-static int vdi2tt(int col)
-{
-    return (col * 15 + 500) / 1000;
-}
-
-
-/* Create a VDI color value from TT color
- *
- * we use a lookup table for speed & space savings
- */
-#define tt2vdi(col) tt2vdi_lookup_table[(col) & 0x0f]
-
-
-/*
- * this table implements the following calculation, as used by TT TOS:
- *      VDI value = (TT palette hardware value * 1000 + 7) / 15
- */
-static const WORD tt2vdi_lookup_table[16] =
-    { 0, 67, 133, 200, 267, 333, 400, 467,
-      533, 600, 667, 733, 800, 867, 933, 1000 };
-
-
-/* Return adjusted VDI color number for TT systems
- *
- * This ensures that we access the right save area
- * (REQ_COL or req_col2) if bank switching is in effect
- */
-static WORD adjust_tt_colnum(WORD colnum)
-{
-    UWORD tt_shifter, rez, bank;
-
-    tt_shifter = EgetShift();
-    rez = (tt_shifter >> 8) & 0x07;
-    switch (rez) {
-    case ST_LOW:
-    case ST_MEDIUM:
-    case TT_MEDIUM:
-        bank = tt_shifter & 0x000f;
-        colnum += bank * 16;
-    }
-
-    return colnum;
-}
-
-
-/* Set an entry in the TT hardware palette
- *
- * TT video hardware has several obscure features which complicate
- * the VDI handler; we try to be TOS3-compatible
- *
- * Input is VDI-style: colnum is VDI pen#, rgb[] entries are 0-1000
- */
-static void set_tt_color(WORD colnum, WORD *rgb)
-{
-    WORD r, g, b;
-    WORD hwreg, hwvalue;
-    UWORD tt_shifter, rez, bank, mask;
-
-    /*
-     * first we determine which h/w palette register to update
-     */
-    hwreg = MAP_COL[colnum];    /* default, can be modified below */
-
-    tt_shifter = EgetShift();
-    rez = (tt_shifter >> 8) & 0x07;
-    bank = tt_shifter & 0x000f;
-    mask = numcolors - 1;
-
-    switch (rez) {
-    case ST_LOW:
-    case ST_MEDIUM:
-    case TT_MEDIUM:
-        hwreg &= mask;      /* mask out unwanted bits */
-        hwreg += bank * 16; /* allow for bank number */
-        break;
-    case ST_HIGH:   /* also known as duochrome on a TT */
-        /*
-         * set register 254 or 255 depending on the VDI pen#
-         * and the invert bit in palette register 0
-         */
-        hwvalue = EsetColor(0,-1);
-        if (hwvalue & TT_DUOCHROME_INVERT)
-            hwreg = 255 - colnum;
-        else hwreg = 254 + colnum;
-        break;
-    case TT_HIGH:
-        return;
-    }
-
-    /*
-     * then we determine what value to put in it
-     */
-    r = rgb[0];     /* VDI values */
-    g = rgb[1];
-    b = rgb[2];
-
-    if (tt_shifter & TT_HYPER_MONO)
-    {
-        /* we do what TOS3 does: first, derive a weighted value 0-1000
-         * based on input RGB values; then, scale it to a value 0-255
-         * (which the h/w applies to all 3 guns)
-         */
-        hwvalue = mul_div(30, r, 100) + mul_div(59, g, 100) + mul_div(11, b, 100);
-        hwvalue = mul_div(255, hwvalue, 1000);
-    }
-    else
-    {
-        hwvalue = (vdi2tt(r) << 8) | (vdi2tt(g) << 4) | vdi2tt(b);
-    }
-
-    EsetColor(hwreg, hwvalue);
-}
-
-
-/*
- * Return VDI values for hyper mono mode
- *
- * In hyper mono mode, the original VDI values are not even approximately
- * preserved in the hardware palette registers.  So we do what TOS3 does:
- * we fake the return values based on the previously saved values.
- */
-static void get_tt_hyper_mono(WORD colnum, WORD *retval)
-{
-    WORD *save, i, vditemp;
-
-    save = (colnum < 16) ? REQ_COL[colnum] : req_col2[colnum - 16];
-
-    for (i = 0; i < 3; i++, save++, retval++)
-    {
-        /* first clamp the raw values */
-        if (*save > 1000)
-            vditemp = 1000;
-        else if (*save < 0)
-            vditemp = 0;
-        else
-            vditemp = *save;
-
-        /*
-         * convert to h/w value then back to the equivalent VDI value,
-         * just as if we had actually written them in a normal mode
-         */
-        *retval = tt2vdi(vdi2tt(vditemp));
-    }
-}
-
-
-/* Query an entry in the TT hardware palette
- *
- * TT video hardware has several obscure features which complicate
- * the VDI handler; we try to be TOS3-compatible
- *
- * Input colnum is VDI pen#, returned values are nominally 0-1000
- */
-static void query_tt_color(WORD colnum, WORD *retval)
-{
-    WORD hwreg, hwvalue;
-    UWORD tt_shifter, rez, bank, mask;
-
-    /*
-     * first we determine which h/w palette register to read
-     */
-    hwreg = MAP_COL[colnum];    /* default, can be modified below */
-
-    tt_shifter = EgetShift();
-    rez = (tt_shifter >> 8) & 0x07;
-    bank = tt_shifter & 0x000f;
-    mask = numcolors - 1;
-
-    switch (rez) {
-    case ST_LOW:
-    case ST_MEDIUM:
-    case TT_MEDIUM:
-        hwreg &= mask;      /* mask out unwanted bits */
-        hwreg += bank * 16; /* allow for bank number */
-        break;
-    case ST_HIGH:   /* also known as duochrome on a TT */
-        /*
-         * set register 254 or 255 depending on the VDI pen#
-         * and the invert bit in palette register 0
-         */
-        hwvalue = EsetColor(0, -1);
-        if (hwvalue & TT_DUOCHROME_INVERT)
-            hwreg = 255 - colnum;
-        else
-            hwreg = 254 + colnum;
-        break;
-    case TT_HIGH:
-        retval[0] = retval[1] = retval[2] = colnum ? 0 : 1000;
-        return;
-    }
-
-    if (tt_shifter & TT_HYPER_MONO)
-    {
-        get_tt_hyper_mono(colnum, retval);
-    }
-    else
-    {
-        hwvalue = EsetColor(hwreg, -1);
-        retval[0] = tt2vdi(hwvalue >> 8);
-        retval[1] = tt2vdi(hwvalue >> 4);
-        retval[2] = tt2vdi(hwvalue);
-    }
-}
-#endif
-
-
 #if CONF_WITH_VIDEL
 /* Create videl colour value from VDI colour */
 static LONG vdi2videl(WORD col)
@@ -552,14 +273,6 @@ static void set_color(WORD colnum, WORD *rgb)
 
         videlrgb = (vdi2videl(r) << 16) | (vdi2videl(g) << 8) | vdi2videl(b);
         VsetRGB(hwreg, 1, (LONG)&videlrgb);
-        return;
-    }
-#endif
-
-#if CONF_WITH_TT_SHIFTER
-    if (has_tt_shifter)
-    {
-        set_tt_color(colnum, rgb);
         return;
     }
 #endif
@@ -686,11 +399,6 @@ void vdi_vs_color(Vwk *vwk)
         return;
     }
 
-#if CONF_WITH_TT_SHIFTER
-    if (has_tt_shifter)
-        colnum = adjust_tt_colnum(colnum);  /* handles palette bank issues */
-#endif
-
     /*
      * Copy raw values to the "requested colour" arrays, then clamp
      * them to 0-1000 before calling set_color()
@@ -733,18 +441,6 @@ void init_colors(void)
     }
     else
 #endif
-
-#if CONF_WITH_TT_SHIFTER
-    if (has_tt_shifter)
-    {
-        memcpy(REQ_COL, tt_palette1, sizeof(tt_palette1));
-        memcpy(req_col2, tt_palette2, sizeof(tt_palette2));
-    }
-    else
-#endif
-    {
-        /* Nothing */
-    }
 
     /* set up vdi pen -> hardware colour register mapping */
     memcpy(MAP_COL, MAP_COL_ROM, sizeof(MAP_COL_ROM));
@@ -805,10 +501,7 @@ void init_colors(void)
      * consequence of this workaround is that a vq_color() for the actual
      * value of pen 0 will return an unexpected result.
      */
-#if CONF_WITH_TT_SHIFTER
-    if (has_tt_shifter && (sshiftmod == ST_HIGH))
-        EsetColor(0, 0x0002);
-#endif
+
 #endif
 }
 
@@ -881,11 +574,6 @@ void vdi_vq_color(Vwk *vwk)
     }
 #endif
 
-#if CONF_WITH_TT_SHIFTER
-    if (has_tt_shifter)
-        colnum = adjust_tt_colnum(colnum);  /* handles palette bank issues */
-#endif
-
     if (INTIN[1] == 0)  /* return last-requested value */
     {
         if (colnum < 16)
@@ -924,13 +612,6 @@ void vdi_vq_color(Vwk *vwk)
     }
 #endif
 
-#if CONF_WITH_TT_SHIFTER
-    if (has_tt_shifter)
-    {
-        query_tt_color(colnum, &INTOUT[1]);
-        return;
-    }
-#endif
 
 #if CONF_WITH_STE_SHIFTER
     if (has_ste_shifter)

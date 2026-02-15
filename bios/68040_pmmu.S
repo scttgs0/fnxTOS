@@ -52,12 +52,6 @@ _setup_68040_pmmu:
 
                 jbsr    turn_off_all
 
-                // find out how much TT RAM we have
-                move.l  _ramtop.w,d0
-                jeq     no_ttram1
-                sub.l   #0x01000000,d0
-                move.l  d0,tt_ram_size
-no_ttram1:
                 add.l   #MEMORY_SIZE_ST_RAM+MEMORY_SIZE_TOS_ROM+MEMORY_SIZE_IO1+MEMORY_SIZE_IO2,d0
 
                 // calculate amount of memory needed for the tables and descriptors:
@@ -205,15 +199,6 @@ mmusetup:
                 jbsr    create_table
                 jcc     .error
 
-                // TT RAM
-                move.l  tt_ram_size,d2          // size
-                jeq     no_ttram2
-                move.l  #0x01000000,d0          // logical
-                move.l  #0x01000000,d1          // physical
-                move.l  #c_copyback<<d_cache_pos,d3     // flags
-                jbsr    create_table
-                jcc     .error
-no_ttram2:
                 // I/O space (shadow)
                 move.l  #0xfff00000,d0          // logical
                 move.l  #0x00f00000,d1          // physical
@@ -370,6 +355,5 @@ create_pointertable:
                 .even
 root_table:     .ds.l 1
 next_free:      .ds.l 1
-tt_ram_size:    .ds.l 1
 
 #endif /* CONF_WITH_68040_PMMU */

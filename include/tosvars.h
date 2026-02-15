@@ -73,7 +73,6 @@ extern UBYTE *end_os;
 extern UBYTE *membot;
 extern UBYTE *memtop;
 
-#define TTRAM_START ((UBYTE *)0x01000000)
 extern UBYTE *ramtop;     /* top of TT-RAM, or NULL if no TT-RAM is present */
 #define RAMVALID_MAGIC 0x1357BD13
 extern LONG ramvalid;     /* if equal to RAMVALID_MAGIC, then ramtop is valid */

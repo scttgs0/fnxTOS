@@ -134,7 +134,6 @@ _main:
 #if defined(MACHINE_ARANYM)
 # define OSXH_ST        0
 # define OSXH_STE       0
-# define OSXH_TT        0
 # define OSXH_FALCON    0
 # define OSXH_ARANYM    (1<<8)
 #else
@@ -143,11 +142,6 @@ _main:
 #  define OSXH_STE      (1<<1)
 # else
 #  define OSXH_STE      0
-# endif
-# if CONF_WITH_TT_SHIFTER
-#  define OSXH_TT       (1<<2)
-# else
-#  define OSXH_TT       0
 # endif
 # if CONF_WITH_VIDEL
 #  define OSXH_FALCON   (1<<3)
@@ -160,7 +154,7 @@ _main:
 #  define OSXH_ARANYM   0
 # endif
 #endif
-#define OSXH_MACHINES   (OSXH_ST+OSXH_STE+OSXH_TT+OSXH_FALCON+OSXH_ARANYM)
+#define OSXH_MACHINES   (OSXH_ST+OSXH_STE+OSXH_FALCON+OSXH_ARANYM)
 
 /*
  *  Processor flags in extended OS header
@@ -263,16 +257,6 @@ _realmain:
         // this is useless on cold boot,
         // but it matters for software reset
         move    #0x2700,sr
-
-#if CONF_WITH_TT_MMU
-        // TT TOS does the following even before reset; it is
-        // apparently required for correct floppy functioning
-        // when EmuTOS is ROM-resident (report by Ingo Uhlemann).
-        // It _should_ be harmless on all Atari systems; it has
-        // been tested (via emutos.prg) on ST/TT/Falcon.
-        move.w  #0x0100,0xffff8606.w    // toggle the ACSI DMA write bit
-        move.w  #0x0000,0xffff8606.w
-#endif
 
 #if (!EMUTOS_LIVES_IN_RAM) && (CONF_WITH_ST_MMU)
         // Some ST MMUs power up with an invalid memory bank configuration,

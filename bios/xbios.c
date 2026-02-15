@@ -913,7 +913,7 @@ static WORD xbios_40(WORD mode)
 /*
  * TT video
  */
-#if DBG_XBIOS && CONF_WITH_TT_SHIFTER
+#if DBG_XBIOS
 static WORD xbios_50(WORD mode)
 {
     kprintf("XBIOS: EsetShift\n");
@@ -1276,8 +1276,6 @@ LONG supexec(PFLONG);       /* defined in vectors.S */
 # define LAST_ENTRY 0x7f
 #elif CONF_WITH_VIDEL
 # define LAST_ENTRY 0x5f
-#elif CONF_WITH_TT_SHIFTER
-# define LAST_ENTRY 0x57
 #else
 # define LAST_ENTRY 0x40
 #endif
@@ -1388,16 +1386,7 @@ const PFLONG xbios_vecs[] = {
     xbios_unimpl,   /* 4f */
 #endif
 
-#if CONF_WITH_TT_SHIFTER
-    VEC(xbios_50, esetshift),   /* 50 */
-    VEC(xbios_51, egetshift),   /* 51 */
-    VEC(xbios_52, esetbank),    /* 52 */
-    VEC(xbios_53, esetcolor),   /* 53 */
-    VEC(xbios_54, esetpalette), /* 54 */
-    VEC(xbios_55, egetpalette), /* 55 */
-    VEC(xbios_56, esetgray),    /* 56 */
-    VEC(xbios_57, esetsmear),   /* 57 */
-#elif LAST_ENTRY > 0x57     /* must insert fillers for TT shifter opcodes */
+#if LAST_ENTRY > 0x57     /* must insert fillers for TT shifter opcodes */
     xbios_unimpl,   /* 50 */
     xbios_unimpl,   /* 51 */
     xbios_unimpl,   /* 52 */
@@ -1406,7 +1395,7 @@ const PFLONG xbios_vecs[] = {
     xbios_unimpl,   /* 55 */
     xbios_unimpl,   /* 56 */
     xbios_unimpl,   /* 57 */
-#endif  /* CONF_WITH_TT_SHIFTER */
+#endif
 
 #if CONF_WITH_VIDEL
     VEC(xbios_58, vsetmode),   /* 58 */

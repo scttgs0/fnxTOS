@@ -18,7 +18,7 @@
 #include "tosvars.h"
 #include "vectors.h"
 
-#if CONF_WITH_MFP || CONF_WITH_TT_MFP
+#if CONF_WITH_MFP
 
 static void reset_mfp_regs(MFP *mfp)
 {
@@ -68,27 +68,6 @@ static void enable_mfp_interrupt(MFP *mfp, WORD num)
         mfp->ierb |= mask;
         mfp->imrb |= mask;
     }
-}
-
-#endif
-
-
-#if CONF_WITH_TT_MFP
-
-void tt_mfp_init(void)
-{
-    MFP *mfp = TT_MFP_BASE; /* set base address of MFP */
-
-    reset_mfp_regs(mfp);    /* reset the MFP registers */
-    mfp->vr = 0x58;         /* vectors 0x50 to 0x5F, software end of interrupt */
-}
-
-void tt_mfpint(WORD num, LONG vector)
-{
-    num &= 0x0F;
-    disable_mfp_interrupt(TT_MFP_BASE, num);
-    *(LONG *)((0x50L + num)*4) = vector;
-    enable_mfp_interrupt(TT_MFP_BASE, num);
 }
 
 #endif

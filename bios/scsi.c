@@ -83,7 +83,6 @@
  */
 #define DEFAULT_HOSTID          7       /* if not available from NVRAM */
 #define MAXSECS_PER_FSCSI_IO    16383   /* Falcon DMA chip limitation */
-#define MAXSECS_PER_TTSCSI_IO   65535   /* TT limitation due to CDB used */
 
 
 /*
@@ -138,16 +137,6 @@ typedef struct
 #define dma_initrecv    reset
 } SCSI;
 #define SCSI_BASE   ((volatile SCSI *)0xffff8780L)
-
-
-/*
- * we need the definition for TT_MFP_BASE for TT SCSI support, but the
- * definition (in mfp.h) is dependent on CONF_WITH_TT_MFP.  to avoid
- * dragging in TT MFP support, we define TT_MFP_BASE here if necessary.
- */
-#ifndef TT_MFP_BASE
-#define TT_MFP_BASE ((MFP *)(0xfffffa80L))
-#endif
 
 
 /*
@@ -219,7 +208,6 @@ typedef struct
  * local variables
  */
 static UBYTE has_scsi;                      /* 0 => no scsi, otherwise type below */
-#define TT_SCSI     1
 #define FALCON_SCSI 2
 static UBYTE hostid_bit;
 static UWORD device_exists;                 /* device bitmap: 1 => successful I/O */
@@ -260,9 +248,7 @@ BOOL detect_scsi(void)
      * to emulate the presence of the SCSI DMA controller, so we use
      * that instead.
      */
-    if (check_read_byte((LONG)SCSIDMA_BASE+1))
-        has_scsi = TT_SCSI;
-    else if (HAS_VIDEL)
+    if (HAS_VIDEL)
         has_scsi = FALCON_SCSI;             /* must have Falcon SCSI */
 #endif
 
@@ -366,9 +352,6 @@ LONG scsi_rw(UWORD rw, ULONG sector, UWORD count, UBYTE *buf, WORD dev)
 
     rw &= RW_RW;    /* we just care about read or write for now */
 
-    if (has_scsi == TT_SCSI)
-        maxsecs_per_io = MAXSECS_PER_TTSCSI_IO;
-    else            /* assumed to be FALCON_SCSI */
     {
         /*
          * the Falcon SCSI hardware requires that the buffer be word-aligned
@@ -462,106 +445,67 @@ static __inline__ void fscsi_or(UWORD reg, UWORD value)
 
 static UBYTE get_data_reg(void)
 {
-    if (has_scsi == TT_SCSI)
-        return SCSI_BASE->data;
-    else
-        return fscsi_get(fscsi_data);
+    return fscsi_get(fscsi_data);
 }
 
 static void put_data_reg(UBYTE b)
 {
-    if (has_scsi == TT_SCSI)
-        SCSI_BASE->data = b;
-    else
-        fscsi_put(fscsi_data, b);
+    fscsi_put(fscsi_data, b);
 }
 
 static UBYTE get_icr_reg(void)
 {
-   if (has_scsi == TT_SCSI)
-        return SCSI_BASE->icr;
-    else
-        return fscsi_get(fscsi_icr);
+   return fscsi_get(fscsi_icr);
 }
 
 static void put_icr_reg(UWORD value)
 {
-   if (has_scsi == TT_SCSI)
-        SCSI_BASE->icr = value;
-    else
-        fscsi_put(fscsi_icr, value);
+   fscsi_put(fscsi_icr, value);
 }
 
 static void and_icr_reg(UWORD value)
 {
-    if (has_scsi == TT_SCSI)
-        SCSI_BASE->icr &= value;
-    else
-        fscsi_and(fscsi_icr, value);
+    fscsi_and(fscsi_icr, value);
 }
 
 static void or_icr_reg(UWORD value)
 {
-    if (has_scsi == TT_SCSI)
-        SCSI_BASE->icr |= value;
-    else
-        fscsi_or(fscsi_icr, value);
+    fscsi_or(fscsi_icr, value);
 }
 
 static void put_mode_reg(UWORD value)
 {
-   if (has_scsi == TT_SCSI)
-        SCSI_BASE->mode = value;
-    else
-        fscsi_put(fscsi_mode, value);
+   fscsi_put(fscsi_mode, value);
 }
 
 static void and_mode_reg(UWORD value)
 {
-    if (has_scsi == TT_SCSI)
-        SCSI_BASE->mode &= value;
-    else
-        fscsi_and(fscsi_mode, value);
+    fscsi_and(fscsi_mode, value);
 }
 
 static void or_mode_reg(UWORD value)
 {
-    if (has_scsi == TT_SCSI)
-        SCSI_BASE->mode |= value;
-    else
-        fscsi_or(fscsi_mode, value);
+    fscsi_or(fscsi_mode, value);
 }
 
 static void put_tcr_reg(UWORD value)
 {
-   if (has_scsi == TT_SCSI)
-        SCSI_BASE->tcr = value;
-    else
-        fscsi_put(fscsi_tcr, value);
+   fscsi_put(fscsi_tcr, value);
 }
 
 static UBYTE get_bus_status_reg(void)
 {
-    if (has_scsi == TT_SCSI)
-        return SCSI_BASE->bus_status;
-    else
-        return fscsi_get(fscsi_bus_status);
+    return fscsi_get(fscsi_bus_status);
 }
 
 static UBYTE get_dma_status_reg(void)
 {
-    if (has_scsi == TT_SCSI)
-        return SCSI_BASE->dma_status;
-    else
-        return fscsi_get(fscsi_dma_status);
+    return fscsi_get(fscsi_dma_status);
 }
 
 static void put_select_enable_reg(UWORD value)
 {
-   if (has_scsi == TT_SCSI)
-        SCSI_BASE->select_enable = value;
-    else
-        fscsi_put(fscsi_select_enable, value);
+   fscsi_put(fscsi_select_enable, value);
 }
 
 /*
@@ -577,18 +521,9 @@ static void set_output_phase(UBYTE phase)
     UBYTE dummy;
     MAYBE_UNUSED(dummy);
 
-    if (has_scsi == TT_SCSI)
-    {
-        SCSI_BASE->tcr = phase;         /* assert new phase */
-        SCSI_BASE->icr |= 0x01;         /* gate it on to bus */
-        dummy = SCSI_BASE->reset;       /* reset parity, interrupts */
-    }
-    else                        /* handle Falcon SCSI */
-    {
-        fscsi_put(fscsi_tcr, phase);    /* assert new phase */
-        fscsi_or(fscsi_icr, 0x01);      /* gate it on to bus */
-        dummy = fscsi_get(fscsi_reset); /* reset parity, interrupts */
-    }
+    fscsi_put(fscsi_tcr, phase);    /* assert new phase */
+    fscsi_or(fscsi_icr, 0x01);      /* gate it on to bus */
+    dummy = fscsi_get(fscsi_reset); /* reset parity, interrupts */
 }
 
 static void set_input_phase(UBYTE phase)
@@ -596,35 +531,9 @@ static void set_input_phase(UBYTE phase)
     UBYTE dummy;
     MAYBE_UNUSED(dummy);
 
-    if (has_scsi == TT_SCSI)
-    {
-        SCSI_BASE->tcr = phase;         /* assert new phase */
-        SCSI_BASE->icr &= 0xfe;         /* degate bus */
-        dummy = SCSI_BASE->reset;       /* reset parity, interrupts */
-    }
-    else                        /* handle Falcon SCSI */
-    {
-        fscsi_put(fscsi_tcr, phase);    /* assert new phase */
-        fscsi_and(fscsi_icr, 0xfe);     /* degate bus */
-        dummy = fscsi_get(fscsi_reset); /* reset parity, interrupts */
-    }
-}
-
-static void setup_tt_dma(CMDINFO *info)
-{
-    UBYTE *p;
-
-    p = (UBYTE *)&info->bufptr;     /* move data address to DMA pointer */
-    SCSIDMA_BASE->ptr_upper = *p++;
-    SCSIDMA_BASE->ptr_uprmiddle = *p++;
-    SCSIDMA_BASE->ptr_lwrmiddle = *p++;
-    SCSIDMA_BASE->ptr_lower = *p;
-
-    p = (UBYTE *)&info->buflen;     /* move data length to DMA byte count */
-    SCSIDMA_BASE->cnt_upper = *p++;
-    SCSIDMA_BASE->cnt_uprmiddle = *p++;
-    SCSIDMA_BASE->cnt_lwrmiddle = *p++;
-    SCSIDMA_BASE->cnt_lower = *p;
+    fscsi_put(fscsi_tcr, phase);    /* assert new phase */
+    fscsi_and(fscsi_icr, 0xfe);     /* degate bus */
+    dummy = fscsi_get(fscsi_reset); /* reset parity, interrupts */
 }
 
 static void toggle_dmaout(BOOL write)
@@ -655,12 +564,6 @@ static void setup_falcon_dma(CMDINFO *info)
 static BOOL use_dma(CMDINFO *info)
 {
     /*
-     * for TT SCSI, we always use DMA
-     */
-    if (has_scsi == TT_SCSI)
-        return TRUE;
-
-    /*
      * for Falcon SCSI, it depends on the data length
      */
     if ((info->buflen < SECTOR_SIZE)    /* for small I/Os or I/Os that */
@@ -675,20 +578,9 @@ static BOOL use_dma(CMDINFO *info)
  */
 static void init_data_out(CMDINFO *info)
 {
-    if (has_scsi == TT_SCSI)        /* handle TT SCSI DMA */
-    {
-        setup_tt_dma(info);
-        SCSI_BASE->mode |= 0x02;            /* set DMA mode, we are initiator */
-        SCSI_BASE->dma_send = 0x00;         /* start DMA send */
-        SCSIDMA_BASE->control = 0x01;       /* set DMA chip to DMA OUT */
-        SCSIDMA_BASE->control = 0x03;       /*  & enable DMA           */
-    }
-    else                            /* handle Falcon SCSI DMA */
-    {
-        setup_falcon_dma(info);
-        fscsi_put(fscsi_dma_send, 0x00);    /* start DMA send */
-        FSCSI_BASE->control = 0x0100;       /* & turn on DMA  */
-    }
+    setup_falcon_dma(info);
+    fscsi_put(fscsi_dma_send, 0x00);    /* start DMA send */
+    FSCSI_BASE->control = 0x0100;       /* & turn on DMA  */
 }
 
 /*
@@ -696,20 +588,9 @@ static void init_data_out(CMDINFO *info)
  */
 static void init_data_in(CMDINFO *info)
 {
-    if (has_scsi == TT_SCSI)        /* handle TT SCSI DMA */
-    {
-        setup_tt_dma(info);
-        SCSIDMA_BASE->control = 0x00;       /* set DMA chip to DMA IN */
-        SCSIDMA_BASE->control = 0x02;       /*  & enable DMA          */
-        SCSI_BASE->mode |= 0x02;            /* set DMA mode, we are initiator */
-        SCSI_BASE->dma_initrecv = 0x00;     /* start DMA initiator receive */
-    }
-    else                            /* handle Falcon SCSI DMA */
-    {
-        setup_falcon_dma(info);
-        fscsi_put(fscsi_dma_initrecv, 0x00);/* start DMA initiator receive */
-        FSCSI_BASE->control = 0x0000;       /*  & turn on DMA              */
-    }
+    setup_falcon_dma(info);
+    fscsi_put(fscsi_dma_initrecv, 0x00);/* start DMA initiator receive */
+    FSCSI_BASE->control = 0x0000;       /*  & turn on DMA              */
 }
 
 /* wait for DMA to complete */
@@ -717,23 +598,6 @@ static int wait_dma_complete(ULONG timeout)
 {
     UBYTE dummy;
     MAYBE_UNUSED(dummy);
-
-    if (has_scsi == TT_SCSI)
-    {
-        while(!(TT_MFP_BASE->gpip & 0x80))  /* until we get IRQ */
-        {
-            if (!(TT_MFP_BASE->gpip & 0x20))/* got DMAC interrupt ? */
-                if (SCSIDMA_BASE->control & 0x80)
-                    return BUS_ERROR;       /* exit iff bus error */
-            if (hz_200 >= timeout)
-                return TIMEOUT_ERROR;
-        }
-        dummy = SCSI_BASE->reset;           /* reset parity, interrupts */
-        SCSIDMA_BASE->control = 0x00;       /* disable DMA chip */
-        SCSI_BASE->mode &= 0xfd;            /* disable DMA mode */
-        SCSI_BASE->icr = 0x00;              /* unassert ACK, BSY, SEL, ATN, data bus */
-        return 0;
-    }
 
     /* handle Falcon SCSI */
     while(MFP_BASE->gpip & 0x20)            /* until we get interrupt */
@@ -772,56 +636,16 @@ static int wait_req(ULONG timeout)
     return 0;
 }
 
-/*
- * handle TT-style DMA cleanup: the command has completed ok but
- * we still need to get any data bytes that weren't DMA'd
- */
-static void cleanup_tt_dma(CMDINFO *info)
-{
-    WORD bytes_remaining;
-    ULONG residue;
-    union
-    {
-        UBYTE *ptr;
-        UBYTE byte[4];
-    } u;
-    UBYTE *p, *q;
-
-    bytes_remaining = SCSIDMA_BASE->ptr_lower & 0x03;
-    if (bytes_remaining == 0)
-        return;                             /* everything was DMA'd */
-
-    residue = SCSIDMA_BASE->residue;        /* contains remaining bytes */
-
-    u.byte[0] = SCSIDMA_BASE->ptr_upper;    /* build target pointer */
-    u.byte[1] = SCSIDMA_BASE->ptr_uprmiddle;
-    u.byte[2] = SCSIDMA_BASE->ptr_lwrmiddle;
-    u.byte[3] = SCSIDMA_BASE->ptr_lower & 0xfc;
-
-    for (p = u.ptr, q = (UBYTE *)&residue; bytes_remaining; bytes_remaining--)
-        *p++ = *q++;
-}
-
 /* general SCSI cleanup */
 static void cleanup_scsi(void)
 {
     UBYTE dummy;
     MAYBE_UNUSED(dummy);
 
-    if (has_scsi == TT_SCSI)
-    {
-        dummy = SCSI_BASE->reset;
-        SCSIDMA_BASE->control = 0x00;   /* disable DMA chip */
-        SCSI_BASE->mode = 0x00;         /* disable DMA mode */
-        SCSI_BASE->icr = 0x00;          /* unassert ACK, BSY, SEL, ATN, data bus */
-    }
-    else                            /* handle Falcon SCSI */
-    {
-        dummy = fscsi_get(fscsi_reset);
-        FSCSI_BASE->control = 0x0080;   /* reset DMA chip */
-        fscsi_put(fscsi_mode, 0x00);    /* disable DMA mode */
-        fscsi_put(fscsi_icr, 0x00);     /* unassert ACK, BSY, SEL, ATN, data bus */
-    }
+    dummy = fscsi_get(fscsi_reset);
+    FSCSI_BASE->control = 0x0080;   /* reset DMA chip */
+    fscsi_put(fscsi_mode, 0x00);    /* disable DMA mode */
+    fscsi_put(fscsi_icr, 0x00);     /* unassert ACK, BSY, SEL, ATN, data bus */
 }
 
 /*
@@ -891,21 +715,13 @@ static void reset_bus(BOOL write)
 {
     ULONG timeout;
 
-    if (has_scsi == TT_SCSI)
-    {
-        SCSI_BASE->icr = 0x80;          /* assert RST */
-        rst_hold_delay();
-        SCSI_BASE->icr = 0x00;          /* unassert everything */
-    }
-    else    /* handle Falcon SCSI */
-    {
-        while(FSCSI_BASE->modectl & DMA_MCBIT3) /* Falcon TOS does this, so do we */
-            ;
-        toggle_dmaout(write);
-        fscsi_put(fscsi_icr, 0x80);     /* assert RST */
-        rst_hold_delay();
-        fscsi_put(fscsi_icr, 0x00);     /* unassert everything */
-    }
+    while(FSCSI_BASE->modectl & DMA_MCBIT3) /* Falcon TOS does this, so do we */
+        ;
+
+    toggle_dmaout(write);
+    fscsi_put(fscsi_icr, 0x80);     /* assert RST */
+    rst_hold_delay();
+    fscsi_put(fscsi_icr, 0x00);     /* unassert everything */
 
     /* wait for devices to reset themselves */
     timeout = hz_200 + RESET_TIME;
@@ -1018,8 +834,6 @@ static int handle_data_in(CMDINFO *info)
     {
         init_data_in(info);
         ret = wait_dma_complete(timeout);
-        if ((ret == 0) && (has_scsi == TT_SCSI))
-            cleanup_tt_dma(info);   /* do any DMA cleanup required */
         return ret;
     }
 

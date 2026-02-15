@@ -117,13 +117,9 @@ void *xmalloc(long amount)
 {
     void *rc;
 
-    if (run->p_flags & PF_TTRAMMEM) {
-        /* allocate TT RAM, or ST RAM if not enough TT RAM */
-        rc = xmxalloc(amount, MX_PREFTTRAM);
-    } else {
-        /* allocate only ST RAM */
-        rc = xmxalloc(amount, MX_STRAM);
-    }
+    /* allocate only ST RAM */
+    rc = xmxalloc(amount, MX_STRAM);
+
     KDEBUG(("BDOS: Malloc(%ld), pgmflags=0x%08lx: rc=0x%08lx\n",amount,run->p_flags,(ULONG)rc));
     return rc;
 }
@@ -249,13 +245,7 @@ void *xmxalloc(long amount, int mode)
         case MX_STRAM:
             ret_value = ffit(-1L,&pmd);
             break;
-#if CONF_WITH_ALT_RAM
-        case MX_TTRAM:
-            ret_value = ffit(-1L,&pmdalt);
-            break;
-#endif
         case MX_PREFSTRAM:
-        case MX_PREFTTRAM:
             /*
              * for the "preferred" options, the correct behaviour is to
              * return the biggest size in either pool - verified on TOS3
@@ -293,24 +283,12 @@ void *xmxalloc(long amount, int mode)
     case MX_STRAM:
         m = ffit(amount,&pmd);
         break;
-#if CONF_WITH_ALT_RAM
-    case MX_TTRAM:
-        m = ffit(amount,&pmdalt);
-        break;
-#endif
     case MX_PREFSTRAM:
         m = ffit(amount,&pmd);
 #if CONF_WITH_ALT_RAM
         if (m == NULL)
             m = ffit(amount,&pmdalt);
 #endif
-        break;
-    case MX_PREFTTRAM:
-#if CONF_WITH_ALT_RAM
-        m = ffit(amount,&pmdalt);
-        if (m == NULL)
-#endif
-            m = ffit(amount,&pmd);
         break;
     default:
         /* unknown mode */

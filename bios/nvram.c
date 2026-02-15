@@ -168,10 +168,8 @@ WORD nvmaccess(WORD type, WORD start, WORD count, UBYTE *buffer)
             *addr_reg = i + NVRAM_START;
             *data_reg = 0;
         }
-        if (cookie_mch == MCH_TT)
-            set_sum(compute_sum());
-        else
-            nvmaccess(1,NVRAM_INIT_START,ARRAY_SIZE(nvram_init),CONST_CAST(UBYTE *,nvram_init));
+        nvmaccess(1,NVRAM_INIT_START,ARRAY_SIZE(nvram_init),CONST_CAST(UBYTE *,nvram_init));
+
         return 0;
     }
 

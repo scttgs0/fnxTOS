@@ -62,7 +62,7 @@ static UBYTE sndtmp;
  * way to do this directly; we just know that it's present on the TT
  * and the Mega STe.
  */
-#define HAS_LAN_PORT    ((cookie_mch==MCH_TT) || (cookie_mch==MCH_MSTE))
+#define HAS_LAN_PORT    (cookie_mch==MCH_MSTE)
 
 #endif
 

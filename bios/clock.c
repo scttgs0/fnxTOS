@@ -981,26 +981,6 @@ void clock_init(void)
          * By default, we use the new offset in EmuTOS.
          */
         BOOL new_year_offset = TRUE;
-
-#if EMUTOS_LIVES_IN_RAM
-        /* We run from RAM, so we must respect the base year of the ROM OS. */
-        if (cookie_mch == MCH_TT)
-        {
-            BOOL rom_is_emutos = *(ULONG*)0xe0002c == 0x45544f53; /* ETOS */
-
-            if (!rom_is_emutos)
-            {
-                UWORD rom_os_version = *(UWORD*)0xe00002;
-
-                if (rom_os_version <= 0x0305)
-                {
-                    /* Old TOS in ROM: use old NVRAM offset */
-                    new_year_offset = FALSE;
-                }
-            }
-        }
-#endif /* EMUTOS_LIVES_IN_RAM */
-
         nvram_rtc_year_offset = (new_year_offset ? 1968 : 1970) - 1980;
     }
 #endif /* CONF_WITH_NVRAM */

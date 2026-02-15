@@ -51,7 +51,6 @@
 #if CONF_WITH_SCSI_DRIVER
 
 #define MAXLEN_ACSI     (128 * SECTOR_SIZE)     /* like HD Driver says */
-#define MAXLEN_SCSI_TT  (256 * 1024L * 1024L)
 #define MAXLEN_SCSI_FA  (16383L * SECTOR_SIZE)  /* Falcon SCSI DMA limitation */
 #define MAXLEN_IDE      (255 * SECTOR_SIZE)
 
@@ -186,7 +185,7 @@ static ULONG get_bus_maxlen(WORD busnum)
 #endif
 #if CONF_WITH_SCSI
     case SCSI_BUS:
-        maxlen = MAXLEN_SCSI_TT;
+        maxlen = 0;
         if (HAS_VIDEL)          /* Falcon */
         {
             if (frbptr)         /* ... with TT-RAM */

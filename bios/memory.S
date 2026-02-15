@@ -89,14 +89,6 @@ meminit:
 not_a_falcon:
 #endif /* CONF_WITH_FALCON_MMU */
 
-#if CONF_WITH_TT_MMU
-        /* Detect if this is a TT.
-         * Assume we have a TT MMU if we have a TT Shifter */
-        move.l  #not_a_tt,0x08          // bus error vector
-        tst.b   0xffff8400.w            // try to access the tt palette registers
-        bset    #MEMINIT_BIT_TT_MMU, d7
-not_a_tt:
-#endif /* CONF_WITH_FALCON_MMU */
 
 // ===========================================================================
 // ==== memchk - Check if old memory config can be used ======================
@@ -106,8 +98,6 @@ not_a_tt:
 // Outputs:
 //   d6.b: old memctrl
 //   d5.l: old _phystop
-//   d3.l: old _ramvalid (#if CONF_WITH_TTRAM)
-//   a3.l: old _ramtop (#if CONF_WITH_TTRAM)
 memchk:
         // We must determine the ST-RAM settings in some way.
         // If EmuTOS lives in RAM, always assume that settings of previous OS
@@ -128,11 +118,6 @@ memchk:
         move.b  memctrl.w, d6
         move.l  _phystop.w, d5
 
-#if CONF_WITH_TTRAM
-        move.l  _ramvalid.w, d3
-        move.l  _ramtop.w, a3
-#endif
-
 // ===========================================================================
 // ==== The ST-RAM configuration is valid ====================================
 // ===========================================================================
@@ -140,8 +125,6 @@ memchk:
 //   d7.b: _meminit_flags (input/output)
 //   d6.b: old memctrl
 //   d5.l: old _phystop
-//   d3.l: old _ramvalid (#if CONF_WITH_TTRAM)
-//   a3.l: old _ramtop (#if CONF_WITH_TTRAM)
 
 #if CONF_WITH_FALCON_MMU
         btst    #MEMINIT_BIT_FALCON_MMU, d7 // is it Falcon MMU?
@@ -178,8 +161,6 @@ memory_reused:
 //   d6.b: new value of 0xffff8001 (maybe fake), to put into memctrl.
 //   d5.l: detected end of the ST-RAM, to put into _phystop.
 // Must be preserved:
-//   d3.l: old _ramvalid (#if CONF_WITH_TTRAM)
-//   a3.l: old _ramtop (#if CONF_WITH_TTRAM)
 memconf:
 #if CONF_STRAM_SIZE
         // memconf for hardcoded ST-RAM size
@@ -193,106 +174,6 @@ memconf:
         jne     falcmemconf             // yes -> jump to Falcon mem routine
 #endif
 
-#if CONF_WITH_TT_MMU
-// ===========================================================================
-// ==== memconf for TT =======================================================
-// ===========================================================================
-
-        btst    #MEMINIT_BIT_TT_MMU, d7 // is it TT MMU?
-        jeq     after_tt_memconf        // no -> skip TT memconf
-/*
- * The following configurations are valid for ST-RAM in a TT, listed as
- * total RAM (motherboard RAM + optional daughterboard RAM):
- *  2MB (2MB + 0MB), 4MB (2MB + 2MB), 10MB (2MB + 8MB)
- * [According to the TT rev B MCU functional description, it is also
- * possible to have 8MB (8MB + 0MB) and 10MB (8MB + 2MB) configurations,
- * but I have not seen this.]  When an 8MB board is present, it is always
- * mapped to the first 8MB of memory.
- *
- * Systems with only 2MB boards require a memcntlr value of 0x05; systems
- * with an 8MB board require a memcntlr value of 0x0a.  We detect which
- * size of board is in low memory by assuming an 8MB board, then checking
- * for different memory addresses mapping to the same physical address.
- *
- * rfb (sep/2016)
- */
-        move.w  #0x0005,d6          // assume 2MB board
-        move.b  #0x0a,0xffff8001.w  // set memory controller for 8MB
-        moveq   #0,d0
-        move.l  d0,0x1008           // zero out test addresses
-        move.l  d0,0x100c
-        move.l  #0x25121642,d0      // write test value #1 to an address
-        move.l  d0,0x0008           //  that may be mapped into test address #1
-        cmp.l   0x1008,d0           // did test address #1 get updated?
-        jne     set_8MB             // no, must be an 8MB board
-        move.l  #0x14031879,d0      // yes, repeat with test value #2 to be sure
-        move.l  d0,0x000c
-        cmp.l   0x100c,d0           // did test address #2 get updated?
-        jeq     set_2MB             // yes, use the 2MB memcntlr value
-set_8MB:
-        move.w  #0x000a,d6          // set 8MB memcntlr value
-set_2MB:
-        move.b  d6,0xffff8001.w     // update memcntlr
-
-/*
- * We now need to size the actual memory present.  We test memory,
- * starting at 128K and increasing by 128K each time.  For each area of
- * memory, we start at the current address, and work downwards, storing
- * a series of values; we then verify that the values have been stored
- * correctly.  An invalid value (or a bus error when we try to access a
- * memory location) causes us to stop and size the memory accordingly.
- */
-        move.l  #tt_stramsize_done,0x08 // bus error means end of ram
-        move.w  #0xf769,d4          // d4.w = difference between adjacent stored values
-        move.l  #0x20000,d7         // d7 = address of first memory test zone
-                                    //  & gap between memory test zones
-        movea.l d7,a0               // a0 = address of current test zone
-next_zone:
-        movea.l a0,a1               // a1 -> memory being tested
-        move.w  d0,d5               // d5.w = test value
-        moveq   #32,d1              // d1.w = loop count-1
-store_mem:
-        move.w  d5,-(a1)            // store a value
-        add.w   d4,d5               // update the value for next time
-        dbra    d1,store_mem        // rinse & repeat
-                                // now check the values we stored
-        movea.l a0,a1               // a1 -> test area
-        moveq   #32,d1              // loop count
-check_mem:
-        cmp.w   -(a1),d0
-        jne     tt_stramsize_done   // miscompare, ram invalid, exit
-        clr.w   (a1)                // else zero it out
-        add.w   d4,d0               // update for next compare
-        dbra    d1,check_mem        // until we're done
-        adda.l  d7,a0               // point to next test area
-        jra     next_zone
-
-tt_stramsize_done:                  // bus error or bad ram
-        suba.l  d7,a0               // (a0 -> first zone that failed)
-        move.l  a0,d5               // d5 = st ram size
-
-        // While we are at it, initialize the TT-RAM hardware.
-        // Actual size of TT-RAM will be detected later in detect_ttram_size().
-        // We must set the TT-RAM refresh rate before we use it.  The
-        // rate is set by writing a "don't care" value to an address in
-        // the range 0xffd00000-0xffd000ff; the low-order byte of the
-        // address sets the refresh rate (specifically the number of
-        // system clock cycles between each refresh request).  TT TOS
-        // uses the value 0xe0; so do we.
-        // NOTE: whether we actually have TT-RAM or not, setting the
-        // value always causes a bus error, so we need to handle it.
-        // NOTE2: We use the "move.w #0" instruction because "clr.w" oddly
-        // generates a useless read cycle on plain 68000. That might matter
-        // regarding to this very specific refresh rate function. Even if TT
-        // computers are supposed to be equipped with 68030 which is not subject
-        // to this 68000-specific oddity, we stay on the safe side.
-        move.l  #refresh_done,0x08      // bus error vector
-        move.w  #0,0xffd000e0           // Set TT-RAM refresh rate
-refresh_done:
-
-        jra     memconf_done
-after_tt_memconf:
-#endif
 
 #if CONF_WITH_ST_MMU
 
@@ -493,10 +374,6 @@ less16:
 memconf_done:
         // Since the memory was not valid, this is a first boot
         bset    #MEMINIT_BIT_FIRST_BOOT, d7
-#if CONF_WITH_TTRAM
-        // Since the ST-RAM was invalid, TT-RAM settings were also invalid
-        moveq   #0, d3                  // _ramvalid
-#endif
 
 #endif // !EMUTOS_LIVES_IN_RAM
 
@@ -512,8 +389,6 @@ memconf_done:
  * d7.b = _meminit_flags
  * d5.l = new phystop
  * d6.b = new memctrl
- * d3.l = old _ramvalid (#if CONF_WITH_TTRAM)
- * a3.l = old _ramtop (#if CONF_WITH_TTRAM)
  */
 stram_detected:
         // The previous temporary stack pointer may have moved
@@ -546,13 +421,6 @@ stram_detected:
         lea     _warm_magic.w, a0
         move.l  #0x5741524D, d1         // WARM_MAGIC
         move.l  d1, (a0)                // Next boot will not be a first boot
-#endif
-
-#if CONF_WITH_TTRAM
-        // After clearing sysvars, restore old TT-RAM settings.
-        // They will be used later for TT-RAM initialization.
-        move.l  a3, _ramtop.w           // set ramtop to size of found memory
-        move.l  d3, _ramvalid.w
 #endif
 
 // ===========================================================================

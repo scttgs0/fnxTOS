@@ -77,14 +77,8 @@
 # ifndef CONF_WITH_SCSI
 #  define CONF_WITH_SCSI 0
 # endif
-# ifndef CONF_WITH_TT_MFP
-#  define CONF_WITH_TT_MFP 0
-# endif
 # ifndef CONF_WITH_STE_SHIFTER
 #  define CONF_WITH_STE_SHIFTER 0
-# endif
-# ifndef CONF_WITH_TT_SHIFTER
-#  define CONF_WITH_TT_SHIFTER 0
 # endif
 # ifndef CONF_WITH_SCC
 #  define CONF_WITH_SCC 1
@@ -136,20 +130,11 @@
 # ifndef CONF_WITH_CACHE_CONTROL
 #  define CONF_WITH_CACHE_CONTROL 0
 # endif
-# ifndef CONF_WITH_TT_MMU
-#  define CONF_WITH_TT_MMU 0
-# endif
 # ifndef CONF_WITH_FALCON_MMU
 #  define CONF_WITH_FALCON_MMU 0
 # endif
 # ifndef CONF_WITH_ALT_RAM
 #  define CONF_WITH_ALT_RAM 0
-# endif
-# ifndef CONF_WITH_TTRAM
-#  define CONF_WITH_TTRAM 0
-# endif
-# ifndef CONF_WITH_TT_MFP
-#  define CONF_WITH_TT_MFP 0
 # endif
 # ifndef CONF_WITH_SCC
 #  define CONF_WITH_SCC 0
@@ -165,9 +150,6 @@
 # endif
 # ifndef CONF_WITH_STE_SHIFTER
 #  define CONF_WITH_STE_SHIFTER 0
-# endif
-# ifndef CONF_WITH_TT_SHIFTER
-#  define CONF_WITH_TT_SHIFTER 0
 # endif
 # ifndef CONF_WITH_VIDEL
 #  define CONF_WITH_VIDEL 0
@@ -316,15 +298,6 @@
 # ifndef CONF_WITH_SCSI
 #  define CONF_WITH_SCSI 0
 # endif
-# ifndef CONF_WITH_TT_MFP
-#  define CONF_WITH_TT_MFP 0
-# endif
-# ifndef CONF_WITH_TT_MMU
-#  define CONF_WITH_TT_MMU 0
-# endif
-# ifndef CONF_WITH_TT_SHIFTER
-#  define CONF_WITH_TT_SHIFTER 0
-# endif
 # ifndef CONF_WITH_VIDEL
 #  define CONF_WITH_VIDEL 0
 # endif
@@ -383,20 +356,11 @@
 # ifndef CONF_WITH_ALT_RAM
 #  define CONF_WITH_ALT_RAM 0
 # endif
-# ifndef CONF_WITH_TTRAM
-#  define CONF_WITH_TTRAM 0
-# endif
 # ifndef CONF_WITH_SCSI
 #  define CONF_WITH_SCSI 0
 # endif
 # ifndef CONF_WITH_SCSI_DRIVER
 #  define CONF_WITH_SCSI_DRIVER 0
-# endif
-# ifndef CONF_WITH_TT_MFP
-#  define CONF_WITH_TT_MFP 0
-# endif
-# ifndef CONF_WITH_TT_SHIFTER
-#  define CONF_WITH_TT_SHIFTER 0
 # endif
 # ifndef CONF_WITH_BIOS_EXTENSIONS
 #  define CONF_WITH_BIOS_EXTENSIONS 0
@@ -472,26 +436,17 @@
 # ifndef CONF_WITH_ST_MMU
 #  define CONF_WITH_ST_MMU 0
 # endif
-# ifndef CONF_WITH_TT_MMU
-#  define CONF_WITH_TT_MMU 0
-# endif
 # ifndef CONF_WITH_FALCON_MMU
 #  define CONF_WITH_FALCON_MMU 0
 # endif
 # ifndef CONF_WITH_FRB
 #  define CONF_WITH_FRB 0
 # endif
-# if !(defined(CONF_WITH_TTRAM) || defined(CONF_TTRAM_SIZE))
-#  define CONF_WITH_TTRAM 0
-# endif
 # ifndef CONF_WITH_MFP
 #  define CONF_WITH_MFP 0
 # endif
 # ifndef CONF_WITH_MFP_RS232
 #  define CONF_WITH_MFP_RS232 0
-# endif
-# ifndef CONF_WITH_TT_MFP
-#  define CONF_WITH_TT_MFP 0
 # endif
 # ifndef CONF_WITH_SCC
 #  define CONF_WITH_SCC 0
@@ -537,9 +492,6 @@
 # endif
 # ifndef CONF_WITH_STE_SHIFTER
 #  define CONF_WITH_STE_SHIFTER 0
-# endif
-# ifndef CONF_WITH_TT_SHIFTER
-#  define CONF_WITH_TT_SHIFTER 0
 # endif
 # ifndef CONF_WITH_VIDEL
 #  define CONF_WITH_VIDEL 0
@@ -633,13 +585,6 @@
 #endif
 
 /*
- * Set CONF_WITH_TT_MMU to 1 to enable support for TT MMU
- */
-#ifndef CONF_WITH_TT_MMU
-# define CONF_WITH_TT_MMU 1
-#endif
-
-/*
  * Set CONF_WITH_FALCON_MMU to 1 to enable support for Falcon MMU
  */
 #ifndef CONF_WITH_FALCON_MMU
@@ -671,21 +616,6 @@
 #endif
 
 /*
- * Set CONF_WITH_TTRAM to 1 to enable detection and usage of TT-RAM
- */
-#ifndef CONF_WITH_TTRAM
-# define CONF_WITH_TTRAM 1
-#endif
-
-/*
- * Define CONF_TTRAM_SIZE to the actual size of the TT-RAM, in bytes.
- * If set to 0, the amount of TT-RAM will be autodetected.
- */
-#ifndef CONF_TTRAM_SIZE
-# define CONF_TTRAM_SIZE 0
-#endif
-
-/*
  * Set CONF_WITH_MFP to 1 to enable support for the MFP 68901
  */
 #ifndef CONF_WITH_MFP
@@ -697,13 +627,6 @@
  */
 #ifndef CONF_WITH_MFP_RS232
 # define CONF_WITH_MFP_RS232 1
-#endif
-
-/*
- * Set CONF_WITH_TT_MFP to 1 to enable TT MFP support
- */
-#ifndef CONF_WITH_TT_MFP
-# define CONF_WITH_TT_MFP 1
 #endif
 
 /*
@@ -816,13 +739,6 @@
  */
 #ifndef CONF_WITH_STE_SHIFTER
 # define CONF_WITH_STE_SHIFTER 1
-#endif
-
-/*
- * Set CONF_WITH_TT_SHIFTER to 1 to enable support for TT Shifter
- */
-#ifndef CONF_WITH_TT_SHIFTER
-# define CONF_WITH_TT_SHIFTER 1
 #endif
 
 /*
@@ -1775,9 +1691,6 @@
 # if CONF_WITH_STATIC_ALT_RAM
 #  error CONF_WITH_STATIC_ALT_RAM requires CONF_WITH_ALT_RAM.
 # endif
-# if CONF_WITH_TTRAM
-#  error CONF_WITH_TTRAM requires CONF_WITH_ALT_RAM.
-# endif
 #endif
 
 #ifndef STATIC_ALT_RAM_ADDRESS
@@ -1786,12 +1699,6 @@
 # endif
 # ifdef STATIC_ALT_RAM_SIZE
 #  error STATIC_ALT_RAM_SIZE requires STATIC_ALT_RAM_ADDRESS.
-# endif
-#endif
-
-#if !CONF_WITH_TTRAM
-# if CONF_TTRAM_SIZE != 0
-#  error CONF_TTRAM_SIZE != 0 requires CONF_WITH_TTRAM.
 # endif
 #endif
 
@@ -1819,9 +1726,6 @@
 #if !CONF_WITH_ATARI_VIDEO
 # if CONF_WITH_STE_SHIFTER
 #  error CONF_WITH_STE_SHIFTER requires CONF_WITH_ATARI_VIDEO.
-# endif
-# if CONF_WITH_TT_SHIFTER
-#  error CONF_WITH_TT_SHIFTER requires CONF_WITH_ATARI_VIDEO.
 # endif
 # if CONF_WITH_VIDEL
 #  error CONF_WITH_VIDEL requires CONF_WITH_ATARI_VIDEO.
