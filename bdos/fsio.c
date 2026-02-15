@@ -426,7 +426,6 @@ long ixlseek(OFD *p,long n)
 }
 
 
-
 /*
  * xread - read 'len' bytes  from handle 'h'
  *
@@ -512,7 +511,6 @@ long ixread(OFD *p, long len, void *ubufr)
 
     return(0L); /* zero bytes read for zero requested */
 }
-
 
 
 /*

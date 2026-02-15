@@ -6,7 +6,6 @@ We are happy to announce a new public release of EmuTOS:
 EmuTOS 1.4 -- June 7, 2025
 
 
-
 INTRODUCTION
 
 EmuTOS is a single-user single-tasking operating system for 32-bit Atari
@@ -18,7 +17,6 @@ Boards. All the source code is open and free, licensed under the GNU
 General Public License (GPL).
 
 
-
 CHANGES SINCE RELEASE 0.9.4
 
 For a quick summary of changes by release since release 0.9.4, please
@@ -26,7 +24,6 @@ refer to doc/changelog.txt.
 
 For a detailed list of all changes since the project started, refer to
 the Git repository.
-
 
 
 DESCRIPTION
@@ -67,7 +64,6 @@ MiNT on top of it in order to run more modern software. EmuTOS is not
 an alternative to MiNT, but it's the only free base OS to boot MiNT.
 
 
-
 EMULATION AND FUTURE PLATFORMS
 
 EmuTOS and MiNT cooperate well. Both can utilize the Native Features
@@ -85,7 +81,6 @@ not have even dreamed of.
 
 The ARAnyM emulator has the most extensive support for NatFeats.
 The Hatari emulator supports the basic NatFeats facilities.
-
 
 
 HARDWARE
@@ -137,7 +132,6 @@ EmuTOS is also available on some non-Atari hardware:
 - Apple Lisa (experimental - no binaries provided yet)
 - ColdFire Evaluation Boards (M5484LITE, M5485EVB)
 - Vampire v4 standalone board
-
 
 
 AVAILABILITY

@@ -432,7 +432,6 @@ void vdi_vex_wheelv(Vwk *vwk)
 #endif
 
 
-
 /* copies src mouse form to dst mouse sprite, constrains hotspot
  * position & colors and maps colors
  */

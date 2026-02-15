@@ -54,7 +54,6 @@ static void xbios_0(WORD type, struct param * param, PFVOID vec)
 #endif
 
 
-
 /*
  * xbios_1 - (ssbrk) Reserve 'amount' bytes from the top of memory.
  *
@@ -82,7 +81,6 @@ static const UBYTE *xbios_2(void)
 #endif
 
 
-
 /*
  * xbios_3 - (logBase) Get the screen's logical base, right away.
  *
@@ -98,7 +96,6 @@ static UBYTE *xbios_3(void)
 #endif
 
 
-
 /*
  * xbios_4 - (getRez) Get the screen's current resolution
  *
@@ -112,7 +109,6 @@ static WORD xbios_4(void)
     return getrez();
 }
 #endif
-
 
 
 /*
@@ -149,7 +145,6 @@ static WORD xbios_5(UBYTE *logLoc, const UBYTE *physLoc, WORD rez, WORD videlmod
 #endif
 
 
-
 /*
  * xbios_6 - (setPalette) Set the contents of the hardware palette register
  *
@@ -165,7 +160,6 @@ static void xbios_6(const UWORD *palettePtr)
     setpalette(palettePtr);
 }
 #endif
-
 
 
 /*
@@ -185,7 +179,6 @@ static WORD xbios_7(WORD colorNum, WORD color)
     return setcolor(colorNum, color);
 }
 #endif
-
 
 
 /*
@@ -216,7 +209,6 @@ static LONG xbios_8(UBYTE *buf, LONG filler, WORD devno, WORD sectno,
 #endif
 
 
-
 /*
  * xbios_9 - (flopwr) Write one or more sectors to a floppy disk.
  *
@@ -237,7 +229,6 @@ static LONG xbios_9(const UBYTE *buf, LONG filler, WORD devno, WORD sectno,
     return flopwr(buf, filler, devno, sectno, trackno, sideno, count);
 }
 #endif
-
 
 
 /*
@@ -282,7 +273,6 @@ static LONG xbios_a(UBYTE *buf, WORD *skew, WORD devno, WORD spt,
                    virgin, magic);
 }
 #endif
-
 
 
 /*
@@ -387,7 +377,6 @@ static ULONG xbios_f(WORD speed, WORD flowctl, WORD ucr, WORD rsr, WORD tsr, WOR
 #endif
 
 
-
 /*
  * xbios_10 - (keytbl) Sets pointers to the keyboard translation tables
  *
@@ -407,7 +396,6 @@ static LONG xbios_10(const UBYTE* unshift, const UBYTE* shift, const UBYTE* caps
     return keytbl(unshift, shift, capslock);
 }
 #endif
-
 
 
 /*
@@ -467,7 +455,6 @@ static void xbios_12(UBYTE *buf, LONG serialno, WORD disktype, WORD execflag)
 #endif
 
 
-
 /*
  * xbios_13 - (flopver) Verify sectors from a floppy disk.
  */
@@ -480,7 +467,6 @@ static LONG xbios_13(WORD *buf, LONG filler, WORD devno, WORD sectno,
     return flopver(buf, filler, devno, sectno, trackno, sideno, count);
 }
 #endif
-
 
 
 /*
@@ -502,7 +488,6 @@ static void xbios_14(void)
 #endif
 
 
-
 /*
  * xbios_15 - (cursconf) Configure the cursor
  */
@@ -514,7 +499,6 @@ static WORD xbios_15(WORD function, WORD operand)
     return cursconf(function, operand);
 }
 #endif
-
 
 
 /*
@@ -533,7 +517,6 @@ static void xbios_16(ULONG datetime)
 #endif
 
 
-
 /*
  * xbios_17 - (gettime) Gets intelligent keyboard's time and date
  *
@@ -550,7 +533,6 @@ static ULONG xbios_17(void)
 #endif
 
 
-
 /*
  * xbios_18 - (bioskeys) Restores powerup settings of keyboard
  *
@@ -564,7 +546,6 @@ static void xbios_18(void)
     bioskeys();
 }
 #endif
-
 
 
 /*
@@ -595,7 +576,6 @@ static void xbios_1a(WORD intno)
 #endif
 
 
-
 /*
  * xbios_1b - (jenabint) Enable interrupt number 'intno' on the 68901.
  */
@@ -624,7 +604,6 @@ static WORD xbios_1c(WORD data, WORD regno)
 #endif
 
 
-
 /*
  * xbios_1d - (offgibit) Atomically set a bit in the PSG PORT A register to zero.
  */
@@ -636,7 +615,6 @@ static void xbios_1d(WORD bitno)
     offgibit(bitno);
 }
 #endif
-
 
 
 /*
@@ -685,7 +663,6 @@ static void xbios_20(const UBYTE *ptr)
 #endif
 
 
-
 #if CONF_WITH_PRINTER_PORT
 
 /*
@@ -707,7 +684,6 @@ static WORD xbios_21(WORD config)
 #endif  /* CONF_WITH_PRINTER_PORT */
 
 
-
 /*
  * xbios_22 - (kbdvbase) Returns pointer to a kbdvecs structure
  *
@@ -727,7 +703,6 @@ static LONG xbios_22(void)
 #endif
 
 
-
 /*
  * xbios_23 - (kbrate) Get/set the keyboard's repeat rate
  */
@@ -739,7 +714,6 @@ static WORD xbios_23(WORD initial, WORD repeat)
     return kbrate(initial, repeat);
 }
 #endif
-
 
 
 /*
@@ -760,7 +734,6 @@ static void xbios_25(void)
     vsync();
 }
 #endif
-
 
 
 /*
@@ -804,7 +777,6 @@ static LONG xbios_26(PFLONG codeptr)
     return retval;
 }
 #endif
-
 
 
 /*
@@ -864,7 +836,6 @@ static LONG xbios_2c(WORD devno)
     return bconmap(devno);
 }
 #endif
-
 
 
 /*

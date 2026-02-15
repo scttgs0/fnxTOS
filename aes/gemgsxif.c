@@ -104,7 +104,6 @@ static ULONG gsx_mcalc(void)
 }
 
 
-
 void gsx_malloc(void)
 {
     ULONG   mlen;
@@ -114,12 +113,10 @@ void gsx_malloc(void)
 }
 
 
-
 void gsx_mfree(void)
 {
     dos_free(gl_tmp.fd_addr);
 }
-
 
 
 void gsx_mret(LONG *pmaddr, LONG *pmlen)
@@ -127,7 +124,6 @@ void gsx_mret(LONG *pmaddr, LONG *pmlen)
      *pmaddr = (LONG)gl_tmp.fd_addr;
      *pmlen = gl_mlen;
 }
-
 
 
 static void gsx_ncode(WORD code, WORD n, WORD m)
@@ -140,12 +136,10 @@ static void gsx_ncode(WORD code, WORD n, WORD m)
 }
 
 
-
 void gsx_0code(WORD code)
 {
     gsx_ncode(code, 0, 0);
 }
-
 
 
 void gsx_1code(WORD code, WORD value)
@@ -155,15 +149,10 @@ void gsx_1code(WORD code, WORD value)
 }
 
 
-
 static WORD screen_rez(void)
 {
-    if (HAS_VIDEL)
-        return FALCON_REZ;
-
     return Getrez();
 }
-
 
 
 static void gsx_wsopen(void)
@@ -187,19 +176,16 @@ static void gsx_wsopen(void)
 }
 
 
-
 void gsx_wsclose(void)
 {
     gsx_0code(CLOSE_WORKSTATION);
 }
 
 
-
 void gsx_wsclear(void)
 {
     gsx_0code(CLEAR_WORKSTATION);
 }
-
 
 
 void ratinit(void)
@@ -213,7 +199,6 @@ void ratexit(void)
 {
     gsx_moff();
 }
-
 
 
 static void gsx_setmb(PFVOID boff, PFVOID moff, PFVOID *pdrwaddr)
@@ -232,7 +217,6 @@ static void gsx_setmb(PFVOID boff, PFVOID moff, PFVOID *pdrwaddr)
     m_lptr2( pdrwaddr );
 */
 }
-
 
 
 static void gsx_resetmb(void)
@@ -294,7 +278,6 @@ void gsx_init(void)
 }
 
 
-
 void gsx_graphic(BOOL tographic)
 {
     if (gl_graphic != tographic)
@@ -314,7 +297,6 @@ void gsx_graphic(BOOL tographic)
         }
     }
 }
-
 
 
 static void bb_set(BOOL save, GRECT *r)
@@ -379,19 +361,16 @@ static void bb_set(BOOL save, GRECT *r)
 }
 
 
-
 void bb_save(GRECT *ps)
 {
     bb_set(TRUE, ps);
 }
 
 
-
 void bb_restore(GRECT *pr)
 {
     bb_set(FALSE, pr);
 }
-
 
 
 WORD gsx_tick(void *tcode, void *ptsave)
@@ -401,7 +380,6 @@ WORD gsx_tick(void *tcode, void *ptsave)
     m_lptr2( ptsave );
     return(intout[0]);
 }
-
 
 
 void gsx_mfset(const MFORM *pmfnew)
@@ -420,7 +398,6 @@ void gsx_mfset(const MFORM *pmfnew)
 }
 
 
-
 void gsx_mxmy(WORD *pmx, WORD *pmy)
 {
     *pmx = xrat;
@@ -428,13 +405,11 @@ void gsx_mxmy(WORD *pmx, WORD *pmy)
 }
 
 
-
 WORD gsx_kstate(void)
 {
     gsx_0code(KEY_STATE);
     return(intout[0]);
 }
-
 
 
 void gsx_moff(void)
@@ -446,14 +421,12 @@ void gsx_moff(void)
 }
 
 
-
 void gsx_mon(void)
 {
     gl_moff--;
     if (!gl_moff)
         gsx_1code(SHOW_CUR, 1);
 }
-
 
 
 WORD gsx_char(void)
@@ -470,7 +443,6 @@ WORD gsx_char(void)
     else
         return(0);
 }
-
 
 
 /*
@@ -490,7 +462,6 @@ void gsx_setmousexy(WORD x, WORD y)
     ptsin[1] = y;
     gsx_ncode(LOCATOR_INPUT, 1, 0);     /* vsm_locator() */
 }
-
 
 
 /* Get the number of planes (or bit depth) of the current screen */
@@ -600,14 +571,12 @@ void vst_height(WORD height, WORD *pchr_width, WORD *pchr_height,
 }
 
 
-
 void vr_recfl(WORD *pxyarray)
 {
     i_ptsin( pxyarray );
     gsx_ncode(FILL_RECTANGLE, 2, 0);
     i_ptsin( ptsin );
 }
-
 
 
 void vro_cpyfm(WORD wr_mode, WORD *pxyarray, FDB *psrcMFDB, FDB *pdesMFDB )
@@ -619,7 +588,6 @@ void vro_cpyfm(WORD wr_mode, WORD *pxyarray, FDB *psrcMFDB, FDB *pdesMFDB )
     gsx_ncode(COPY_RASTER_OPAQUE, 4, 1);
     i_ptsin( ptsin );
 }
-
 
 
 void vrt_cpyfm(WORD wr_mode, WORD *pxyarray, FDB *psrcMFDB, FDB *pdesMFDB,
@@ -636,7 +604,6 @@ void vrt_cpyfm(WORD wr_mode, WORD *pxyarray, FDB *psrcMFDB, FDB *pdesMFDB,
 }
 
 
-
 void vrn_trnfm(FDB *psrcMFDB, FDB *pdesMFDB)
 {
     i_ptr( psrcMFDB );
@@ -644,7 +611,6 @@ void vrn_trnfm(FDB *psrcMFDB, FDB *pdesMFDB)
 
     gsx_0code(TRANSFORM_FORM);
 }
-
 
 
 /*
@@ -656,7 +622,6 @@ void vsl_width(WORD width)
     ptsin[1] = 0;
     gsx_ncode(SET_LINE_WIDTH, 1, 0);
 }
-
 
 
 #if CONF_WITH_EXTENDED_MOUSE

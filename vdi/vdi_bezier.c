@@ -48,7 +48,6 @@
 #define IS_JUMP(f) ((f&2)!=0)
 
 
-
 /*
  * labs - absolute for LONG
  */
@@ -60,7 +59,6 @@ labs(LONG x)
     else
         return(x);
 }
-
 
 
 /*
@@ -154,7 +152,6 @@ gen_segs(WORD *const array, WORD *px, const int bez_qual,
     if ( x > *pmax )
         *pmax = x;
 }
-
 
 
 /*

@@ -135,7 +135,6 @@ static void rect_change(OBJECT *tree, MOBLK *prmob, WORD iob, BOOL x)
 }
 
 
-
 /*
  *  Routine to change the state of a particular object.  The change in
  *  state will not occur if the object is disabled and the chkdisabled

@@ -12,7 +12,6 @@
  */
 
 
-
 /* Defines for cursor */
 #define  M_CFLASH       0x0001  /* cursor flash         0:disabled 1:enabled */
 #define  M_CSTATE       0x0002  /* cursor flash state   0:off 1:on */

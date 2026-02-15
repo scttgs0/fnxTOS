@@ -51,7 +51,6 @@ Again, C9 and R9 don't exist in a 512 kByte bank, hence in an STe
 0x80008 will map to 0x00008 during memory detection.
 
 
-
 Writing memory detection code that works on STs and STes
 ========================================================
 There are five possible different standard memory setups; each has a
@@ -117,7 +116,6 @@ STE => will correctly wrap around at R9 when 512 kByte are installed
 0 1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 1 0 0 0
 C R C R C R C R C R C R C R C R C R C R X
 9 9 8 8 7 7 6 6 5 5 4 4 3 3 2 2 1 1 0 0 X
-
 
 
 Address decoding during normal operation

@@ -80,7 +80,6 @@ struct _windnode
 };
 
 
-
 /* Prototypes: */
 void win_view(void);
 int win_start(void);

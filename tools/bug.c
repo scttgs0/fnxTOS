@@ -1605,7 +1605,6 @@ err:
 }
 
 
-
 /*
  * parse OIPL (one item per line) simple files
  */

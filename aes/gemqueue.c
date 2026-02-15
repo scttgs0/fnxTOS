@@ -27,7 +27,6 @@
 #include "gemqueue.h"
 
 
-
 static void doq(WORD donq, AESPD *p, QPB *m)
 {
     WORD n, index;

@@ -56,7 +56,6 @@ LONG super(WORD cx, AESPB *pcrys_blk);  /* called only from gemdosif.S */
 static void     *ad_rso;
 
 
-
 #ifdef ENABLE_KDEBUG
 static void aestrace(const char* message)
 {

@@ -157,7 +157,6 @@ Some guilty programs:
     (VDI) Invaders, Anduril, Brain Blasters
 
 
-
 Unique issues
 =============
 

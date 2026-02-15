@@ -403,7 +403,6 @@ LONG scsi_rw(UWORD rw, ULONG sector, UWORD count, UBYTE *buf, WORD dev)
 }
 
 
-
 /*
  * low-level routines
  */

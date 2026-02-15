@@ -17,7 +17,6 @@
  */
 
 
-
 #ifndef FS_H
 #define FS_H
 
@@ -100,7 +99,6 @@ typedef struct
 } DOSTIME;
 
 
-
 /*
  *  DFD - disk file data
  *
@@ -128,7 +126,6 @@ typedef struct
  * bit usage in o_flag 
  */
 #define O_DIRTY     1   /* contents have changed, FCB on disk must be updated */ 
-
 
 
 /*
@@ -173,7 +170,6 @@ struct _ofd
 #define VALID_FOPEN_BITS    MODE_FAC    /* currently-valid bits for Fopen() */
 
 
-
 /*
  *  FCB - File Control Block
  *
@@ -194,7 +190,6 @@ typedef struct
 
 #define FA_NORM         (FA_ARCHIVE|FA_SYSTEM|FA_HIDDEN|FA_RO)
 #define FA_LFN          0x0f
-
 
 
 /*
@@ -231,7 +226,6 @@ struct _dnd         /* directory node descriptor */
                             /* free_available_dnds() in fsdir.c) */
 
 
-
 /*
  *  DMD - Drive Media Block
  *
@@ -260,7 +254,6 @@ struct _dmd         /* drive media block */
     UBYTE  m_16;        /* 16 bit fat ?                         */
     UBYTE  m_1fat;      /* 1 FAT only ?                         */
 } ;
-
 
 
 /*
@@ -312,7 +305,6 @@ typedef struct
 } FTAB;
 
 
-
 /*
  * DTAINFO - Information stored in the dta by srch-frst for use by srch-nxt.
  */
@@ -351,7 +343,6 @@ extern  DIRTBL_ENTRY dirtbl[];
 extern  DMD     *drvtbl[];
 extern  LONG    drvsel;
 extern  FTAB    sft[];
-
 
 
 /*

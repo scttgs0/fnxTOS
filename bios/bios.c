@@ -63,7 +63,6 @@
 #endif
 
 
-
 /*==== Defines ============================================================*/
 
 #define DBGBIOS 0               /* If you want to enable debug wrappers */
@@ -814,7 +813,6 @@ void biosmain(void)
 }
 
 
-
 /**
  * bios_0 - (getmpb) Load Memory parameter block
  *
@@ -997,7 +995,6 @@ static LONG bios_4(WORD r_w, UBYTE *adr, WORD numb, WORD first, WORD drive, LONG
 #endif
 
 
-
 /**
  * Setexc - set exception vector
  *
@@ -1104,7 +1101,6 @@ static LONG bios_8(WORD handle)
     return bcostat(handle);
 }
 #endif
-
 
 
 /**

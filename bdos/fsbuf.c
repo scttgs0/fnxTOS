@@ -73,7 +73,6 @@ void bufl_init(void)
 }
 
 
-
 /*
  * flush -
  *
@@ -103,7 +102,6 @@ void flush(BCB *b)
     b->b_bufdrv = d;                    /* re-validate */
     b->b_dirty = 0;
 }
-
 
 
 /*
@@ -200,7 +198,6 @@ doio:   for (p = *(q = phdr); p->b_link; p = *(q = &p->b_link))
 
     return b;
 }
-
 
 
 /*

@@ -1862,7 +1862,6 @@ static void makbuf(FCB *f, DTAINFO *dt)
 }
 
 
-
 /*
  *  getdnd - find a DND with matching name
  */

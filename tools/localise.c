@@ -144,7 +144,6 @@ int keytable_count = 0;
 char now[26];                       /* for current date/time */
 
 
-
 /*
  ***** general-purpose functions *****
  */
@@ -292,7 +291,6 @@ static void usage(char *s)
 
     exit(1);
 }
-
 
 
 /*

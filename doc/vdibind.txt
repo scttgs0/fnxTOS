@@ -1,7 +1,6 @@
 vdibind.txt - VDI bindings (from old documentation)
 
 
-
 The following routines are the actual binding routines found in the
 VDIBIND library. They have been provided to help clear up any discrepancy
 within the GEM Programmer's Guide Volume 1: VDI.
@@ -248,8 +247,6 @@ WORD xy[];
 
     i_ptsin( ptsin );
 }
-
-
 
 
     WORD
@@ -929,7 +926,6 @@ WORD planes;
 				-----------------
 
 
-
     WORD
 vro_cpyfm( handle, wr_mode, xy, srcMFDB, desMFDB )
 WORD handle;		/* Physical device handle */
@@ -1358,7 +1354,6 @@ WORD *status;
 				-----------------
 
 
-
     WORD
 vq_extnd( handle, owflag, work_out )
 WORD handle;		/* Physical device handle */
@@ -1619,8 +1614,6 @@ WORD effects[];
 				----------------
 
 
-
-
     WORD
 vq_chcells( handle, rows, columns )
 WORD handle;		/* Physical device handle */
@@ -1746,7 +1739,6 @@ WORD handle;		/* Physical device handle */
 }
 
 
-
     WORD
 vs_curaddress( handle, row, column )
 WORD handle;		/* Physical device handle */
@@ -1763,7 +1755,6 @@ WORD column;
     contrl[6] = handle;
     vdi();
 }
-
 
 
     WORD
@@ -2061,7 +2052,6 @@ WORD handle;		/* Physical device handle */
     contrl[6] = handle;
     vdi();
 }
-
 
 
     WORD

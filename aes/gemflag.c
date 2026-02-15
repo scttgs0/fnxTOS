@@ -28,7 +28,6 @@
 #include "gemflag.h"
 
 
-
 void tchange(LONG c)            /* c=number of ticks that have gone by  */
 {
     EVB *d;

@@ -78,7 +78,6 @@ static const WORD ml_pwlv[] =
     {0x0102,0x0102,0x0102,0x0101,0x0002,0x0001};
 
 
-
 void fm_own(WORD beg_ownit)
 {
     if (beg_ownit)

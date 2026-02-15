@@ -578,7 +578,6 @@ static void proc_go(PD *p)
 }
 
 
-
 /*
  * x0term - (Pterm0) terminate current process
  *

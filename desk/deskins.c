@@ -710,7 +710,6 @@ static WORD ins_one_app(WORD curr, FNODE *pf)
 }
 
 
-
 /*
  * install one or more applications
  *

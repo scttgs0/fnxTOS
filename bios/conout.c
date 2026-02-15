@@ -72,7 +72,6 @@ static UBYTE *char_addr(WORD ch)
 }
 
 
-
 /*
  * cell_addr - convert cell X,Y to a screen address.
  *
@@ -127,7 +126,6 @@ static UBYTE *cell_addr(UWORD x, UWORD y)
 }
 
 
-
 #if CONF_WITH_VIDEL
 /*
  * cell_xfer16 - cell_xfer() for Falcon 16-bit graphics
@@ -179,7 +177,6 @@ static void cell_xfer16(UBYTE *src, UBYTE *dst)
     }
 }
 #endif
-
 
 
 /*
@@ -279,7 +276,6 @@ static void cell_xfer(UBYTE *src, UBYTE *dst)
 }
 
 
-
 /*
  * neg_cell - negates
  *
@@ -331,7 +327,6 @@ static void neg_cell(UBYTE *cell)
 }
 
 
-
 /*
  * next_cell - Return the next cell address.
  *
@@ -380,7 +375,6 @@ static BOOL next_cell(void)
 }
 
 
-
 /*
  * invert_cell - negates the cells bits
  *
@@ -399,7 +393,6 @@ void invert_cell(int x, int y)
     /* fetch x and y coords and invert cursor. */
     neg_cell(cell_addr(x, y));
 }
-
 
 
 /*
@@ -470,7 +463,6 @@ void move_cursor(int x, int y)
 }
 
 
-
 /*
  * ascii_out - prints an ascii character on the screen
  *
@@ -532,7 +524,6 @@ void ascii_out(int ch)
 }
 
 
-
 #if CONF_WITH_VIDEL
 /*
  * blank_out16 - blank_out() for Falcon 16-bit graphics
@@ -574,7 +565,6 @@ static void blank_out16(int topx, int topy, int botx, int boty)
     }
 }
 #endif
-
 
 
 /*
@@ -684,7 +674,6 @@ void blank_out(int topx, int topy, int botx, int boty)
 }
 
 
-
 /*
  * scroll_up - Scroll upwards
  *
@@ -723,7 +712,6 @@ void scroll_up(UWORD top_line)
     /* exit thru blank out, bottom line cell address y to top/left cell */
     blank_out(0, v_cel_my , v_cel_mx, v_cel_my);
 }
-
 
 
 /*

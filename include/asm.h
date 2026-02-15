@@ -226,7 +226,6 @@ __extension__                             \
 })
 
 
-
 /*
  * void regsafe_call(void *addr)
  *   Saves all registers to the stack, calls the function
@@ -239,7 +238,6 @@ __extension__                                      \
                     "movem.l (sp)+,d0-d7/a0-a6"    \
                     : : "a"(addr): "memory");      \
 })
-
 
 
 /*

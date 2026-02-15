@@ -840,7 +840,6 @@ LONG blkdev_drvmap(void)
 }
 
 
-
 /*
  * blkdev_avail - Check drive availability
  *

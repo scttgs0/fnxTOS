@@ -803,7 +803,6 @@ PRIVATE int write_tree(FILE *fp);
 PRIVATE char *my_strupr(char *string);
 
 
-
 int main(int argc,char *argv[])
 {
 int n;

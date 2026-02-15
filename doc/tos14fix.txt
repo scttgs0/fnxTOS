@@ -21,7 +21,6 @@ Within each topic are items; items are numbered uniquely in the document,
 starting at 001.
 
 
-
 *******************************************************************
 *                           AES Changes                           *
 *******************************************************************
@@ -223,7 +222,6 @@ Windows
 035. When the user clicks in the scroll area of a window, AES         COMMENT: EmuTOS doesn't wait,
      waits for a double click time before starting the scroll         so scrolls faster: surely this
      repeat.  Single clicks only cause one message to be sent.        is better?
-
 
 
 *******************************************************************
@@ -633,7 +631,6 @@ Windows
      delete, disk copy, or disk format operation.                     0.9.3 and 0.9.4
 
 
-
 *******************************************************************
 *                           GEMDOS changes                        *
 *******************************************************************
@@ -684,7 +681,6 @@ Type-ahead
 ----------
 110. Console input type-ahead buffers are implemented correctly,      FIXED: since initial import
      and no longer grow without bound into the surrounding memory.    (verified by code inspection)
-
 
 
 GEMDOS Changes - File Functions
@@ -756,7 +752,6 @@ Tsetdate() and Tsettime()
      necessary for the real-time clock chip.
 
 
-
 GEMDOS Changes - Directory Functions
 ====================================
 Dcreate()
@@ -815,7 +810,6 @@ Volume Labels
 134. You cannot use Fattrib() to make a file into a volume label.     FIXED: commit 37deaa
 135. You cannot remove a volume label. (But see above; you can        FIXED: commit 1af26d
      rename one simply by creating one with the new name.)
-
 
 
 GEMDOS Changes - Processes and Memory
@@ -880,7 +874,6 @@ Program Termination
      code 0x0000ffff.  Previously, it returned with error code 0.
 
 
-
 GEMDOS Changes - Other
 ======================
 FAT Search Code
@@ -905,7 +898,6 @@ Media Change
      cache without checking for media change.
 147. Mediach() is more reliable when using logical drives A: and      MISSING FEATURE
      B: on a single-drive system.
-
 
 
 GEMDOS Changes - Supplemental Information
@@ -948,7 +940,6 @@ more folders (remember, only ACTIVE folders take up room) or
 800 more memory chunks, or any combination.  For more
 information, see the FOLDR100.PRG documentation in your HDX
 manual.
-
 
 
 *******************************************************************

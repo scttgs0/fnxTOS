@@ -27,9 +27,7 @@
 #include "asm.h"
 
 
-
 struct param rel_pblock;        /* mouse parameter block */
-
 
 
 /*

@@ -36,7 +36,6 @@
 #define HXFORM(h)       (3+h)
 
 
-
 void stdhdl_init(void);
 signed char get_default_handle(int stdh);
 
@@ -58,7 +57,6 @@ void xconrs(char *p);
 int cgets(int h, int maxlen, char *buf);
 long conin(int h);
 void tabout(int h, int ch);
-
 
 
 #endif /* CONSOLE_H */

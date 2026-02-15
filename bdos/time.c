@@ -92,7 +92,6 @@ static const UBYTE nday_leap[] = {0, 31, 29, 31, 30, 31, 30, 31, 31, 30, 31, 30,
 static int msec;
 
 
-
 /*
  * xgetdate - Function 0x2A:  Get date
  */
@@ -125,7 +124,6 @@ long xsetdate(UWORD d)
 }
 
 
-
 /*
  * xgettime - Function 0x2C:  Get time
  */
@@ -133,7 +131,6 @@ long xgettime(void)
 {
     return current_time;
 }
-
 
 
 /*

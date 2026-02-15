@@ -141,7 +141,6 @@ GLOBAL WORD     curpid;
 GLOBAL THEGLO   D;
 
 
-
 /*
  *  return size of global area
  *  called from gemstart.S

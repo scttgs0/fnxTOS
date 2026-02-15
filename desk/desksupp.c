@@ -198,7 +198,6 @@ void desk_verify(WORD wh, WORD changed)
 }
 
 
-
 void do_wredraw(WORD w_handle, GRECT *gptr)
 {
     GRECT clip_r, t;

@@ -45,8 +45,6 @@
 static WORD act_chkobj(OBJECT *tree, WORD root, WORD obj, WORD mx, WORD my, WORD w, WORD h);
 
 
-
-
 static WORD gr_obfind(OBJECT *tree, WORD root, WORD mx, WORD my)
 {
     WORD sobj;

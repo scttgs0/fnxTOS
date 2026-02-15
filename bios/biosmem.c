@@ -83,7 +83,6 @@ void bmem_init(void)
 }
 
 
-
 /*
  * Allocate an ST-RAM buffer.
  * This is only allowed before BDOS is initialized.

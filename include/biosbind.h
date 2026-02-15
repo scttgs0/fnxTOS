@@ -12,7 +12,6 @@
  */
 
 
-
 #ifndef BIOSBIND_H
 #define BIOSBIND_H
 
@@ -28,7 +27,6 @@
 #define Mediach(a) bios_l_w(0x9,a)
 #define Drvmap() bios_l_v(0xa)
 #define Kbshift(a) bios_l_w(0xb,a)
-
 
 
 static __inline__ void bios_v_l(int op, long a)
@@ -57,7 +55,6 @@ static __inline__ void bios_v_ww(int op, short a, short b)
          : "d0", "d1", "d2", "a0", "a1", "a2", "memory", "cc"
         );
 }
-
 
 
 static __inline__ short bios_w_w(int op, short a)

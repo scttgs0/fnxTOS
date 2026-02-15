@@ -449,7 +449,6 @@ fd_no_dirty:
         rts
 
 
-
 /*
  * void invalidate_data_cache(void *start, long size)
  *
