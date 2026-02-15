@@ -1,0 +1,25 @@
+{
+    "configurations": [
+        {
+            "name": "Linux",
+            "includePath": [
+                "${workspaceFolder}/**"
+            ],
+            "defines": [
+                "COUNTRY=us",
+                "WITH_AES",
+                // "WITH_CLI",
+                "TARGET_512",
+                "ENABLE_KDEBUG",
+                "MACHINE_A2560K",
+                "FOENIXLABS_A2560_ANY",
+                "FOENIXLABS_ANY"
+            ],
+            "compilerPath": "/usr/bin/m68k-atari-mint-gcc",
+            "cStandard": "c99",
+            "cppStandard": "gnu++11",
+            "intelliSenseMode": "${default}"
+        }
+    ],
+    "version": 4
+}
