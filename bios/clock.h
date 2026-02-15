@@ -25,10 +25,6 @@ void detect_megartc(void);
 void detect_icdrtc(void);
 #endif /* CONF_WITH_ICDRTC */
 
-#if CONF_WITH_MONSTER
-void detect_monster_rtc(void);
-#endif /* CONF_WITH_MONSTER */
-
 /* internal init */
 
 void clock_init(void);

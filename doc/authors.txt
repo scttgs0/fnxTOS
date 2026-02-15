@@ -245,7 +245,6 @@ Markus Fröschle
 
 Jo Even Skarstein <joska at online.no>
 - Support for Norwegian & Swedish keyboards
-- Support for MonSTer add-on board
 
 Thorsten Otto <admin at tho-otto.de>
 - Made EmuTOS more compatible with Atari TOS in several areas

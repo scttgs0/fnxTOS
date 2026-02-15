@@ -413,7 +413,6 @@ CHANGES BETWEEN RELEASE 0.9.6 AND RELEASE 0.9.7
 
 Major changes:
 - BIOS: add support for extended MBR partitions
-- BIOS: add support for MonSTer board
 - BIOS: configure & size ST-RAM on TT
 - BIOS: add support for Eiffel on CAN bus on ColdFire EVB
 - BIOS: add _5MS cookie to support FreeMiNT on non-Atari hardware

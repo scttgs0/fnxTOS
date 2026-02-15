@@ -31,7 +31,6 @@
 #define VME_INT_MFP             (1<<6)
 #define VME_INT_SCC             (1<<5)
 #define DIP_SWITCHES        0xffff9200UL
-#define MONSTER_REG         0xfffffe00UL
 
 /*
  * standard bus numbers

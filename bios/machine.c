@@ -217,27 +217,6 @@ static void detect_vme(void)
 
 #endif /* CONF_WITH_VME */
 
-#if CONF_WITH_MONSTER
-
-int has_monster;
-
-static void detect_monster(void)
-{
-    if (IS_ARANYM)
-    {
-        /* The auto-detection currently crashes ARAnyM-JIT. */
-        has_monster = 0;
-    }
-    else
-    {
-        has_monster = check_read_byte(MONSTER_REG);
-    }
-
-    KDEBUG(("has_monster = %d\n", has_monster));
-}
-
-#endif /* CONF_WITH_MONSTER */
-
 #if CONF_WITH_MAGNUM
 
 int has_magnum;
@@ -459,10 +438,6 @@ static void add_cookie_frb(void)
     need_frb = (ramtop != NULL);
 #endif
 
-#if CONF_WITH_MONSTER
-    need_frb |= has_monster;
-#endif
-
 #if CONF_WITH_MAGNUM
     need_frb |= has_magnum;
 #endif
@@ -593,14 +568,6 @@ void machine_detect(void)
     detected_busses = check_busses();
     KDEBUG(("detected_busses = 0x%lx\n", detected_busses));
 
-#if CONF_WITH_MONSTER
-    detect_monster();
-    if (has_monster)
-    {
-        detect_monster_rtc();
-        KDEBUG(("has_monster_rtc = %d\n", has_monster_rtc));
-    }
-#endif
 #if CONF_WITH_MAGNUM
     detect_magnum();
 #endif

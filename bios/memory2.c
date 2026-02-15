@@ -137,28 +137,6 @@ void altram_init(void)
         xmaddalt(TTRAM_START, ramtop - TTRAM_START);
 #endif
 
-#if CONF_WITH_MONSTER
-    /* Add MonSTer Alt-RAM detected in machine.c */
-    if (has_monster)
-    {
-        /* Dummy read from MonSTer register to initiate write sequence. */
-        unsigned short monster_reg = *(volatile unsigned short *)MONSTER_REG;
-
-        /* Only enable 6Mb when on a Mega STE due to address conflict with
-           VME bus. Todo: This should be made configurable. */
-        if (cookie_mch == MCH_MSTE)
-            monster_reg = 6;
-        else
-            monster_reg = 8;
-
-        /* Register write sequence: read - write - write */
-        *(volatile unsigned short *)MONSTER_REG = monster_reg;
-        *(volatile unsigned short *)MONSTER_REG = monster_reg;
-        KDEBUG(("xmaddalt()\n"));
-        xmaddalt((UBYTE *)0x400000L, monster_reg*0x100000L);
-    }
-#endif
-
 #if CONF_WITH_MAGNUM
     /* Size and add Magnum Alt-RAM. The Magnum is detected in machine.c. */
     if (has_magnum)

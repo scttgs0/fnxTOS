@@ -104,9 +104,6 @@
 # ifndef CONF_WITH_68040_PMMU
 #  define CONF_WITH_68040_PMMU 1
 # endif
-# ifndef CONF_WITH_MONSTER
-#  define CONF_WITH_MONSTER 0
-# endif
 # ifndef CONF_WITH_MAGNUM
 #  define CONF_WITH_MAGNUM 0
 # endif
@@ -150,9 +147,6 @@
 # endif
 # ifndef CONF_WITH_ALT_RAM
 #  define CONF_WITH_ALT_RAM 0
-# endif
-# ifndef CONF_WITH_MONSTER
-#  define CONF_WITH_MONSTER 0
 # endif
 # ifndef CONF_WITH_MAGNUM
 #  define CONF_WITH_MAGNUM 0
@@ -376,7 +370,7 @@
  *      . alternate/TT RAM is not supported
  *      . the 68040 PMMU is not supported
  *      . the Apollo 68080 is not supported
- *      . support for add-on cards such as MonSTer, Magnum is disabled
+ *      . support for add-on cards such as Magnum is disabled
  *      . extended mouse functions (extra buttons etc) are not supported
  */
 #ifdef TARGET_CART
@@ -448,9 +442,6 @@
 # endif
 # ifndef CONF_WITH_SHUTDOWN
 #  define CONF_WITH_SHUTDOWN 0
-# endif
-# ifndef CONF_WITH_MONSTER
-#  define CONF_WITH_MONSTER 0
 # endif
 # ifndef CONF_WITH_MAGNUM
 #  define CONF_WITH_MAGNUM 0
@@ -598,9 +589,6 @@
 # ifndef CONF_WITH_BUS_ERROR
 #  define CONF_WITH_BUS_ERROR 0
 # endif
-# ifndef CONF_WITH_MONSTER
-#  define CONF_WITH_MONSTER 0
-# endif
 # ifndef CONF_WITH_MAGNUM
 #  define CONF_WITH_MAGNUM 0
 # endif
@@ -707,14 +695,6 @@
  */
 #ifndef CONF_TTRAM_SIZE
 # define CONF_TTRAM_SIZE 0
-#endif
-
-/*
- * Define CONF_WITH_MONSTER to enable detection and usage of ST/STE
- * MonSTer expansion card
- */
-#ifndef CONF_WITH_MONSTER
-# define CONF_WITH_MONSTER 1
 #endif
 
 /*
