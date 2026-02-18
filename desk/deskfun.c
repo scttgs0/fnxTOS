@@ -19,8 +19,6 @@
 *       -------------------------------------------------------------
 */
 
-/* #define ENABLE_KDEBUG */
-
 #include "emutos.h"
 #include <stdarg.h>
 #include "obdefs.h"

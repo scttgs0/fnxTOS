@@ -21,8 +21,6 @@
  *
  */
 
-/* #define ENABLE_KDEBUG */
-
 #include "emutos.h"
 #include "nls.h"
 #include "fs.h"

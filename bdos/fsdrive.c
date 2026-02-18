@@ -28,8 +28,6 @@
  **
  */
 
-/* #define ENABLE_KDEBUG */
-
 #include "emutos.h"
 #include "fs.h"
 #include "biosdefs.h"

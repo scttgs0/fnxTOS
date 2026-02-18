@@ -9,9 +9,6 @@
  */
 
 
-/* #define ENABLE_KDEBUG */
-
-
 #include "emutos.h"
 #include "fs.h"
 #include "mem.h"

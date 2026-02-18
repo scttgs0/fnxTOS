@@ -15,8 +15,6 @@
  * Some code I got from Linux m68k, thanks to the authors! (MAD)
  */
 
-/* #define ENABLE_KDEBUG */
-
 #include "emutos.h"
 #include "tosvars.h"
 #include "bios.h"

@@ -13,8 +13,6 @@
  * option any later version.  See doc/license.txt for details.
  */
 
-/* #define ENABLE_KDEBUG */
-
 #include "asmdefs.h"
 
 // ==== References ===========================================================

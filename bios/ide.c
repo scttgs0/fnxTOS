@@ -15,8 +15,6 @@
  * Note: CHS addressing is now supported in addition to LBA.
  */
 
-/* #define ENABLE_KDEBUG */
-
 #include "emutos.h"
 #include "asm.h"
 #include "blkdev.h"

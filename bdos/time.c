@@ -38,8 +38,6 @@ NAMES
         ACH     Anthony C. Hay (DR UK)
 */
 
-/* #define ENABLE_KDEBUG */
-
 #include "emutos.h"
 #include "time.h"
 #include "gemerror.h"

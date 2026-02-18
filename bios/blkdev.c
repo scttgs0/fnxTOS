@@ -11,8 +11,6 @@
  * option any later version.  See doc/license.txt for details.
  */
 
-/* #define ENABLE_KDEBUG */
-
 #include "emutos.h"
 #include "string.h"
 #include "gemerror.h"

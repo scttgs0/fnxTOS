@@ -15,7 +15,7 @@
 *       Copyright (C) 1987                      Digital Research Inc.
 *       -------------------------------------------------------------
 */
-/* #define ENABLE_KDEBUG */
+
 #include "emutos.h"
 #include "struct.h"
 #include "aesdefs.h"

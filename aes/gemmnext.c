@@ -27,8 +27,6 @@
  * should be adequate.
  */
 
-/* #define ENABLE_KDEBUG */
-
 #include "emutos.h"
 
 #if CONF_WITH_MENU_EXTENSION

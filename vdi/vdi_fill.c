@@ -9,8 +9,6 @@
  * option any later version.  See doc/license.txt for details.
  */
 
-/* #define ENABLE_KDEBUG */
-
 #include "emutos.h"
 #include "asm.h"
 #include "intmath.h"

@@ -120,8 +120,6 @@
 **      scan)..
 */
 
-/* #define ENABLE_KDEBUG */
-
 #include "emutos.h"
 #include "asm.h"
 #include "fs.h"

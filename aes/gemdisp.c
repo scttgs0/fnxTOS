@@ -17,8 +17,6 @@
 *       -------------------------------------------------------------
 */
 
-/* #define ENABLE_KDEBUG */
-
 #include "emutos.h"
 #include "gemdisp.h"
 #include "string.h"
